@@ -31,7 +31,7 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 					}
 
 					// Compare the Player's name from the entity with the one from the CreatePlayerMsg
-					if playerManager.playerName == createPlayerData.Msg.PlayersName {
+					if playerManager.PlayerName == createPlayerData.Msg.PlayersName {
 						// Log for when the name already exists
 						log.Printf("Player with name: %v already exists.\n", createPlayerData.Msg.PlayersName)
 						existingPlayerEntityID = id
@@ -75,9 +75,9 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 
 			// Set the Player Entity variables of the created player entity
 			if err := cardinal.SetComponent[component.Player](world, playerManagerID, &component.Player{
-				playerEntityID:   playerManagerID,
-				playerName:       createPlayerData.Msg.PlayersName,
-				playerConnection: true,
+				PlayerEntityID:   playerManagerID,
+				PlayerName:       createPlayerData.Msg.PlayersName,
+				PlayerConnection: true,
 			}); err != nil {
 				// Log error updating the Player entity.
 				return msg.CreatePlayerReply{
