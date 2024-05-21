@@ -5,9 +5,9 @@ import (
 
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/component"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/msg"
+	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/system"
 	"github.com/rs/zerolog/log"
 	"pkg.world.dev/world-engine/cardinal"
-	"pkg.world.dev/world-engine/cardinal/system"
 )
 
 func main() {
