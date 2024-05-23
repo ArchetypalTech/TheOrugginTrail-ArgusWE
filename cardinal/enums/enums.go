@@ -1,5 +1,7 @@
 package main
 
+/////////////// ENUMS///////////
+
 // RoomType - Custom type for room types
 type RoomType int
 
