@@ -45,10 +45,7 @@ func MustInitWorld(w *cardinal.World) {
 	// Register messages (user action)
 	// NOTE: You must register your transactions here for it to be executed.
 	Must(
-
 		cardinal.RegisterMessage[msg.CreatePlayerMsg, msg.CreatePlayerReply](w, "create-player"),
-		//cardinal.RegisterMessage[msg.CreateRoomMsg, msg.CreateRoomReply](w, "create-room"),
-		cardinal.RegisterMessage[msg.MovePlayerMsg, msg.MovePlayerReply](w, "move-player"),
 	)
 
 	// Register queries
@@ -58,14 +55,12 @@ func MustInitWorld(w *cardinal.World) {
 
 	// Each system executes deterministically in the order they are added.
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
-	// For example, you may want to join the match before changing the role of the player
-	// that way, the roles are confirmed before starting the game.
 	Must(cardinal.RegisterSystems(w,
 		//system.TokeniserSystem,
 		system.CreatePlayerSystem,
-		//system.DirectionSystem,
 	))
 
+	// Register the init system when the world is initiated.
 	Must(cardinal.RegisterInitSystems(w,
 		system.NGameSetupSystem,
 	))
