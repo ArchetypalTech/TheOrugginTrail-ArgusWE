@@ -28,13 +28,17 @@ func MustInitWorld(w *cardinal.World) {
 	// NOTE: You must register your components here for it to be accessible.
 	Must(
 		cardinal.RegisterComponent[component.Action](w),
+		cardinal.RegisterComponent[component.ActionStore](w),
 		cardinal.RegisterComponent[component.ActionOutput](w),
 		cardinal.RegisterComponent[component.Description](w),
 		cardinal.RegisterComponent[component.DirObject](w),
+		cardinal.RegisterComponent[component.DirObjectStore](w),
 		cardinal.RegisterComponent[component.Object](w),
+		cardinal.RegisterComponent[component.ObjectStore](w),
 		cardinal.RegisterComponent[component.Output](w),
 		cardinal.RegisterComponent[component.Player](w),
 		cardinal.RegisterComponent[component.Room](w),
+		cardinal.RegisterComponent[component.RoomStore](w),
 		cardinal.RegisterComponent[component.TxtDef](w),
 	)
 
@@ -43,7 +47,8 @@ func MustInitWorld(w *cardinal.World) {
 	Must(
 
 		cardinal.RegisterMessage[msg.CreatePlayerMsg, msg.CreatePlayerReply](w, "create-player"),
-		cardinal.RegisterMessage[msg.CreateRoomMsg, msg.CreateRoomReply](w, "create-room"),
+		//cardinal.RegisterMessage[msg.CreateRoomMsg, msg.CreateRoomReply](w, "create-room"),
+		cardinal.RegisterMessage[msg.MovePlayerMsg, msg.MovePlayerReply](w, "move-player"),
 	)
 
 	// Register queries
@@ -56,7 +61,13 @@ func MustInitWorld(w *cardinal.World) {
 	// For example, you may want to join the match before changing the role of the player
 	// that way, the roles are confirmed before starting the game.
 	Must(cardinal.RegisterSystems(w,
+		//system.TokeniserSystem,
 		system.CreatePlayerSystem,
+		//system.DirectionSystem,
+	))
+
+	Must(cardinal.RegisterInitSystems(w,
+		system.NGameSetupSystem,
 	))
 
 }
