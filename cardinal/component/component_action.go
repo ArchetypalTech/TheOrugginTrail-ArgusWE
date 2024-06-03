@@ -5,7 +5,7 @@ import (
 )
 
 type Action struct {
-	ActionID           uint32           `json:"action_id"`
+	ID                 uint32           `json:"id"`
 	ActionType         enums.ActionType `json:"action_type"`
 	DBitTxt            string           `json:"d_bit_txt"`
 	Enabled            bool             `json:"enabled"`
@@ -15,6 +15,38 @@ type Action struct {
 	AffectedByActionID uint32           `json:"affected_by_action_id"`
 }
 
+type ActionStore struct {
+	actions map[uint32]Action
+	nextID  uint32
+}
+
+func (ActionStore) Name() string {
+	return "ActionStore"
+}
+
 func (Action) Name() string {
 	return "Action"
+}
+
+func NewActionStore() *ActionStore {
+	return &ActionStore{
+		actions: make(map[uint32]Action),
+		nextID:  1,
+	}
+}
+
+func (store *ActionStore) Add(action Action) uint32 {
+	action.ID = store.nextID
+	store.actions[store.nextID] = action
+	store.nextID++
+	return action.ID
+}
+
+func (store *ActionStore) Get(id uint32) (Action, bool) {
+	action, found := store.actions[id]
+	return action, found
+}
+
+func (store *ActionStore) Set(id uint32, action Action) {
+	store.actions[id] = action
 }

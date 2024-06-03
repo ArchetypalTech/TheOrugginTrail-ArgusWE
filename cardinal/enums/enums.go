@@ -14,10 +14,37 @@ const (
 	RoomTypeFort                       // 5
 	RoomTypeRoom                       // 6
 	RoomTypePlain                      // 7
+	RoomTypeForge                      // 8
 )
 
 func (r RoomType) String() string {
-	return [...]string{"None", "WoodCabin", "Store", "Cavern", "StoneCabin", "Fort", "Room", "Plain"}[r]
+	return [...]string{"None", "WoodCabin", "Store", "Cavern", "StoneCabin", "Fort", "Room", "Plain", "Forge"}[r]
+}
+
+// Map to store the string representations of the enum
+var toStringRoom = map[RoomType]string{
+	RoomTypeNone:       "None",
+	RoomTypeWoodCabin:  "WoodCabin",
+	RoomTypeStore:      "Store",
+	RoomTypeCavern:     "Cavern",
+	RoomTypeStoneCabin: "StoneCabin",
+	RoomTypeFort:       "Fort",
+	RoomTypeRoom:       "Room",
+	RoomTypePlain:      "Plain",
+	RoomTypeForge:      "Forge",
+}
+
+// Map to store the enum values by string
+var toEnumRoom = map[string]RoomType{
+	"None":       RoomTypeNone,
+	"WoodCabin":  RoomTypeWoodCabin,
+	"Store":      RoomTypeStore,
+	"Cavern":     RoomTypeCavern,
+	"StoneCabin": RoomTypeStoneCabin,
+	"Fort":       RoomTypeFort,
+	"Room":       RoomTypeRoom,
+	"Plain":      RoomTypePlain,
+	"Forge":      RoomTypeForge,
 }
 
 // DirectionType - Custom type for direction types
@@ -39,6 +66,32 @@ func (d DirectionType) String() string {
 	return [...]string{"None", "North", "South", "East", "West", "Up", "Down", "Forward", "Backward"}[d]
 }
 
+// Map to store the string representations of the enum
+var toStringDirection = map[DirectionType]string{
+	DirectionTypeNone:     "None",
+	DirectionTypeNorth:    "North",
+	DirectionTypeSouth:    "South",
+	DirectionTypeEast:     "East",
+	DirectionTypeWest:     "West",
+	DirectionTypeUp:       "Up",
+	DirectionTypeDown:     "Down",
+	DirectionTypeForward:  "Forward",
+	DirectionTypeBackward: "Backward",
+}
+
+// Map to store the enum values by string
+var toEnumDirection = map[string]DirectionType{
+	"None":     DirectionTypeNone,
+	"North":    DirectionTypeNorth,
+	"South":    DirectionTypeSouth,
+	"East":     DirectionTypeEast,
+	"West":     DirectionTypeWest,
+	"Up":       DirectionTypeUp,
+	"Down":     DirectionTypeDown,
+	"Forward":  DirectionTypeForward,
+	"Backward": DirectionTypeBackward,
+}
+
 // DirObjectType - Custom type for direction object types
 type DirObjectType int
 
@@ -54,6 +107,28 @@ const (
 
 func (d DirObjectType) String() string {
 	return [...]string{"None", "Door", "Window", "Stairs", "Ladder", "Path", "Trail"}[d]
+}
+
+// Map to store the string representations of the enum
+var toStringDObject = map[DirObjectType]string{
+	DirObjectTypeNone:   "None",
+	DirObjectTypeDoor:   "Door",
+	DirObjectTypeWindow: "Window",
+	DirObjectTypeStairs: "Stairs",
+	DirObjectTypeLadder: "Ladder",
+	DirObjectTypePath:   "Path",
+	DirObjectTypeTrail:  "Trail",
+}
+
+// Map to store the enum values by string
+var toEnumDObject = map[string]DirObjectType{
+	"None":   DirObjectTypeNone,
+	"Door":   DirObjectTypeDoor,
+	"Window": DirObjectTypeWindow,
+	"Stairs": DirObjectTypeStairs,
+	"Ladder": DirObjectTypeLadder,
+	"Path":   DirObjectTypePath,
+	"Trail":  DirObjectTypeTrail,
 }
 
 // ActionType - Custom type for action types
@@ -90,6 +165,56 @@ func (a ActionType) String() string {
 	}[a]
 }
 
+// Map to store the string representations of the enum
+var toStringAction = map[ActionType]string{
+	ActionTypeNone:      "None",
+	ActionTypeGo:        "Go",
+	ActionTypeMove:      "Move",
+	ActionTypeLoot:      "Loot",
+	ActionTypeDescribe:  "Describe",
+	ActionTypeTake:      "Take",
+	ActionTypeKick:      "Kick",
+	ActionTypeLock:      "Lock",
+	ActionTypeUnlock:    "Unlock",
+	ActionTypeOpen:      "Open",
+	ActionTypeLook:      "Look",
+	ActionTypeClose:     "Close",
+	ActionTypeBreak:     "Break",
+	ActionTypeThrow:     "Throw",
+	ActionTypeDrop:      "Drop",
+	ActionTypeInventory: "Inventory",
+	ActionTypeBurn:      "Burn",
+	ActionTypeLight:     "Light",
+	ActionTypeDamage:    "Damage",
+	ActionTypeHit:       "Hit",
+	ActionTypeAcquire:   "Acquire",
+}
+
+// Map to store the enum values by string
+var toEnumAction = map[string]ActionType{
+	"None":      ActionTypeNone,
+	"Go":        ActionTypeGo,
+	"Move":      ActionTypeMove,
+	"Loot":      ActionTypeLoot,
+	"Describe":  ActionTypeDescribe,
+	"Take":      ActionTypeTake,
+	"Kick":      ActionTypeKick,
+	"Lock":      ActionTypeLock,
+	"Unlock":    ActionTypeUnlock,
+	"Open":      ActionTypeOpen,
+	"Look":      ActionTypeLook,
+	"Close":     ActionTypeClose,
+	"Break":     ActionTypeBreak,
+	"Throw":     ActionTypeThrow,
+	"Drop":      ActionTypeDrop,
+	"Inventory": ActionTypeInventory,
+	"Burn":      ActionTypeBurn,
+	"Light":     ActionTypeLight,
+	"Damage":    ActionTypeDamage,
+	"Hit":       ActionTypeHit,
+	"Acquire":   ActionTypeAcquire,
+}
+
 // ObjectType - Custom type for object types
 type ObjectType int
 
@@ -105,6 +230,28 @@ const (
 
 func (o ObjectType) String() string {
 	return [...]string{"None", "Football", "Key", "Knife", "Bottle", "Straw", "Petrol"}[o]
+}
+
+// Map to store the string representations of the enum
+var toStringObject = map[ObjectType]string{
+	ObjectTypeNone:     "None",
+	ObjectTypeFootball: "Football",
+	ObjectTypeKey:      "Key",
+	ObjectTypeKnife:    "Knife",
+	ObjectTypeBottle:   "Bottle",
+	ObjectTypeStraw:    "Straw",
+	ObjectTypePetrol:   "Petrol",
+}
+
+// Map to store the enum values by string
+var toEnumObject = map[string]ObjectType{
+	"None":     ObjectTypeNone,
+	"Football": ObjectTypeFootball,
+	"Key":      ObjectTypeKey,
+	"Knife":    ObjectTypeKnife,
+	"Bottle":   ObjectTypeBottle,
+	"Straw":    ObjectTypeStraw,
+	"Petrol":   ObjectTypePetrol,
 }
 
 // MaterialType - Custom type for material types
@@ -127,6 +274,34 @@ func (m MaterialType) String() string {
 	return [...]string{"None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh", "Dirt", "Mud", "Glass"}[m]
 }
 
+// Map to store the string representations of the enum
+var toStringMaterial = map[MaterialType]string{
+	MaterialTypeNone:  "None",
+	MaterialTypeWood:  "Wood",
+	MaterialTypeStone: "Stone",
+	MaterialTypeIron:  "Iron",
+	MaterialTypeShit:  "Shit",
+	MaterialTypeIKEA:  "IKEA",
+	MaterialTypeFlesh: "Flesh",
+	MaterialTypeDirt:  "Dirt",
+	MaterialTypeMud:   "Mud",
+	MaterialTypeGlass: "Glass",
+}
+
+// Map to store the enum values by string
+var toEnumMaterial = map[string]MaterialType{
+	"None":  MaterialTypeNone,
+	"Wood":  MaterialTypeWood,
+	"Stone": MaterialTypeStone,
+	"Iron":  MaterialTypeIron,
+	"Shit":  MaterialTypeShit,
+	"IKEA":  MaterialTypeIKEA,
+	"Flesh": MaterialTypeFlesh,
+	"Dirt":  MaterialTypeDirt,
+	"Mud":   MaterialTypeMud,
+	"Glass": MaterialTypeGlass,
+}
+
 // TxtDefType - Custom type for text definition types
 type TxtDefType int
 
@@ -141,4 +316,24 @@ const (
 
 func (t TxtDefType) String() string {
 	return [...]string{"None", "DirObject", "Dir", "Place", "Object", "Action"}[t]
+}
+
+// Map to store the string representations of the enum
+var toStringTxDef = map[TxtDefType]string{
+	TxtDefTypeNone:      "None",
+	TxtDefTypeDirObject: "DirObject",
+	TxtDefTypeDir:       "Dir",
+	TxtDefTypePlace:     "Place",
+	TxtDefTypeObject:    "Object",
+	TxtDefTypeAction:    "Action",
+}
+
+// Map to store the enum values by string
+var toEnumTxDef = map[string]TxtDefType{
+	"None":      TxtDefTypeNone,
+	"DirObject": TxtDefTypeDirObject,
+	"Dir":       TxtDefTypeDir,
+	"Place":     TxtDefTypePlace,
+	"Object":    TxtDefTypeObject,
+	"Action":    TxtDefTypeAction,
 }
