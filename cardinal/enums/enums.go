@@ -18,7 +18,7 @@ const (
 )
 
 func (r RoomType) String() string {
-	return [...]string{"None", "WoodCabin", "Store", "Cavern", "StoneCabin", "Fort", "Room", "Plain", "Forge"}[r]
+	return toStringRoom[r]
 }
 
 // Map to store the string representations of the enum
@@ -63,7 +63,7 @@ const (
 )
 
 func (d DirectionType) String() string {
-	return [...]string{"None", "North", "South", "East", "West", "Up", "Down", "Forward", "Backward"}[d]
+	return toStringDirection[d]
 }
 
 // Map to store the string representations of the enum
@@ -106,7 +106,7 @@ const (
 )
 
 func (d DirObjectType) String() string {
-	return [...]string{"None", "Door", "Window", "Stairs", "Ladder", "Path", "Trail"}[d]
+	return toStringDObject[d]
 }
 
 // Map to store the string representations of the enum
@@ -159,10 +159,7 @@ const (
 )
 
 func (a ActionType) String() string {
-	return [...]string{
-		"None", "Go", "Move", "Loot", "Describe", "Take", "Kick", "Lock", "Unlock", "Open", "Look", "Close",
-		"Break", "Throw", "Drop", "Inventory", "Burn", "Light", "Damage", "Hit", "Acquire",
-	}[a]
+	return toStringAction[a]
 }
 
 // Map to store the string representations of the enum
@@ -229,7 +226,7 @@ const (
 )
 
 func (o ObjectType) String() string {
-	return [...]string{"None", "Football", "Key", "Knife", "Bottle", "Straw", "Petrol"}[o]
+	return toStringObject[o]
 }
 
 // Map to store the string representations of the enum
@@ -271,7 +268,7 @@ const (
 )
 
 func (m MaterialType) String() string {
-	return [...]string{"None", "Wood", "Stone", "Iron", "Shit", "IKEA", "Flesh", "Dirt", "Mud", "Glass"}[m]
+	return toStringMaterial[m]
 }
 
 // Map to store the string representations of the enum
@@ -315,7 +312,7 @@ const (
 )
 
 func (t TxtDefType) String() string {
-	return [...]string{"None", "DirObject", "Dir", "Place", "Object", "Action"}[t]
+	return toStringTxDef[t]
 }
 
 // Map to store the string representations of the enum
