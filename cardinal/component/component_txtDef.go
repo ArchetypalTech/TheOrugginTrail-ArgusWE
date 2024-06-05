@@ -11,7 +11,7 @@ type TxtDef struct {
 }
 
 type TxtDefStore struct {
-	txtDefs map[string]TxtDef
+	TxtDefs map[string]TxtDef
 }
 
 func (TxtDef) Name() string {
@@ -24,15 +24,15 @@ func (TxtDefStore) Name() string {
 
 func NewTxtDefStore() *TxtDefStore {
 	return &TxtDefStore{
-		txtDefs: make(map[string]TxtDef),
+		TxtDefs: make(map[string]TxtDef),
 	}
 }
 
 func (store *TxtDefStore) Set(id string, txtDefType enums.TxtDefType, description string) {
-	store.txtDefs[id] = TxtDef{ID: id, TxtDefType: txtDefType, Description: description}
+	store.TxtDefs[id] = TxtDef{ID: id, TxtDefType: txtDefType, Description: description}
 }
 
 func (store *TxtDefStore) Get(id string) (TxtDef, bool) {
-	txtDef, found := store.txtDefs[id]
+	txtDef, found := store.TxtDefs[id]
 	return txtDef, found
 }

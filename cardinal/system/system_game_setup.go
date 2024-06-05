@@ -1,7 +1,6 @@
 package system
 
 import (
-	"fmt"
 	"log"
 
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/component"
@@ -13,6 +12,12 @@ import (
 func NGameSetupSystem(world cardinal.WorldContext) error {
 	setup := NewGameSetup(world)
 	setup.Init()
+	// LOG FOR TESTING TxDefStore entries
+	// Log the number of entries and contents of TxtDefStore
+	log.Printf("TxtDefStore initialized with %d entries", len(setup.TxtDefStore.TxtDefs))
+	for key, value := range setup.TxtDefStore.TxtDefs {
+		log.Printf("TxtDefStore entry - Key: %s, Value: %+v", key, value)
+	}
 	return nil
 }
 
@@ -26,7 +31,6 @@ type GameSetup struct {
 	TxtDefStore    *component.TxtDefStore
 }
 
-// NewGameSetup creates a new instance of GameSetup.
 func NewGameSetup(worldCtx cardinal.WorldContext) *GameSetup {
 	return &GameSetup{
 		worldCtx:       worldCtx,
@@ -100,6 +104,15 @@ func (s *GameSetup) setupPlain() {
 		"the air tastes of burnt grease and bensons.",
 	)
 
+	/*  LOGS FOR TESTING VERIFICATION!
+	// Logs to verify the ID's in the setup
+	log.Printf("Object IDs for room %d: %v", roomID, objs)
+	log.Printf("Directional Object IDs for room %d: %v", roomID, dObjs)
+	// Inspect Data Passed to Setup Functions
+	log.Printf("Data passed to createPlace for room %d: %+v", roomID, objs)
+	log.Printf("Data passed to createDirectionalObject for room %d: %+v", roomID, dObjs)
+	*/
+
 	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain)
 
 	// Logging for completing setup of the plain
@@ -140,7 +153,17 @@ func (s *GameSetup) setupBarn() {
 	s.TxtDefStore.Set(tidBarn, enums.TxtDefTypePlace,
 		"The place is dusty and full of spiderwebs,\n"+
 			"something died in here, possibly your own self\n"+
-			"plenty of corners and dark shadows")
+			"plenty of corners and dark shadows",
+	)
+
+	/* LOGS FOR TESTING VERIFICATION!
+	// Logs to verify the ID's in the setup
+	log.Printf("Object IDs for room %d: %v", roomID, [32]uint32{})
+	log.Printf("Directional Object IDs for room %d: %v", roomID, dObjs)
+	// Inspect Data Passed to Setup Functions
+	log.Printf("Data passed to createPlace for room %d: %+v", roomID, [32]uint32{})
+	log.Printf("Data passed to createDirectionalObject for room %d: %+v", roomID, dObjs)
+	*/
 
 	s.createPlace(roomID, enums.RoomTypeWoodCabin, dObjs, [32]uint32{}, tidBarn) // Pass empty array instead of nil for the objects.
 
@@ -157,7 +180,7 @@ func (s *GameSetup) setupMountainPath() {
 	open2West := s.createAction(enums.ActionTypeOpen, "the path is passable", true, true, false, 0, 0)
 	pathActions := [32]uint32{open2West}
 
-	dirObjs := [32]uint32{s.createDirObject(enums.DirectionTypeWest, enums.RoomTypePlain,
+	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeWest, enums.RoomTypePlain,
 		enums.DirObjectTypePath, enums.MaterialTypeStone,
 		"path", pathActions)}
 
@@ -172,9 +195,19 @@ func (s *GameSetup) setupMountainPath() {
 			"toilet papered trees cover the steep \n valley sides below you.\n"+
 			"On closer inspection the TP might \nbe the remains of a cricket team\n"+
 			"or perhaps a lost and very dead KKK picnic group.\n"+
-			"It's brass monkeys.")
+			"It's brass monkeys.",
+	)
 
-	s.createPlace(roomID, enums.RoomTypeStoneCabin, dirObjs, [32]uint32{}, tidMpath) // Pass empty array instead of nil for the objects.
+	/* LOGS FOR TESTING VERIFICATION!
+	// Logs to verify the ID's in the setup
+	log.Printf("Object IDs for room %d: %v", roomID, [32]uint32{})
+	log.Printf("Directional Object IDs for room %d: %v", roomID, dObjs)
+	// Inspect Data Passed to Setup Functions
+	log.Printf("Data passed to createPlace for room %d: %+v", roomID, [32]uint32{})
+	log.Printf("Data passed to createDirectionalObject for room %d: %+v", roomID, dObjs)
+	*/
+
+	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, [32]uint32{}, tidMpath) // Pass empty array instead of nil for the objects.
 
 	// Logging for completing setup of the mountain path
 	log.Println("Mountain path setup complete")
@@ -187,7 +220,7 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
 
-	// Set the text definition for the directional object
+	// Set the text definition for the directional object and add it to the TxtDefStore
 	s.TxtDefStore.Set(txtID, enums.TxtDefTypeDirObject, desc)
 
 	// Create directional object data
@@ -203,6 +236,9 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 	// Add the directional object data to the DirObjectStore
 	dirObjID := s.DirObjectStore.Add(dirObjData)
 
+	// Update the DirObject data with the assigned ID
+	dirObjData.ID = dirObjID
+
 	// Log the directional object creation
 	log.Printf("Directional object created - ID: %d, Type: %s, Destination Room Type: %s, Material: %s, Description: %s", dirObjID, dirType, dstID, mType, desc)
 
@@ -210,27 +246,29 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 }
 
 // createObject creates an object in the game world.
-// createObject creates an object in the game world.
 func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialType, desc, objName string,
 	actionObjects [32]uint32) uint32 {
 
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
 
-	// Set the text definition for the object
+	// Set the text definition for the object and add it to the TxtDefStore
 	s.TxtDefStore.Set(txtID, enums.TxtDefTypeObject, desc)
 
 	// Create object data
 	objData := component.Object{
+		ObjectName:      objName,
 		ObjectType:      objType,
 		MaterialType:    mType,
 		TxtDefID:        txtID,
 		ObjectActionIDs: actionObjects,
-		Description:     objName,
 	}
 
 	// Add the object data to the ObjectStore
 	objID := s.ObjectStore.Add(objData)
+
+	// Update the Object data with the assigned ID
+	objData.ID = objID
 
 	// Log the object creation
 	log.Printf("Object created - ID: %d, Type: %s, Material: %s, Description: %s", objID, objType, mType, desc)
@@ -281,18 +319,29 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [3
 	// Log successful creation
 	log.Printf("Room with ID %d created successfully, entity ID: %d", roomID, entityID)
 
-	// Log objects and directional objects added to the room
-	objDescriptions := make([]string, 0, len(objs))
+	/* LOGS FOR TESTING THAT THE ROOMS HAS THEIR OBJECTS, ETC. NEED TO BE POLISHED!
+	// Log objects added to the room
 	for _, objID := range objs {
-		objDef, _ := s.TxtDefStore.Get(fmt.Sprintf("%d", objID))
-		objDescriptions = append(objDescriptions, objDef.Description)
+		if objID != 0 {
+			objDef, found := s.TxtDefStore.Get(fmt.Sprintf("txt-%d", objID))
+			if found {
+				log.Printf("Object added to the room: %s", objDef.Description)
+			} else {
+				log.Printf("Failed to find description for object with ID %d", objID)
+			}
+		}
 	}
-	//log.Printf("Objects added to the room: %v", objDescriptions)
 
-	dirObjDescriptions := make([]string, 0, len(dObjs))
+	// Log directional objects added to the room
 	for _, dirObjID := range dObjs {
-		dirObjDef, _ := s.TxtDefStore.Get(fmt.Sprintf("%d", dirObjID))
-		dirObjDescriptions = append(dirObjDescriptions, dirObjDef.Description)
+		if dirObjID != 0 {
+			dirObjDef, found := s.TxtDefStore.Get(fmt.Sprintf("txt-%d", dirObjID))
+			if found {
+				log.Printf("Directional object added to the room: %s", dirObjDef.Description)
+			} else {
+				log.Printf("Failed to find description for directional object with ID %d", dirObjID)
+			}
+		}
 	}
-	//log.Printf("Directional objects added to the room: %v", dirObjDescriptions)
+	*/
 }
