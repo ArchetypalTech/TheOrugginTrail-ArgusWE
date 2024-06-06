@@ -130,16 +130,7 @@ func (s *GameSetup) setupPlain() {
 		"bison skulls in piles taller than houses\n"+
 		"cover the plains as far as your eye can see\n"+
 		"the air tastes of burnt grease and bensons.",
-	)
-
-	if isDevelopmentMode() {
-		// Logs to verify the ID's in the setup
-		logger.Debugf("\033[36mObject IDs for room %d: %v\033[0m", roomID, objs)
-		logger.Debugf("\033[36mDirectional Object IDs for room %d: %v\033[0m", roomID, dObjs)
-		// Inspect Data Passed to Setup Functions
-		logger.Debugf("\033[37mData passed to createPlace for room %d: %+v\033[0m", roomID, objs)
-		logger.Debugf("\033[37mData passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
-	}
+	)	
 
 	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain)
 
@@ -186,16 +177,7 @@ func (s *GameSetup) setupBarn() {
 		"The place is dusty and full of spiderwebs,\n"+
 			"something died in here, possibly your own self\n"+
 			"plenty of corners and dark shadows",
-	)
-
-	if isDevelopmentMode() {
-		// Logs to verify the ID's in the setup
-		logger.Debugf("\033[36mObject IDs for room %d: %v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[36mDirectional Object IDs for room %d: %v\033[0m", roomID, dObjs)
-		// Inspect Data Passed to Setup Functions
-		logger.Debugf("\033[37mData passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[37mData passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
-	}
+	)	
 
 	s.createPlace(roomID, enums.RoomTypeWoodCabin, dObjs, [32]uint32{}, tidBarn) // Pass empty array instead of nil for the objects.
 
@@ -234,15 +216,7 @@ func (s *GameSetup) setupMountainPath() {
 			"It's brass monkeys.",
 	)
 
-	if isDevelopmentMode() {
-		// Logs to verify the ID's in the setup
-		logger.Debugf("\033[36mObject IDs for room %d: %v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[36mDirectional Object IDs for room %d: %v\033[0m", roomID, dObjs)
-		// Inspect Data Passed to Setup Functions
-		logger.Debugf("\033[37mData passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[37mData passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
-	}
-
+	
 	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, [32]uint32{}, tidMpath) // Pass empty array instead of nil for the objects.
 
 	if isDevelopmentMode() {
