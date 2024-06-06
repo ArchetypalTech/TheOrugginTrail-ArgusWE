@@ -179,7 +179,7 @@ func (s *GameSetupTest) createObjectTest(objType enums.ObjectType, mType enums.M
 		MaterialType:    mType,
 		TxtDefID:        txtID,
 		ObjectActionIDs: actionObjects,
-		Description:     objName,
+		ObjectName:      objName,
 	}
 	objID := s.ObjectStore.Add(objData)
 	log.Printf("Object created - ID: %d, Type: %s, Material: %s, Description: %s", objID, objType, mType, desc)
