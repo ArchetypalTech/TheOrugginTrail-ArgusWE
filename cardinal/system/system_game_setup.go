@@ -33,16 +33,6 @@ func NGameSetupSystem(world cardinal.WorldContext) error {
 	setup := NewGameSetup(world)
 	setup.Init()
 	initLogger()
-
-	if isDevelopmentMode() {
-		// LOG FOR TESTING TxtDefStore entries
-		// Log the number of entries and contents of TxtDefStore
-		logger.Debugf("\033[34mTxtDefStore initialized with %d entries\033[0m", len(setup.TxtDefStore.TxtDefs))
-		for key, value := range setup.TxtDefStore.TxtDefs {
-			logger.Debugf("\033[34mTxtDefStore entry - Key: %s, Value: %+v\033[0m", key, value)
-		}
-	}
-
 	return nil
 }
 
@@ -90,7 +80,7 @@ func (s *GameSetup) setupPlain() {
 
 	if isDevelopmentMode() {
 		// Logging for setting up the plain
-		logger.Infof("\033[35mSetting up the plain...\033[0m")
+		logger.Debugf("\033[35mSetting up the plain...\033[0m")
 	}
 
 	// KPLAIN -> N, E
@@ -130,13 +120,13 @@ func (s *GameSetup) setupPlain() {
 		"bison skulls in piles taller than houses\n"+
 		"cover the plains as far as your eye can see\n"+
 		"the air tastes of burnt grease and bensons.",
-	)	
+	)
 
 	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain)
 
 	if isDevelopmentMode() {
 		// Logging for completing setup of the plain
-		logger.Infof("\033[32mPlain setup complete\033[0m")
+		logger.Debugf("\033[32mPlain setup complete\033[0m")
 	}
 
 }
@@ -145,7 +135,7 @@ func (s *GameSetup) setupPlain() {
 func (s *GameSetup) setupBarn() {
 	if isDevelopmentMode() {
 		// Logging for setting up the barn
-		logger.Infof("\033[35mSetting up the barn...\033[0m")
+		logger.Debugf("\033[35mSetting up the barn...\033[0m")
 	}
 	// KBARN -> S
 	open2South := s.createAction(enums.ActionTypeOpen, "the door opens\n", true, true, true, 0, 0)
@@ -177,13 +167,13 @@ func (s *GameSetup) setupBarn() {
 		"The place is dusty and full of spiderwebs,\n"+
 			"something died in here, possibly your own self\n"+
 			"plenty of corners and dark shadows",
-	)	
+	)
 
 	s.createPlace(roomID, enums.RoomTypeWoodCabin, dObjs, [32]uint32{}, tidBarn) // Pass empty array instead of nil for the objects.
 
 	if isDevelopmentMode() {
 		// Logging for completing setup of the plain
-		logger.Infof("\033[32mBarn setup complete\033[0m")
+		logger.Debugf("\033[32mBarn setup complete\033[0m")
 	}
 }
 
@@ -191,7 +181,7 @@ func (s *GameSetup) setupBarn() {
 func (s *GameSetup) setupMountainPath() {
 	if isDevelopmentMode() {
 		// Logging for setting up the mountain path
-		logger.Infof("\033[35mSetting up the mountain path...\033[0m")
+		logger.Debugf("\033[35mSetting up the mountain path...\033[0m")
 	}
 
 	// KPATH -> W
@@ -216,12 +206,11 @@ func (s *GameSetup) setupMountainPath() {
 			"It's brass monkeys.",
 	)
 
-	
 	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, [32]uint32{}, tidMpath) // Pass empty array instead of nil for the objects.
 
 	if isDevelopmentMode() {
 		// Logging for completing setup of the plain
-		logger.Infof("\033[32mMountain path setup complete\033[0m")
+		logger.Debugf("\033[32mMountain path setup complete\033[0m")
 	}
 }
 
@@ -252,7 +241,7 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 
 	if isDevelopmentMode() {
 		// Log the directional object creation
-		logger.Infof("\033[33mDirectional object created - ID: %d, Type: %s, Destination Room Type: %s, Material: %s, Description: %s\033[0m",
+		logger.Debugf("\033[33mDirectional object created - ID: %d, Type: %s, Destination Room Type: %s, Material: %s, Description: %s\033[0m",
 			dirObjID, dirType, dstID, mType, desc)
 	}
 
@@ -286,7 +275,7 @@ func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialT
 
 	if isDevelopmentMode() {
 		// Log the object creation
-		logger.Infof("\033[33mObject created - ID: %d, Type: %s, Material: %s, Description: %s\033[0m", objID, objType, mType, desc)
+		logger.Debugf("\033[33mObject created - ID: %d, Type: %s, Material: %s, Description: %s\033[0m", objID, objType, mType, desc)
 	}
 
 	return objID
@@ -332,34 +321,8 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [3
 
 	if isDevelopmentMode() {
 		// Log successful creation
-		logger.Infof("\033[32mRoom with ID %d created successfully, entity ID: %d%s", roomID, entityID, "\033[0m")
+		logger.Debugf("\033[32mRoom with ID %d created successfully, entity ID: %d%s", roomID, entityID, "\033[0m")
 	}
-
-	/* LOGS FOR TESTING THAT THE ROOMS HAS THEIR OBJECTS, ETC. NEED TO BE POLISHED!
-	// Log objects added to the room
-	for _, objID := range objs {
-		if objID != 0 {
-			objDef, found := s.TxtDefStore.Get(fmt.Sprintf("txt-%d", objID))
-			if found {
-				log.Printf("Object added to the room: %s", objDef.Description)
-			} else {
-				log.Printf("Failed to find description for object with ID %d", objID)
-			}
-		}
-	}
-
-	// Log directional objects added to the room
-	for _, dirObjID := range dObjs {
-		if dirObjID != 0 {
-			dirObjDef, found := s.TxtDefStore.Get(fmt.Sprintf("txt-%d", dirObjID))
-			if found {
-				log.Printf("Directional object added to the room: %s", dirObjDef.Description)
-			} else {
-				log.Printf("Failed to find description for directional object with ID %d", dirObjID)
-			}
-		}
-	}
-	*/
 }
 
 // isDevelopmentMode returns true if the application is running in development/debug mode.
