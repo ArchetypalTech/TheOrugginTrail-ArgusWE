@@ -11,6 +11,7 @@ import (
 
 type CreatePlayerMsg struct {
 	PlayersName string `json:"PlayerName"` // Name of the player, can be the username.
+	RoomID      uint32 `json:"RoomID"`     // Room ID that indicates on which room the player will start at.
 }
 
 type CreatePlayerReply struct {
