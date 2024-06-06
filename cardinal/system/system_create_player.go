@@ -2,7 +2,6 @@ package system
 
 import (
 	"fmt"
-	"log"
 
 	"pkg.world.dev/world-engine/cardinal"
 	"pkg.world.dev/world-engine/cardinal/message"
@@ -21,7 +20,10 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 			// Search for an existing player by name
 			existingPlayerEntityID, err := findExistingPlayer(world, createPlayerData.Msg.PlayersName)
 			if err != nil {
-				log.Printf("Error searching for Player entities: %v\n", err)
+				if isDevelopmentMode() {
+					logger.Errorf("\033[31mError searching for Player entities: %v\033[0m", err)
+				}
+
 				return msg.CreatePlayerReply{
 					Success: false,
 					Message: fmt.Sprintf("Error searching for Player entities: %v", err),
@@ -30,6 +32,10 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 
 			// If an existing player is found, return the existing entity ID.
 			if existingPlayerEntityID != 0 {
+				if isDevelopmentMode() {
+					logger.Warnf("\033[33mPlayer with name: %v already exists.\033[0m", createPlayerData.Msg.PlayersName)
+				}
+
 				return msg.CreatePlayerReply{
 					Success:        false,
 					Message:        fmt.Sprintf("Player with name: %v already exists.", createPlayerData.Msg.PlayersName),
@@ -40,6 +46,10 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 			// Create a new player entity
 			playerManagerID, err := createNewPlayer(world, createPlayerData.Msg.PlayersName)
 			if err != nil {
+				if isDevelopmentMode() {
+					logger.Errorf("\033[31mFailed to create the Player Entity: %v\033[0m", err)
+				}
+
 				return msg.CreatePlayerReply{
 					Success: false,
 					Message: fmt.Sprintf("Failed to create the Player Entity: %v", err),
@@ -51,6 +61,10 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 			// Assign the player to the specified room
 			roomID := types.EntityID(createPlayerData.Msg.RoomID)
 			if err := assignPlayerToRoom(world, playerID, roomID); err != nil {
+				if isDevelopmentMode() {
+					logger.Errorf("\033[31mFailed to assign player to the room: %v\033[0m", err)
+				}
+
 				return msg.CreatePlayerReply{
 					Success: false,
 					Message: fmt.Sprintf("Failed to assign player to the room: %v", err),
@@ -59,14 +73,20 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 
 			// Update the player's room ID
 			if err := updatePlayerRoomID(world, playerManagerID, roomID); err != nil {
+				if isDevelopmentMode() {
+					logger.Errorf("\033[31mFailed to update player's room ID: %v\033[0m", err)
+				}
+
 				return msg.CreatePlayerReply{
 					Success: false,
 					Message: fmt.Sprintf("Failed to update player's room ID: %v", err),
 				}, err
 			}
 
-			// Log player entity created successfully.
-			log.Printf("Player entity created successfully")
+			if isDevelopmentMode() {
+				// Log player entity created successfully.
+				logger.Infof("\033[32mPlayer entity created successfully\033[0m")
+			}
 
 			return msg.CreatePlayerReply{
 				Success:        true,
@@ -84,7 +104,9 @@ func findExistingPlayer(world cardinal.WorldContext, playerName string) (types.E
 		Each(world, func(id types.EntityID) bool {
 			playerManager, err := cardinal.GetComponent[component.Player](world, id)
 			if err != nil {
-				log.Printf("Error getting Player Component: %v\n", err)
+				if isDevelopmentMode() {
+					logger.Errorf("\033[31mError getting Player Component: %v\033[0m", err)
+				}
 				return true
 			}
 
@@ -102,7 +124,9 @@ func findExistingPlayer(world cardinal.WorldContext, playerName string) (types.E
 func createNewPlayer(world cardinal.WorldContext, playerName string) (types.EntityID, error) {
 	playerManagerID, err := cardinal.Create(world, &component.Player{})
 	if err != nil {
-		log.Printf("Failed to create player entity: %v", err)
+		if isDevelopmentMode() {
+			logger.Errorf("\033[31mFailed to create player entity: %v\033[0m", err)
+		}
 		return 0, err
 	}
 
@@ -113,7 +137,9 @@ func createNewPlayer(world cardinal.WorldContext, playerName string) (types.Enti
 		PlayerID:         playerID,
 		PlayerConnection: true,
 	}); err != nil {
-		log.Printf("Error updating the Player entity: %v", err)
+		if isDevelopmentMode() {
+			logger.Errorf("\033[31mError updating the Player entity: %v\033[0m", err)
+		}
 		return 0, err
 	}
 
@@ -125,7 +151,9 @@ func assignPlayerToRoom(world cardinal.WorldContext, playerID uint32, roomID typ
 	// Get the Room based on the roomID
 	selectedRoom, err := cardinal.GetComponent[component.Room](world, roomID)
 	if err != nil {
-		log.Printf("Failed to retrieve room component: %v", err)
+		if isDevelopmentMode() {
+			logger.Errorf("\033[31mFailed to retrieve room component: %v\033[0m", err)
+		}
 		return err
 	}
 
@@ -139,7 +167,9 @@ func assignPlayerToRoom(world cardinal.WorldContext, playerID uint32, roomID typ
 
 	// Update the room entity
 	if err := cardinal.SetComponent[component.Room](world, roomID, selectedRoom); err != nil {
-		log.Printf("Failed to update room component: %v", err)
+		if isDevelopmentMode() {
+			logger.Errorf("\033[31mFailed to update room component: %v\033[0m", err)
+		}
 		return err
 	}
 
@@ -150,13 +180,17 @@ func assignPlayerToRoom(world cardinal.WorldContext, playerID uint32, roomID typ
 func updatePlayerRoomID(world cardinal.WorldContext, playerManagerID types.EntityID, roomID types.EntityID) error {
 	playerManager, err := cardinal.GetComponent[component.Player](world, playerManagerID)
 	if err != nil {
-		log.Printf("Error getting Player Component: %v\n", err)
+		if isDevelopmentMode() {
+			logger.Errorf("\033[31mError getting Player Component: %v\033[0m", err)
+		}
 		return err
 	}
 
 	playerManager.RoomID = uint32(roomID)
 	if err := cardinal.SetComponent[component.Player](world, playerManagerID, playerManager); err != nil {
-		log.Printf("Error updating the Player entity: %v", err)
+		if isDevelopmentMode() {
+			logger.Errorf("\033[31mError updating the Player entity: %v\033[0m", err)
+		}
 		return err
 	}
 
