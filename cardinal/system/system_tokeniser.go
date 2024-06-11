@@ -6,7 +6,13 @@ import (
 
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/component"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
+	"pkg.world.dev/world-engine/cardinal"
 )
+
+func NTokeniserSystem(world cardinal.WorldContext) error {
+	NewTokeniserSystem()
+	return nil
+}
 
 // TokeniserSystem structure
 type TokeniserSystem struct {
@@ -14,6 +20,7 @@ type TokeniserSystem struct {
 	dirLookup      map[string]enums.DirectionType          // Lookup table for direction strings to DirectionType
 	dirObjLookup   map[string]enums.DirObjectType          // Lookup table for direction object strings to DirObjectType
 	objLookup      map[string]enums.ObjectType             // Lookup table for object strings to ObjectType
+	grammarLookup  map[string]enums.GrammarType            // Lookup table for GrammarType
 	responseLookup map[enums.ActionType][]enums.ActionType // Lookup table for action responses
 }
 
@@ -24,6 +31,7 @@ func NewTokeniserSystem() *TokeniserSystem {
 		dirLookup:      make(map[string]enums.DirectionType),
 		dirObjLookup:   make(map[string]enums.DirObjectType),
 		objLookup:      make(map[string]enums.ObjectType),
+		grammarLookup:  make(map[string]enums.GrammarType),
 		responseLookup: make(map[enums.ActionType][]enums.ActionType),
 	}
 	ts.initLUTS()
@@ -100,6 +108,14 @@ func (ts *TokeniserSystem) setupVrbAct() {
 	ts.responseLookup[enums.ActionTypeBreak] = []enums.ActionType{enums.ActionTypeBreak}
 }
 
+// setupGrammar initializes the grammar response tookup table with predifined grammar
+func (ts *TokeniserSystem) setupGrammar() {
+	ts.grammarLookup["The"] = enums.GrammarTypeDefinitionArticle
+	ts.grammarLookup["To"] = enums.GrammarTypePreposition
+	ts.grammarLookup["at"] = enums.GrammarTypePrepo
+	ts.grammarLookup["Around"] = enums.GrammarTypeAdverb
+}
+
 // FishTokens processes the tokenized command and returns VerbData
 func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	var data component.VerbData // Initialize VerbData to store the result
@@ -154,4 +170,29 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	data.ErrCode = err
 	fmt.Printf("--->d.dobj:%s iobj:%s vrb:%s\n", data.DirectNoun, data.IndirectDirNoun, data.Verb)
 	return data
+}
+
+// GetResponseForVerb returns the response actions for a given verb
+func (ts *TokeniserSystem) GetResponseForVerb(key enums.ActionType) []enums.ActionType {
+	return ts.responseLookup[key]
+}
+
+// GetObjectType returns the ObjectType for a given object key
+func (ts *TokeniserSystem) GetObjectType(key string) enums.ObjectType {
+	return ts.objLookup[key]
+}
+
+// GetActionType returns the ActionType for a given action key
+func (ts *TokeniserSystem) GetActionType(key string) enums.ActionType {
+	return ts.cmdLookup[key]
+}
+
+// GetGrammarType returns the GrammarType for a given grammar key
+func (ts *TokeniserSystem) GetGrammarType(key string) enums.GrammarType {
+	return ts.grammarLookup[key]
+}
+
+// GetDirectionType returns the DirectionType for a given direction key
+func (ts *TokeniserSystem) GetDirectionType(key string) enums.DirectionType {
+	return ts.dirLookup[key]
 }

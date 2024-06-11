@@ -334,3 +334,30 @@ var toEnumTxDef = map[string]TxtDefType{
 	"Object":    TxtDefTypeObject,
 	"Action":    TxtDefTypeAction,
 }
+
+// GrammarType - Custom type for the gramar definition types
+type GrammarType int
+
+const (
+	GrammarTypeNone              GrammarType = iota // Starts at 0
+	GrammarTypeDefinitionArticle                    // 1
+	GrammarTypePreposition                          // 2
+	GrammarTypePrepo                                // 2
+	GrammarTypeAdverb                               // 3
+)
+
+var toStringGrammar = map[GrammarType]string{
+	GrammarTypeNone:              "None",
+	GrammarTypeDefinitionArticle: "The",
+	GrammarTypePreposition:       "To",
+	GrammarTypePrepo:             "at",
+	GrammarTypeAdverb:            "Around",
+}
+
+var toEnumGrammar = map[string]GrammarType{
+	"None":   GrammarTypeNone,
+	"The":    GrammarTypeDefinitionArticle,
+	"To":     GrammarTypePreposition,
+	"at":     GrammarTypePrepo,
+	"Around": GrammarTypeAdverb,
+}

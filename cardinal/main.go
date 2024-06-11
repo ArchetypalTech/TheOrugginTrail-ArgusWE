@@ -56,13 +56,13 @@ func MustInitWorld(w *cardinal.World) {
 	// Each system executes deterministically in the order they are added.
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
 	Must(cardinal.RegisterSystems(w,
-		//system.TokeniserSystem,
 		system.CreatePlayerSystem,
 	))
 
 	// Register the init system when the world is initiated.
 	Must(cardinal.RegisterInitSystems(w,
 		system.NGameSetupSystem,
+		system.NTokeniserSystem,
 	))
 
 }
