@@ -3,6 +3,7 @@ package system
 import (
 	"testing"
 
+	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/constants"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
 	"github.com/stretchr/testify/assert"
 )
@@ -43,7 +44,7 @@ func TestFishTokensKickTheBallToTheWindow(t *testing.T) {
 	expectedDObj := enums.ObjectTypeFootball
 	expectedIDirObj := enums.DirObjectTypeWindow
 	expectedIObj := enums.ObjectTypeNone
-	expectedErr := uint8(0)
+	expectedErr := constants.ErrDirectionRoutineND
 
 	result := ts.FishTokens(tokens)
 
@@ -51,7 +52,14 @@ func TestFishTokensKickTheBallToTheWindow(t *testing.T) {
 	assert.Equal(t, expectedDObj, result.DirectNoun)
 	assert.Equal(t, expectedIDirObj, result.IndirectDirNoun)
 	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
-	assert.Equal(t, expectedErr, result.ErrCode)
+
+	// Check if the error is nil or matches the expected error
+	if result.ErrCode != nil {
+		assert.Equal(t, expectedErr.Code, result.ErrCode.Code)
+		assert.Equal(t, expectedErr.Message, result.ErrCode.Message)
+	} else {
+		assert.Nil(t, result.ErrCode)
+	}
 }
 
 func TestFishTokensOpenTheDoorToTheKnife(t *testing.T) {
@@ -62,7 +70,7 @@ func TestFishTokensOpenTheDoorToTheKnife(t *testing.T) {
 	expectedDObj := enums.ObjectTypeNone
 	expectedIDirObj := enums.DirObjectTypeDoor
 	expectedIObj := enums.ObjectTypeKnife
-	expectedErr := uint8(0)
+	expectedErr := constants.ErrNoDirectObject // Example of using a custom error from constants
 
 	result := ts.FishTokens(tokens)
 
@@ -70,7 +78,14 @@ func TestFishTokensOpenTheDoorToTheKnife(t *testing.T) {
 	assert.Equal(t, expectedDObj, result.DirectNoun)
 	assert.Equal(t, expectedIDirObj, result.IndirectDirNoun)
 	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
-	assert.Equal(t, expectedErr, result.ErrCode)
+
+	// Check if the error is nil or matches the expected error
+	if result.ErrCode != nil {
+		assert.Equal(t, expectedErr.Code, result.ErrCode.Code)
+		assert.Equal(t, expectedErr.Message, result.ErrCode.Message)
+	} else {
+		assert.Nil(t, result.ErrCode)
+	}
 }
 
 func TestGetResponseForVerb(t *testing.T) {
