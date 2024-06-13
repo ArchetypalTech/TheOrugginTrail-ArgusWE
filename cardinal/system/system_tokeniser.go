@@ -118,46 +118,45 @@ func (ts *TokeniserSystem) setupGrammar() {
 // FishTokens processes the tokenized command and returns VerbData
 func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	var data component.VerbData // Initialize VerbData to store the result
-	var err uint8 = 0           // Error code variable
 	lenTokens := len(tokens) - 1
 
 	// Look up the verb, object, and directional object from the tokens
-	var vrb enums.ActionType = ts.cmdLookup[(tokens[0])]
-	var obj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
-	var dobj enums.DirObjectType = ts.dirObjLookup[(tokens[lenTokens])]
+	var VRB enums.ActionType = ts.cmdLookup[(tokens[0])]
+	var DObj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
+	var IObj enums.DirObjectType = ts.dirObjLookup[(tokens[lenTokens])]
 
-	data.Verb = vrb // Set the verb in VerbData
-	if obj == enums.ObjectTypeNone && dobj == enums.DirObjectTypeNone {
-		data.ErrCode = constants.ER_TKPR_NO
+	data.Verb = VRB // Set the verb in VerbData
+	if DObj == enums.ObjectTypeNone && IObj == enums.DirObjectTypeNone {
+		data.ErrCode = constants.ErrNoDirectObject
 		if isDevelopmentMode() {
-			logger.Errorf("\033[31mE--->1err:%d\033[0m", data.ErrCode)
+			logger.Errorf("\033[31mE--->1err:%s\033[0m", data.ErrCode)
 		}
 	} else {
 		// ? VRB, OBJ ? //
-		if obj != enums.ObjectTypeNone && len(tokens) <= 3 {
-			data.DirectNoun = obj
-		} else if obj == enums.ObjectTypeNone && len(tokens) <= 3 {
-			err = constants.ER_TKPR_NO
+		if DObj != enums.ObjectTypeNone && len(tokens) <= 3 {
+			data.DirectNoun = DObj
+		} else if DObj == enums.ObjectTypeNone && len(tokens) <= 3 {
+			data.ErrCode = constants.ErrNoDirectObject
 			if isDevelopmentMode() {
-				logger.Errorf("\033[31mE--->2err:%d\033[0m", err)
+				logger.Errorf("\033[31mE--->2err:%s\033[0m", data.ErrCode)
 			}
 		}
 		if len(tokens) > 3 {
 			// ? VRB, [DA], OBJ, IOBJ ? //
 			// dirObj ?
-			if dobj != enums.DirObjectTypeNone {
+			if IObj != enums.DirObjectTypeNone {
 				// we have IOBJ find DOBJ
-				obj = ts.objLookup[tokens[1]]
-				if obj == enums.ObjectTypeNone {
-					obj = ts.objLookup[tokens[2]]
-					if obj == enums.ObjectTypeNone {
-						err = constants.ER_TKPR_NO
+				DObj = ts.objLookup[tokens[1]]
+				if DObj == enums.ObjectTypeNone {
+					DObj = ts.objLookup[tokens[2]]
+					if DObj == enums.ObjectTypeNone {
+						data.ErrCode = constants.ErrNoDirectObject
 						if isDevelopmentMode() {
-							logger.Errorf("\033[31mE--->3err:%d\033[0m", err)
+							logger.Errorf("\033[31mE--->3err:%s\033[0m", data.ErrCode)
 						}
 					}
 				}
-			} else if obj != enums.ObjectTypeNone {
+			} else if DObj != enums.ObjectTypeNone {
 				// we arent dealing with this type structure right now
 				// but we have a "throw thing1 at thing2" form where thing2
 				// is not a direction object. Probably combat as it goes
@@ -168,37 +167,52 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	}
 
 	// Set the direct noun, indirect directional noun, and error code in VerbData
-	data.DirectNoun = obj
-	data.IndirectDirNoun = dobj
-	data.ErrCode = err
+	data.DirectNoun = DObj
+	data.IndirectDirNoun = IObj
 	//fmt.Printf("--->d.dobj:%s iobj:%s vrb:%s\n", data.DirectNoun, data.IndirectDirNoun, data.Verb)
 	if isDevelopmentMode() {
-		logger.Infof("\033[34mP--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectNoun, data.IndirectDirNoun, data.Verb)
+		logger.Infof("\033[35mP--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectNoun, data.IndirectDirNoun, data.Verb)
 	}
 	return data
 }
 
 // GetResponseForVerb returns the response actions for a given verb
 func (ts *TokeniserSystem) GetResponseForVerb(key enums.ActionType) []enums.ActionType {
-	return ts.responseLookup[key]
+	if verb, ok := ts.responseLookup[key]; ok {
+		return verb
+	}
+	return nil
 }
 
 // GetObjectType returns the ObjectType for a given object key
 func (ts *TokeniserSystem) GetObjectType(key string) enums.ObjectType {
-	return ts.objLookup[key]
+	if object, ok := ts.objLookup[key]; ok {
+		return object
+	}
+	return enums.ObjectTypeNone
 }
 
 // GetActionType returns the ActionType for a given action key
 func (ts *TokeniserSystem) GetActionType(key string) enums.ActionType {
-	return ts.cmdLookup[key]
+	//return ts.cmdLookup[key]
+	if action, ok := ts.cmdLookup[key]; ok {
+		return action
+	}
+	return enums.ActionTypeNone
 }
 
 // GetGrammarType returns the GrammarType for a given grammar key
 func (ts *TokeniserSystem) GetGrammarType(key string) enums.GrammarType {
-	return ts.grammarLookup[key]
+	if grammar, ok := ts.grammarLookup[key]; ok {
+		return grammar
+	}
+	return enums.GrammarTypeNone
 }
 
 // GetDirectionType returns the DirectionType for a given direction key
 func (ts *TokeniserSystem) GetDirectionType(key string) enums.DirectionType {
-	return ts.dirLookup[key]
+	if direction, ok := ts.dirLookup[key]; ok {
+		return direction
+	}
+	return enums.DirectionTypeNone
 }

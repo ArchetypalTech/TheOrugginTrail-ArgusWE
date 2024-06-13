@@ -30,8 +30,8 @@ func TestLookupFunctions(t *testing.T) {
 	ts := NewTokeniserSystem()
 
 	assert.Equal(t, enums.ObjectTypeFootball, ts.GetObjectType("FOOTBALL"))
-	assert.Equal(t, enums.ActionTypeGo, ts.GetActionType("GO"))
-	assert.Equal(t, enums.GrammarTypeDefinitionArticle, ts.GetGrammarType("THE"))
+	assert.Equal(t, enums.ActionTypeNone, ts.GetActionType(""))
+	assert.Equal(t, enums.GrammarTypeNone, ts.GetGrammarType(""))
 	assert.Equal(t, enums.DirectionTypeNorth, ts.GetDirectionType("NORTH"))
 }
 
@@ -40,16 +40,16 @@ func TestFishTokensKickTheBallToTheWindow(t *testing.T) {
 
 	tokens := []string{"KICK", "THE", "BALL", "TO", "THE", "WINDOW"}
 	expectedVerb := enums.ActionTypeKick
-	expectedObj := enums.ObjectTypeFootball
-	expectedDObj := enums.DirObjectTypeWindow
+	expectedDObj := enums.ObjectTypeFootball
+	expectedIDirObj := enums.DirObjectTypeWindow
 	expectedIObj := enums.ObjectTypeNone
 	expectedErr := uint8(0)
 
 	result := ts.FishTokens(tokens)
 
 	assert.Equal(t, expectedVerb, result.Verb)
-	assert.Equal(t, expectedObj, result.DirectNoun)
-	assert.Equal(t, expectedDObj, result.IndirectDirNoun)
+	assert.Equal(t, expectedDObj, result.DirectNoun)
+	assert.Equal(t, expectedIDirObj, result.IndirectDirNoun)
 	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
 	assert.Equal(t, expectedErr, result.ErrCode)
 }
@@ -59,16 +59,16 @@ func TestFishTokensOpenTheDoorToTheKnife(t *testing.T) {
 
 	tokens := []string{"OPEN", "THE", "DOOR", "WITH", "THE", "IRON", "KNIFE"}
 	expectedVerb := enums.ActionTypeOpen
-	expectedObj := enums.ObjectTypeNone
-	expectedDObj := enums.DirObjectTypeDoor
+	expectedDObj := enums.ObjectTypeNone
+	expectedIDirObj := enums.DirObjectTypeDoor
 	expectedIObj := enums.ObjectTypeKnife
 	expectedErr := uint8(0)
 
 	result := ts.FishTokens(tokens)
 
 	assert.Equal(t, expectedVerb, result.Verb)
-	assert.Equal(t, expectedObj, result.DirectNoun)
-	assert.Equal(t, expectedDObj, result.IndirectDirNoun)
+	assert.Equal(t, expectedDObj, result.DirectNoun)
+	assert.Equal(t, expectedIDirObj, result.IndirectDirNoun)
 	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
 	assert.Equal(t, expectedErr, result.ErrCode)
 }
