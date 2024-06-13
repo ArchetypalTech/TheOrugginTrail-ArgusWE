@@ -46,6 +46,7 @@ func MustInitWorld(w *cardinal.World) {
 	// NOTE: You must register your transactions here for it to be executed.
 	Must(
 		cardinal.RegisterMessage[msg.CreatePlayerMsg, msg.CreatePlayerReply](w, "create-player"),
+		cardinal.RegisterMessage[msg.ProcessCommandsMsg, msg.ProcessCommandsReply](w, "process-commands"),
 	)
 
 	// Register queries
@@ -57,12 +58,13 @@ func MustInitWorld(w *cardinal.World) {
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
 	Must(cardinal.RegisterSystems(w,
 		system.CreatePlayerSystem,
+		system.ProcessCommandsTokens,
+		system.NTokeniserSystem,
 	))
 
 	// Register the init system when the world is initiated.
 	Must(cardinal.RegisterInitSystems(w,
 		system.NGameSetupSystem,
-		system.NTokeniserSystem,
 	))
 
 }

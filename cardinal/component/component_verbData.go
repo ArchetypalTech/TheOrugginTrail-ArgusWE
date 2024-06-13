@@ -12,7 +12,7 @@ type VerbData struct {
 	Verb            enums.ActionType    // The action/verb from the command
 	DirectNoun      enums.ObjectType    // The direct object of the action
 	IndirectDirNoun enums.DirObjectType // The indirect directional object of the action
-	ObjType         string              // Type of the direct object
+	IndirectObjNoun enums.ObjectType    // The indirect Object noun
 	ErrCode         uint8               // Error code for parsing the tokens
 }
 
