@@ -14,7 +14,7 @@ func NTokeniserSystem(world cardinal.WorldContext) error {
 
 // TokeniserSystem structure
 type TokeniserSystem struct {
-	cmdLookup      map[string]enums.ActionType             // Lookup table for command strings to ActionType
+	vrbLookup      map[string]enums.ActionType             // Lookup table for command strings to ActionType
 	dirLookup      map[string]enums.DirectionType          // Lookup table for direction strings to DirectionType
 	dirObjLookup   map[string]enums.DirObjectType          // Lookup table for direction object strings to DirObjectType
 	objLookup      map[string]enums.ObjectType             // Lookup table for object strings to ObjectType
@@ -25,7 +25,7 @@ type TokeniserSystem struct {
 // NewTokeniserSystem creates a new instance of TokeniserSystem and initializes lookup tables
 func NewTokeniserSystem() *TokeniserSystem {
 	ts := &TokeniserSystem{
-		cmdLookup:      make(map[string]enums.ActionType),
+		vrbLookup:      make(map[string]enums.ActionType),
 		dirLookup:      make(map[string]enums.DirectionType),
 		dirObjLookup:   make(map[string]enums.DirObjectType),
 		objLookup:      make(map[string]enums.ObjectType),
@@ -48,23 +48,23 @@ func (ts *TokeniserSystem) initLUTS() {
 
 // setupCmds initializes the command lookup table with predefined actions
 func (ts *TokeniserSystem) setupCmds() {
-	ts.cmdLookup["GO"] = enums.ActionTypeGo
-	ts.cmdLookup["MOVE"] = enums.ActionTypeMove
-	ts.cmdLookup["LOOT"] = enums.ActionTypeLoot
-	ts.cmdLookup["DESCRIBE"] = enums.ActionTypeDescribe
-	ts.cmdLookup["TAKE"] = enums.ActionTypeTake
-	ts.cmdLookup["KICK"] = enums.ActionTypeKick
-	ts.cmdLookup["LOCK"] = enums.ActionTypeLock
-	ts.cmdLookup["UNLOCK"] = enums.ActionTypeUnlock
-	ts.cmdLookup["OPEN"] = enums.ActionTypeOpen
-	ts.cmdLookup["LOOK"] = enums.ActionTypeLook
-	ts.cmdLookup["CLOSE"] = enums.ActionTypeClose
-	ts.cmdLookup["BREAK"] = enums.ActionTypeBreak
-	ts.cmdLookup["THROW"] = enums.ActionTypeThrow
-	ts.cmdLookup["DROP"] = enums.ActionTypeDrop
-	ts.cmdLookup["INVENTORY"] = enums.ActionTypeInventory
-	ts.cmdLookup["BURN"] = enums.ActionTypeBurn
-	ts.cmdLookup["LIGHT"] = enums.ActionTypeLight
+	ts.vrbLookup["GO"] = enums.ActionTypeGo
+	ts.vrbLookup["MOVE"] = enums.ActionTypeMove
+	ts.vrbLookup["LOOT"] = enums.ActionTypeLoot
+	ts.vrbLookup["DESCRIBE"] = enums.ActionTypeDescribe
+	ts.vrbLookup["TAKE"] = enums.ActionTypeTake
+	ts.vrbLookup["KICK"] = enums.ActionTypeKick
+	ts.vrbLookup["LOCK"] = enums.ActionTypeLock
+	ts.vrbLookup["UNLOCK"] = enums.ActionTypeUnlock
+	ts.vrbLookup["OPEN"] = enums.ActionTypeOpen
+	ts.vrbLookup["LOOK"] = enums.ActionTypeLook
+	ts.vrbLookup["CLOSE"] = enums.ActionTypeClose
+	ts.vrbLookup["BREAK"] = enums.ActionTypeBreak
+	ts.vrbLookup["THROW"] = enums.ActionTypeThrow
+	ts.vrbLookup["DROP"] = enums.ActionTypeDrop
+	ts.vrbLookup["INVENTORY"] = enums.ActionTypeInventory
+	ts.vrbLookup["BURN"] = enums.ActionTypeBurn
+	ts.vrbLookup["LIGHT"] = enums.ActionTypeLight
 }
 
 // setupObjects initializes the object lookup table with predefined objects
@@ -121,7 +121,7 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	lenTokens := len(tokens) - 1
 
 	// Look up the verb, object, and directional object from the tokens
-	var VRB enums.ActionType = ts.cmdLookup[(tokens[0])]
+	var VRB enums.ActionType = ts.vrbLookup[(tokens[0])]
 	var DObj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
 	var IObj enums.DirObjectType = ts.dirObjLookup[(tokens[lenTokens])]
 
@@ -134,7 +134,7 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	} else {
 		// ? VRB, OBJ ? //
 		if DObj != enums.ObjectTypeNone && len(tokens) <= 3 {
-			data.DirectNoun = DObj
+			data.DirectObject = DObj
 		} else if DObj == enums.ObjectTypeNone && len(tokens) <= 3 {
 			data.ErrCode = constants.ErrNoDirectObject
 			if isDevelopmentMode() {
@@ -167,11 +167,11 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	}
 
 	// Set the direct noun, indirect directional noun, and error code in VerbData
-	data.DirectNoun = DObj
-	data.IndirectDirNoun = IObj
+	data.DirectObject = DObj
+	data.IndirectObject = IObj
 	//fmt.Printf("--->d.dobj:%s iobj:%s vrb:%s\n", data.DirectNoun, data.IndirectDirNoun, data.Verb)
 	if isDevelopmentMode() {
-		logger.Infof("\033[35mP--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectNoun, data.IndirectDirNoun, data.Verb)
+		logger.Infof("\033[35mP--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectObject, data.IndirectObject, data.Verb)
 	}
 	return data
 }
@@ -195,7 +195,7 @@ func (ts *TokeniserSystem) GetObjectType(key string) enums.ObjectType {
 // GetActionType returns the ActionType for a given action key
 func (ts *TokeniserSystem) GetActionType(key string) enums.ActionType {
 	//return ts.cmdLookup[key]
-	if action, ok := ts.cmdLookup[key]; ok {
+	if action, ok := ts.vrbLookup[key]; ok {
 		return action
 	}
 	return enums.ActionTypeNone

@@ -11,7 +11,7 @@ import (
 func TestNewTokeniserSystem(t *testing.T) {
 	ts := NewTokeniserSystem()
 
-	assert.NotNil(t, ts.cmdLookup)
+	assert.NotNil(t, ts.vrbLookup)
 	assert.NotNil(t, ts.dirLookup)
 	assert.NotNil(t, ts.dirObjLookup)
 	assert.NotNil(t, ts.objLookup)
@@ -19,7 +19,7 @@ func TestNewTokeniserSystem(t *testing.T) {
 	assert.NotNil(t, ts.responseLookup)
 
 	// Check if all predefined values are set correctly
-	assert.Equal(t, enums.ActionTypeGo, ts.cmdLookup["GO"])
+	assert.Equal(t, enums.ActionTypeGo, ts.vrbLookup["GO"])
 	assert.Equal(t, enums.ObjectTypeFootball, ts.objLookup["FOOTBALL"])
 	assert.Equal(t, enums.DirectionTypeNorth, ts.dirLookup["NORTH"])
 	assert.Equal(t, enums.DirObjectTypeDoor, ts.dirObjLookup["DOOR"])
@@ -49,8 +49,8 @@ func TestFishTokensKickTheBallToTheWindow(t *testing.T) {
 	result := ts.FishTokens(tokens)
 
 	assert.Equal(t, expectedVerb, result.Verb)
-	assert.Equal(t, expectedDObj, result.DirectNoun)
-	assert.Equal(t, expectedIDirObj, result.IndirectDirNoun)
+	assert.Equal(t, expectedDObj, result.DirectObject)
+	assert.Equal(t, expectedIDirObj, result.IndirectObject)
 	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
 
 	// Check if the error is nil or matches the expected error
@@ -75,8 +75,8 @@ func TestFishTokensOpenTheDoorToTheKnife(t *testing.T) {
 	result := ts.FishTokens(tokens)
 
 	assert.Equal(t, expectedVerb, result.Verb)
-	assert.Equal(t, expectedDObj, result.DirectNoun)
-	assert.Equal(t, expectedIDirObj, result.IndirectDirNoun)
+	assert.Equal(t, expectedDObj, result.DirectObject)
+	assert.Equal(t, expectedIDirObj, result.IndirectObject)
 	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
 
 	// Check if the error is nil or matches the expected error
