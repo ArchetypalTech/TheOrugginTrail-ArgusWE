@@ -184,75 +184,75 @@ func TestDirectionType(t *testing.T) {
 	}
 }
 
-// Test for DirObjectType enum
-func TestDirObjectType(t *testing.T) {
+// Test for ObjectType enum
+func TestObjectType(t *testing.T) {
 	// Test enum to string conversion
-	if DirObjectTypeNone.String() != "None" {
-		t.Errorf("DirObjectTypeNone.String() = %v; want %v", DirObjectTypeNone.String(), "None")
+	if ObjectTypeNone.String() != "None" {
+		t.Errorf("DirObjectTypeNone.String() = %v; want %v", ObjectTypeNone.String(), "None")
 	}
-	if DirObjectTypeDoor.String() != "Door" {
-		t.Errorf("DirObjectTypeDoor.String() = %v; want %v", DirObjectTypeDoor.String(), "Door")
+	if ObjectTypeDoor.String() != "Door" {
+		t.Errorf("DirObjectTypeDoor.String() = %v; want %v", ObjectTypeDoor.String(), "Door")
 	}
-	if DirObjectTypeWindow.String() != "Window" {
-		t.Errorf("DirObjectTypeWindow.String() = %v; want %v", DirObjectTypeWindow.String(), "Window")
+	if ObjectTypeWindow.String() != "Window" {
+		t.Errorf("DirObjectTypeWindow.String() = %v; want %v", ObjectTypeWindow.String(), "Window")
 	}
-	if DirObjectTypeStairs.String() != "Stairs" {
-		t.Errorf("DirObjectTypeStairs.String() = %v; want %v", DirObjectTypeStairs.String(), "Stairs")
+	if ObjectTypeStairs.String() != "Stairs" {
+		t.Errorf("DirObjectTypeStairs.String() = %v; want %v", ObjectTypeStairs.String(), "Stairs")
 	}
-	if DirObjectTypeLadder.String() != "Ladder" {
-		t.Errorf("DirObjectTypeLadder.String() = %v; want %v", DirObjectTypeLadder.String(), "Ladder")
+	if ObjectTypeLadder.String() != "Ladder" {
+		t.Errorf("DirObjectTypeLadder.String() = %v; want %v", ObjectTypeLadder.String(), "Ladder")
 	}
-	if DirObjectTypePath.String() != "Path" {
-		t.Errorf("DirObjectTypePath.String() = %v; want %v", DirObjectTypePath.String(), "Path")
+	if ObjectTypePath.String() != "Path" {
+		t.Errorf("DirObjectTypePath.String() = %v; want %v", ObjectTypePath.String(), "Path")
 	}
-	if DirObjectTypeTrail.String() != "Trail" {
-		t.Errorf("DirObjectTypeTrail.String() = %v; want %v", DirObjectTypeTrail.String(), "Trail")
+	if ObjectTypeTrail.String() != "Trail" {
+		t.Errorf("DirObjectTypeTrail.String() = %v; want %v", ObjectTypeTrail.String(), "Trail")
 	}
 
 	// Test map lookup
-	if toStringDObject[DirObjectTypeNone] != "None" {
-		t.Errorf("toStringDObject[DirObjectTypeNone] = %v; want %v", toStringDObject[DirObjectTypeNone], "None")
+	if toStringObject[ObjectTypeNone] != "None" {
+		t.Errorf("toStringDObject[DirObjectTypeNone] = %v; want %v", toStringObject[ObjectTypeNone], "None")
 	}
-	if toStringDObject[DirObjectTypeDoor] != "Door" {
-		t.Errorf("toStringDObject[DirObjectTypeDoor] = %v; want %v", toStringDObject[DirObjectTypeDoor], "Door")
+	if toStringObject[ObjectTypeDoor] != "Door" {
+		t.Errorf("toStringDObject[DirObjectTypeDoor] = %v; want %v", toStringObject[ObjectTypeDoor], "Door")
 	}
-	if toStringDObject[DirObjectTypeWindow] != "Window" {
-		t.Errorf("toStringDObject[DirObjectTypeWindow] = %v; want %v", toStringDObject[DirObjectTypeWindow], "Window")
+	if toStringObject[ObjectTypeWindow] != "Window" {
+		t.Errorf("toStringDObject[DirObjectTypeWindow] = %v; want %v", toStringObject[ObjectTypeWindow], "Window")
 	}
-	if toStringDObject[DirObjectTypeStairs] != "Stairs" {
-		t.Errorf("toStringDObject[DirObjectTypeStairs] = %v; want %v", toStringDObject[DirObjectTypeStairs], "Stairs")
+	if toStringObject[ObjectTypeStairs] != "Stairs" {
+		t.Errorf("toStringDObject[DirObjectTypeStairs] = %v; want %v", toStringObject[ObjectTypeStairs], "Stairs")
 	}
-	if toStringDObject[DirObjectTypeLadder] != "Ladder" {
-		t.Errorf("toStringDObject[DirObjectTypeLadder] = %v; want %v", toStringDObject[DirObjectTypeLadder], "Ladder")
+	if toStringObject[ObjectTypeLadder] != "Ladder" {
+		t.Errorf("toStringDObject[DirObjectTypeLadder] = %v; want %v", toStringObject[ObjectTypeLadder], "Ladder")
 	}
-	if toStringDObject[DirObjectTypePath] != "Path" {
-		t.Errorf("toStringDObject[DirObjectTypePath] = %v; want %v", toStringDObject[DirObjectTypePath], "Path")
+	if toStringObject[ObjectTypePath] != "Path" {
+		t.Errorf("toStringDObject[DirObjectTypePath] = %v; want %v", toStringObject[ObjectTypePath], "Path")
 	}
-	if toStringDObject[DirObjectTypeTrail] != "Trail" {
-		t.Errorf("toStringDObject[DirObjectTypeTrail] = %v; want %v", toStringDObject[DirObjectTypeTrail], "Trail")
+	if toStringObject[ObjectTypeTrail] != "Trail" {
+		t.Errorf("toStringDObject[DirObjectTypeTrail] = %v; want %v", toStringObject[ObjectTypeTrail], "Trail")
 	}
 
 	// Test reverse map lookup
-	if toEnumDObject["None"] != DirObjectTypeNone {
-		t.Errorf("toEnumDObject[\"None\"] = %v; want %v", toEnumDObject["None"], DirObjectTypeNone)
+	if toEnumObject["None"] != ObjectTypeNone {
+		t.Errorf("toEnumDObject[\"None\"] = %v; want %v", toEnumObject["None"], ObjectTypeNone)
 	}
-	if toEnumDObject["Door"] != DirObjectTypeDoor {
-		t.Errorf("toEnumDObject[\"Door\"] = %v; want %v", toEnumDObject["Door"], DirObjectTypeDoor)
+	if toEnumObject["Door"] != ObjectTypeDoor {
+		t.Errorf("toEnumDObject[\"Door\"] = %v; want %v", toEnumObject["Door"], ObjectTypeDoor)
 	}
-	if toEnumDObject["Window"] != DirObjectTypeWindow {
-		t.Errorf("toEnumDObject[\"Window\"] = %v; want %v", toEnumDObject["Window"], DirObjectTypeWindow)
+	if toEnumObject["Window"] != ObjectTypeWindow {
+		t.Errorf("toEnumDObject[\"Window\"] = %v; want %v", toEnumObject["Window"], ObjectTypeWindow)
 	}
-	if toEnumDObject["Stairs"] != DirObjectTypeStairs {
-		t.Errorf("toEnumDObject[\"Stairs\"] = %v; want %v", toEnumDObject["Stairs"], DirObjectTypeStairs)
+	if toEnumObject["Stairs"] != ObjectTypeStairs {
+		t.Errorf("toEnumDObject[\"Stairs\"] = %v; want %v", toEnumObject["Stairs"], ObjectTypeStairs)
 	}
-	if toEnumDObject["Ladder"] != DirObjectTypeLadder {
-		t.Errorf("toEnumDObject[\"Ladder\"] = %v; want %v", toEnumDObject["Ladder"], DirObjectTypeLadder)
+	if toEnumObject["Ladder"] != ObjectTypeLadder {
+		t.Errorf("toEnumDObject[\"Ladder\"] = %v; want %v", toEnumObject["Ladder"], ObjectTypeLadder)
 	}
-	if toEnumDObject["Path"] != DirObjectTypePath {
-		t.Errorf("toEnumDObject[\"Path\"] = %v; want %v", toEnumDObject["Path"], DirObjectTypePath)
+	if toEnumObject["Path"] != ObjectTypePath {
+		t.Errorf("toEnumDObject[\"Path\"] = %v; want %v", toEnumObject["Path"], ObjectTypePath)
 	}
-	if toEnumDObject["Trail"] != DirObjectTypeTrail {
-		t.Errorf("toEnumDObject[\"Trail\"] = %v; want %v", toEnumDObject["Trail"], DirObjectTypeTrail)
+	if toEnumObject["Trail"] != ObjectTypeTrail {
+		t.Errorf("toEnumDObject[\"Trail\"] = %v; want %v", toEnumObject["Trail"], ObjectTypeTrail)
 	}
 }
 

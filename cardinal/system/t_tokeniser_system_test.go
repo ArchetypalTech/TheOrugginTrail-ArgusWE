@@ -22,7 +22,7 @@ func TestNewTokeniserSystem(t *testing.T) {
 	assert.Equal(t, enums.ActionTypeGo, ts.vrbLookup["GO"])
 	assert.Equal(t, enums.ObjectTypeFootball, ts.objLookup["FOOTBALL"])
 	assert.Equal(t, enums.DirectionTypeNorth, ts.dirLookup["NORTH"])
-	assert.Equal(t, enums.DirObjectTypeDoor, ts.dirObjLookup["DOOR"])
+	assert.Equal(t, enums.ObjectTypeDoor, ts.dirObjLookup["DOOR"])
 	assert.Equal(t, enums.GrammarTypeDefinitionArticle, ts.grammarLookup["THE"])
 	assert.ElementsMatch(t, []enums.ActionType{enums.ActionTypeBreak, enums.ActionTypeHit, enums.ActionTypeDamage}, ts.responseLookup[enums.ActionTypeKick])
 }
@@ -36,14 +36,13 @@ func TestLookupFunctions(t *testing.T) {
 	assert.Equal(t, enums.DirectionTypeNorth, ts.GetDirectionType("NORTH"))
 }
 
-func TestFishTokensKickTheBallToTheWindow(t *testing.T) {
+func TestFishTokens1(t *testing.T) {
 	ts := NewTokeniserSystem()
 
-	tokens := []string{"KICK", "THE", "BALL", "TO", "THE", "WINDOW"}
+	tokens := []string{"KICK", "THE", "BALL", "AT", "THE", "WINDOW"}
 	expectedVerb := enums.ActionTypeKick
 	expectedDObj := enums.ObjectTypeFootball
-	expectedIDirObj := enums.DirObjectTypeWindow
-	expectedIObj := enums.ObjectTypeNone
+	expectedIDirObj := enums.ObjectTypeWindow
 	expectedErr := constants.ErrDirectionRoutineND
 
 	result := ts.FishTokens(tokens)
@@ -51,7 +50,6 @@ func TestFishTokensKickTheBallToTheWindow(t *testing.T) {
 	assert.Equal(t, expectedVerb, result.Verb)
 	assert.Equal(t, expectedDObj, result.DirectObject)
 	assert.Equal(t, expectedIDirObj, result.IndirectObject)
-	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
 
 	// Check if the error is nil or matches the expected error
 	if result.ErrCode != nil {
@@ -62,14 +60,13 @@ func TestFishTokensKickTheBallToTheWindow(t *testing.T) {
 	}
 }
 
-func TestFishTokensOpenTheDoorToTheKnife(t *testing.T) {
+func TestFishTokens2(t *testing.T) {
 	ts := NewTokeniserSystem()
 
-	tokens := []string{"OPEN", "THE", "DOOR", "WITH", "THE", "IRON", "KNIFE"}
+	tokens := []string{"OPEN", "THE", "DOOR", "WITH", "THE", "KNIFE"}
 	expectedVerb := enums.ActionTypeOpen
-	expectedDObj := enums.ObjectTypeNone
-	expectedIDirObj := enums.DirObjectTypeDoor
-	expectedIObj := enums.ObjectTypeKnife
+	expectedDObj := enums.ObjectTypeDoor
+	expectedIDirObj := enums.ObjectTypeKnife
 	expectedErr := constants.ErrNoDirectObject // Example of using a custom error from constants
 
 	result := ts.FishTokens(tokens)
@@ -77,7 +74,30 @@ func TestFishTokensOpenTheDoorToTheKnife(t *testing.T) {
 	assert.Equal(t, expectedVerb, result.Verb)
 	assert.Equal(t, expectedDObj, result.DirectObject)
 	assert.Equal(t, expectedIDirObj, result.IndirectObject)
-	assert.Equal(t, expectedIObj, result.IndirectObjNoun)
+
+	// Check if the error is nil or matches the expected error
+	if result.ErrCode != nil {
+		assert.Equal(t, expectedErr.Code, result.ErrCode.Code)
+		assert.Equal(t, expectedErr.Message, result.ErrCode.Message)
+	} else {
+		assert.Nil(t, result.ErrCode)
+	}
+}
+
+func TestFishTokens3(t *testing.T) {
+	ts := NewTokeniserSystem()
+
+	tokens := []string{"GO", "TO", "DOOR"}
+	expectedVerb := enums.ActionTypeGo
+	expectedDObj := enums.ObjectTypeDoor
+	expectedIDirObj := enums.ObjectTypeNone
+	expectedErr := constants.ErrNoDirectObject // Example of using a custom error from constants
+
+	result := ts.FishTokens(tokens)
+
+	assert.Equal(t, expectedVerb, result.Verb)
+	assert.Equal(t, expectedDObj, result.DirectObject)
+	assert.Equal(t, expectedIDirObj, result.IndirectObject)
 
 	// Check if the error is nil or matches the expected error
 	if result.ErrCode != nil {

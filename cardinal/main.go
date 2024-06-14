@@ -31,8 +31,6 @@ func MustInitWorld(w *cardinal.World) {
 		cardinal.RegisterComponent[component.ActionStore](w),
 		cardinal.RegisterComponent[component.ActionOutput](w),
 		cardinal.RegisterComponent[component.Description](w),
-		cardinal.RegisterComponent[component.DirObject](w),
-		cardinal.RegisterComponent[component.DirObjectStore](w),
 		cardinal.RegisterComponent[component.Object](w),
 		cardinal.RegisterComponent[component.ObjectStore](w),
 		cardinal.RegisterComponent[component.Output](w),
@@ -46,6 +44,7 @@ func MustInitWorld(w *cardinal.World) {
 	// NOTE: You must register your transactions here for it to be executed.
 	Must(
 		cardinal.RegisterMessage[msg.CreatePlayerMsg, msg.CreatePlayerReply](w, "create-player"),
+		cardinal.RegisterMessage[msg.ProcessCommandsMsg, msg.ProcessCommandsReply](w, "process-commands"),
 	)
 
 	// Register queries
@@ -56,8 +55,10 @@ func MustInitWorld(w *cardinal.World) {
 	// Each system executes deterministically in the order they are added.
 	// This is a neat feature that can be strategically used for systems that depends on the order of execution.
 	Must(cardinal.RegisterSystems(w,
-		system.NTokeniserSystem,
 		system.CreatePlayerSystem,
+		system.ProcessCommandsTokens,
+		system.NTokeniserSystem,
+		system.LookSystem,
 	))
 
 	// Register the init system when the world is initiated.

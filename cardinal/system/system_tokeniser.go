@@ -16,7 +16,7 @@ func NTokeniserSystem(world cardinal.WorldContext) error {
 type TokeniserSystem struct {
 	vrbLookup      map[string]enums.ActionType             // Lookup table for command strings to ActionType
 	dirLookup      map[string]enums.DirectionType          // Lookup table for direction strings to DirectionType
-	dirObjLookup   map[string]enums.DirObjectType          // Lookup table for direction object strings to DirObjectType
+	dirObjLookup   map[string]enums.ObjectType             // Lookup table for direction object strings to DirObjectType
 	objLookup      map[string]enums.ObjectType             // Lookup table for object strings to ObjectType
 	grammarLookup  map[string]enums.GrammarType            // Lookup table for GrammarType
 	responseLookup map[enums.ActionType][]enums.ActionType // Lookup table for action responses
@@ -27,7 +27,7 @@ func NewTokeniserSystem() *TokeniserSystem {
 	ts := &TokeniserSystem{
 		vrbLookup:      make(map[string]enums.ActionType),
 		dirLookup:      make(map[string]enums.DirectionType),
-		dirObjLookup:   make(map[string]enums.DirObjectType),
+		dirObjLookup:   make(map[string]enums.ObjectType),
 		objLookup:      make(map[string]enums.ObjectType),
 		grammarLookup:  make(map[string]enums.GrammarType),
 		responseLookup: make(map[enums.ActionType][]enums.ActionType),
@@ -74,6 +74,7 @@ func (ts *TokeniserSystem) setupObjects() {
 	ts.objLookup["KEY"] = enums.ObjectTypeKey
 	ts.objLookup["KNIFE"] = enums.ObjectTypeKnife
 	ts.objLookup["BOTTLE"] = enums.ObjectTypeBottle
+
 }
 
 // setupDirs initializes the direction lookup table with predefined directions
@@ -90,12 +91,12 @@ func (ts *TokeniserSystem) setupDirs() {
 
 // setupDirObjs initializes the directional object lookup table with predefined directional objects
 func (ts *TokeniserSystem) setupDirObjs() {
-	ts.dirObjLookup["DOOR"] = enums.DirObjectTypeDoor
-	ts.dirObjLookup["WINDOW"] = enums.DirObjectTypeWindow
-	ts.dirObjLookup["STAIRS"] = enums.DirObjectTypeStairs
-	ts.dirObjLookup["LADDER"] = enums.DirObjectTypeLadder
-	ts.dirObjLookup["PATH"] = enums.DirObjectTypePath
-	ts.dirObjLookup["TRAIL"] = enums.DirObjectTypeTrail
+	ts.objLookup["DOOR"] = enums.ObjectTypeDoor
+	ts.objLookup["WINDOW"] = enums.ObjectTypeWindow
+	ts.objLookup["STAIRS"] = enums.ObjectTypeStairs
+	ts.objLookup["LADDER"] = enums.ObjectTypeLadder
+	ts.objLookup["PATH"] = enums.ObjectTypePath
+	ts.objLookup["TRAIL"] = enums.ObjectTypeTrail
 }
 
 // setupVrbAct initializes the verb action response lookup table with predefined responses
@@ -111,8 +112,9 @@ func (ts *TokeniserSystem) setupVrbAct() {
 func (ts *TokeniserSystem) setupGrammar() {
 	ts.grammarLookup["THE"] = enums.GrammarTypeDefinitionArticle
 	ts.grammarLookup["TO"] = enums.GrammarTypePreposition
-	ts.grammarLookup["AT"] = enums.GrammarTypePrepo
-	ts.grammarLookup["Around"] = enums.GrammarTypeAdverb
+	ts.grammarLookup["AT"] = enums.GrammarTypePreposition
+	ts.grammarLookup["WITH"] = enums.GrammarTypePreposition
+	ts.grammarLookup["AROUND"] = enums.GrammarTypeAdverb
 }
 
 // FishTokens processes the tokenized command and returns VerbData
@@ -123,53 +125,53 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	// Look up the verb, object, and directional object from the tokens
 	var VRB enums.ActionType = ts.vrbLookup[(tokens[0])]
 	var DObj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
-	var IObj enums.DirObjectType = ts.dirObjLookup[(tokens[lenTokens])]
+	var IObj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
 
 	data.Verb = VRB // Set the verb in VerbData
-	if DObj == enums.ObjectTypeNone && IObj == enums.DirObjectTypeNone {
+
+	switch {
+	case DObj == enums.ObjectTypeNone && IObj == enums.ObjectTypeNone:
 		data.ErrCode = constants.ErrNoDirectObject
 		if isDevelopmentMode() {
 			logger.Errorf("\033[31mE--->1err:%s\033[0m", data.ErrCode)
 		}
-	} else {
-		// ? VRB, OBJ ? //
-		if DObj != enums.ObjectTypeNone && len(tokens) <= 3 {
+	case len(tokens) <= 3:
+		switch {
+		case DObj != enums.ObjectTypeNone:
 			data.DirectObject = DObj
-		} else if DObj == enums.ObjectTypeNone && len(tokens) <= 3 {
+			IObj = enums.ObjectTypeNone
+		case DObj == enums.ObjectTypeNone:
 			data.ErrCode = constants.ErrNoDirectObject
 			if isDevelopmentMode() {
 				logger.Errorf("\033[31mE--->2err:%s\033[0m", data.ErrCode)
 			}
 		}
-		if len(tokens) > 3 {
-			// ? VRB, [DA], OBJ, IOBJ ? //
-			// dirObj ?
-			if IObj != enums.DirObjectTypeNone {
-				// we have IOBJ find DOBJ
-				DObj = ts.objLookup[tokens[1]]
+	case len(tokens) > 3:
+		switch {
+		case IObj != enums.ObjectTypeNone:
+			// We have IOBJ, find DOBJ
+			DObj = ts.objLookup[tokens[1]]
+			if DObj == enums.ObjectTypeNone {
+				DObj = ts.objLookup[tokens[2]]
 				if DObj == enums.ObjectTypeNone {
-					DObj = ts.objLookup[tokens[2]]
-					if DObj == enums.ObjectTypeNone {
-						data.ErrCode = constants.ErrNoDirectObject
-						if isDevelopmentMode() {
-							logger.Errorf("\033[31mE--->3err:%s\033[0m", data.ErrCode)
-						}
+					data.ErrCode = constants.ErrNoDirectObject
+					if isDevelopmentMode() {
+						logger.Errorf("\033[31mE--->3err:%s\033[0m", data.ErrCode)
 					}
 				}
-			} else if DObj != enums.ObjectTypeNone {
-				// we arent dealing with this type structure right now
-				// but we have a "throw thing1 at thing2" form where thing2
-				// is not a direction object. Probably combat as it goes
-				// so for now return
-				return data
 			}
+		case DObj != enums.ObjectTypeNone:
+			// We aren't dealing with this type of structure right now
+			// But we have a "throw thing1 at thing2" form where thing2
+			// is not a direction object. Probably combat as it goes
+			// so for now return
+			return data
 		}
 	}
 
 	// Set the direct noun, indirect directional noun, and error code in VerbData
 	data.DirectObject = DObj
 	data.IndirectObject = IObj
-	//fmt.Printf("--->d.dobj:%s iobj:%s vrb:%s\n", data.DirectNoun, data.IndirectDirNoun, data.Verb)
 	if isDevelopmentMode() {
 		logger.Infof("\033[35mP--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectObject, data.IndirectObject, data.Verb)
 	}
