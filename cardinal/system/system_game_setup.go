@@ -31,7 +31,7 @@ func initLogger() {
 func NGameSetupSystem(world cardinal.WorldContext) error {
 
 	setup := NewGameSetup(world)
-	setup.Init()
+	setup.Init(world)
 	initLogger()
 
 	if isDevelopmentMode() {
@@ -68,30 +68,26 @@ func NewGameSetup(worldCtx cardinal.WorldContext) *GameSetup {
 }
 
 // Init initializes the GameSetup system.
-func (s *GameSetup) Init() {
-	s.setupWorld()
+func (s *GameSetup) Init(world cardinal.WorldContext) {
+	s.setupWorld(world)
 }
 
 // setupWorld initializes the game world by setting up rooms.
-func (s *GameSetup) setupWorld() {
-	s.setupRooms()
+func (s *GameSetup) setupWorld(world cardinal.WorldContext) {
+	s.setupRooms(world)
 	// Add setup functions for objects, actions, etc.
 }
 
 // setupRooms sets up various rooms in the game world.
-func (s *GameSetup) setupRooms() {
-	s.setupPlain()
-	s.setupBarn()
-	s.setupMountainPath()
+func (s *GameSetup) setupRooms(world cardinal.WorldContext) {
+	s.setupPlain(world)
+	s.setupBarn(world)
+	s.setupMountainPath(world)
 }
 
 // setupPlain sets up the plain in the game world.
-func (s *GameSetup) setupPlain() {
-
-	if isDevelopmentMode() {
-		// Logging for setting up the plain
-		logger.Infof("\033[35mSetting up the plain...\033[0m")
-	}
+func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
+	world.Logger().Debug().Msg("---->Setting up the plain.....")
 
 	// KPLAIN -> N, E
 	open2Barn := s.createAction(enums.ActionTypeOpen, "the door opens with a farty noise\n"+
@@ -100,7 +96,7 @@ func (s *GameSetup) setupPlain() {
 	plainBarn := [32]uint32{open2Barn}
 	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeNorth, enums.RoomTypePlain,
 		enums.ObjectTypePath, enums.MaterialTypeDirt,
-		"path", plainBarn)}
+		"path", plainBarn, world)}
 
 	open2Path := s.createAction(enums.ActionTypeOpen, "the door opens and a small hinge demon curses you\n"+
 		"your nose is really itchy", true, true, true, 0, 0)
@@ -108,7 +104,7 @@ func (s *GameSetup) setupPlain() {
 	plainPath := [32]uint32{open2Path}
 	dObjs[1] = s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeWoodCabin,
 		enums.ObjectTypePath, enums.MaterialTypeMud,
-		"path", plainPath)
+		"path", plainPath, world)
 
 	kick := s.createAction(enums.ActionTypeKick, "the ball (such as it is)\n"+
 		"bounces feebly\n then rolls into some fresh dog eggs\n"+
@@ -118,7 +114,7 @@ func (s *GameSetup) setupPlain() {
 	objs := [32]uint32{s.createObject(enums.ObjectTypeFootball, enums.MaterialTypeFlesh,
 		"A slightly deflated knock off uefa football,\n"+
 			"not quite spherical, it's "+
-			"kickable though", "football", ballActions)}
+			"kickable though", "football", ballActions, world)}
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a windswept plain",
@@ -132,36 +128,29 @@ func (s *GameSetup) setupPlain() {
 		"the air tastes of burnt grease and bensons.",
 	)
 
-	if isDevelopmentMode() {
-		// Logs to verify the ID's in the setup
-		logger.Debugf("\033[36mObject IDs for room %d: %v\033[0m", roomID, objs)
-		logger.Debugf("\033[36mDirectional Object IDs for room %d: %v\033[0m", roomID, dObjs)
-		// Inspect Data Passed to Setup Functions
-		logger.Debugf("\033[37mData passed to createPlace for room %d: %+v\033[0m", roomID, objs)
-		logger.Debugf("\033[37mData passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
-	}
+	// Logs to verify the ID's in the setup
+	world.Logger().Debug().Msgf("Object IDs for room %d: %v\033[0m", roomID, objs)
+	world.Logger().Debug().Msgf("Directional Object IDs for room %d: %v", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain)
+	// Inspect Data Passed to Setup Functions
+	world.Logger().Debug().Msgf("ata passed to createPlace for room %d: %+v\033[0m", roomID, objs)
+	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
 
-	if isDevelopmentMode() {
-		// Logging for completing setup of the plain
-		logger.Infof("\033[32mPlain setup complete\033[0m")
-	}
+	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain, world)
+
+	world.Logger().Debug().Msg("---->Plain setup complete")
 
 }
 
 // setupBarn sets up the barn in the game world.
-func (s *GameSetup) setupBarn() {
-	if isDevelopmentMode() {
-		// Logging for setting up the barn
-		logger.Infof("\033[35mSetting up the barn...\033[0m")
-	}
+func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
+	world.Logger().Debug().Msg("---->Setting up the barn.....")
 	// KBARN -> S
 	open2South := s.createAction(enums.ActionTypeOpen, "the door opens\n", true, true, true, 0, 0)
 	barnPlain := [32]uint32{open2South}
 	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeSouth, enums.RoomTypePlain,
 		enums.ObjectTypeDoor, enums.MaterialTypeWood,
-		"door", barnPlain)}
+		"door", barnPlain, world)}
 
 	open2Forest := s.createAction(enums.ActionTypeOpen, "the window, glass and frame smashed\n"+
 		"falls open", false, false, false, 0, 0)
@@ -174,7 +163,7 @@ func (s *GameSetup) setupBarn() {
 	windowActions := [32]uint32{open2Forest, smashWindow}
 	dObjs[1] = s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeForge,
 		enums.ObjectTypeWindow, enums.MaterialTypeWood,
-		"window", windowActions)
+		"window", windowActions, world)
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a barn",
@@ -188,29 +177,23 @@ func (s *GameSetup) setupBarn() {
 			"plenty of corners and dark shadows",
 	)
 
-	if isDevelopmentMode() {
-		// Logs to verify the ID's in the setup
-		logger.Debugf("\033[36mObject IDs for room %d: %v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[36mDirectional Object IDs for room %d: %v\033[0m", roomID, dObjs)
-		// Inspect Data Passed to Setup Functions
-		logger.Debugf("\033[37mData passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[37mData passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
-	}
+	// Logs to verify the ID's in the setup
+	world.Logger().Debug().Msgf("Object IDs for room %d: %v\033[0m", roomID, [32]uint32{})
+	world.Logger().Debug().Msgf("Directional Object IDs for room %d: %v", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypeWoodCabin, dObjs, [32]uint32{}, tidBarn) // Pass empty array instead of nil for the objects.
+	// Inspect Data Passed to Setup Functions
+	world.Logger().Debug().Msgf("ata passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
+	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
 
-	if isDevelopmentMode() {
-		// Logging for completing setup of the plain
-		logger.Infof("\033[32mBarn setup complete\033[0m")
-	}
+	s.createPlace(roomID, enums.RoomTypeWoodCabin, dObjs, [32]uint32{}, tidBarn, world) // Pass empty array instead of nil for the objects.
+
+	world.Logger().Debug().Msg("---->Barn setup complete")
+
 }
 
 // setupMountainPath sets up the mountain path in the game world.
-func (s *GameSetup) setupMountainPath() {
-	if isDevelopmentMode() {
-		// Logging for setting up the mountain path
-		logger.Infof("\033[35mSetting up the mountain path...\033[0m")
-	}
+func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
+	world.Logger().Debug().Msg("---->Setting up the mountain path..")
 
 	// KPATH -> W
 	open2West := s.createAction(enums.ActionTypeOpen, "the path is passable", true, true, false, 0, 0)
@@ -218,7 +201,7 @@ func (s *GameSetup) setupMountainPath() {
 
 	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeWest, enums.RoomTypePlain,
 		enums.ObjectTypePath, enums.MaterialTypeStone,
-		"path", pathActions)}
+		"path", pathActions, world)}
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a high mountain pass",
@@ -234,26 +217,22 @@ func (s *GameSetup) setupMountainPath() {
 			"It's brass monkeys.",
 	)
 
-	if isDevelopmentMode() {
-		// Logs to verify the ID's in the setup
-		logger.Debugf("\033[36mObject IDs for room %d: %v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[36mDirectional Object IDs for room %d: %v\033[0m", roomID, dObjs)
-		// Inspect Data Passed to Setup Functions
-		logger.Debugf("\033[37mData passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
-		logger.Debugf("\033[37mData passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
-	}
+	// Logs to verify the ID's in the setup
+	world.Logger().Debug().Msgf("Object IDs for room %d: %v\033[0m", roomID, [32]uint32{})
+	world.Logger().Debug().Msgf("Directional Object IDs for room %d: %v", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, [32]uint32{}, tidMpath) // Pass empty array instead of nil for the objects.
+	// Inspect Data Passed to Setup Functions
+	world.Logger().Debug().Msgf("ata passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
+	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
 
-	if isDevelopmentMode() {
-		// Logging for completing setup of the plain
-		logger.Infof("\033[32mMountain path setup complete\033[0m")
-	}
+	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, [32]uint32{}, tidMpath, world) // Pass empty array instead of nil for the objects.
+
+	world.Logger().Debug().Msg("---->Mountain path setup complete")
 }
 
 // createDirObject creates a directional object in the game world.
 func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType,
-	mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32 {
+	mType enums.MaterialType, desc string, actionObjects [32]uint32, world cardinal.WorldContext) uint32 {
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
 
@@ -276,18 +255,15 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 	// Update the DirObject data with the assigned ID
 	directionObjData.ObjectID = dirObjID
 
-	if isDevelopmentMode() {
-		// Log the directional object creation
-		logger.Infof("\033[33mDirectional object created - ID: %d, Type: %s, Destination Room Type: %s, Material: %s, Description: %s\033[0m",
-			dirObjID, dirType, dstID, mType, desc)
-	}
+	world.Logger().Debug().Msgf("Directional object created - ID: %d, Type: %s, Destination Room Type: %s, Material: %s, Description: %s",
+		dirObjID, dirType, dstID, mType, desc)
 
 	return dirObjID
 }
 
 // createObject creates an object in the game world.
 func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialType, desc, objName string,
-	actionObjects [32]uint32) uint32 {
+	actionObjects [32]uint32, world cardinal.WorldContext) uint32 {
 
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
@@ -310,10 +286,7 @@ func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialT
 	// Update the Object data with the assigned ID
 	objData.ObjectID = objID
 
-	if isDevelopmentMode() {
-		// Log the object creation
-		logger.Infof("\033[33mObject created - ID: %d, Type: %s, Material: %s, Description: %s\033[0m", objID, objType, mType, desc)
-	}
+	world.Logger().Debug().Msgf("Object created - ID: %d, Type: %s, Material: %s, Description: %s", objID, objType, mType, desc)
 
 	return objID
 }
@@ -339,7 +312,7 @@ func (s *GameSetup) _textGuid(desc string) string {
 }
 
 // createPlace creates a room in the game world and populates it with objects and directional objects.
-func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [32]uint32, objs [32]uint32, tid string) {
+func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [32]uint32, objs [32]uint32, tid string, world cardinal.WorldContext) {
 	// Create an entity representing the room with its components
 	entityID, err := cardinal.Create(s.worldCtx,
 		component.Room{
@@ -353,17 +326,15 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [3
 
 	// Check for errors during entity creation
 	if err != nil {
-		logger.Errorf("\033[31mFailed to create entity for room with ID %d: %v\033[0m", roomID, err)
+		world.Logger().Debug().Msgf("Failed to create entity for room with ID %d: %v", roomID, err)
 	}
 
-	if isDevelopmentMode() {
-		// Log successful creation
-		logger.Infof("\033[32mRoom with ID %d created successfully, entity ID: %d%s", roomID, entityID, "\033[0m")
-	}
+	world.Logger().Debug().Msgf("Room with ID %d created successfully, entity ID: %d", roomID, entityID)
+
 }
 
 // isDevelopmentMode returns true if the application is running in development/debug mode.
 func isDevelopmentMode() bool {
 
-	return true // Change this based on if you run in dev or production.
+	return false // Change this based on if you run in dev or production.
 }
