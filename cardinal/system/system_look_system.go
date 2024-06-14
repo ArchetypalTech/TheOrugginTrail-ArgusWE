@@ -17,9 +17,7 @@ func LookSystem(world cardinal.WorldContext) error {
 }
 
 func Stuff(tokens []string, curRmId uint32, playerId uint32, world cardinal.WorldContext) uint8 {
-	if isDevelopmentMode() {
-		fmt.Printf("---->SEE T:%s, R:%d\n", tokens[0], curRmId)
-	}
+	world.Logger().Debug().Msgf("---->SEE T:%s, R:%d\n", tokens[0], curRmId)
 	vrb := ts.GetActionType(tokens[0])
 	var gObj enums.GrammarType
 	var err uint8
@@ -27,43 +25,31 @@ func Stuff(tokens []string, curRmId uint32, playerId uint32, world cardinal.Worl
 	// we know it is an action because the commandProcessors has pre-parsed for us
 	// so we dont need to test for a garbage vrb token
 	if vrb == enums.ActionTypeLook {
-		if isDevelopmentMode() {
-			fmt.Printf("---->LK RM:%d\n", curRmId)
-		}
+		world.Logger().Debug().Msgf("---->LK RM:%d\n", curRmId)
 
 		if len(tokens) > 1 {
 			gObj = ts.GetGrammarType(tokens[len(tokens)-1])
 			if gObj != enums.GrammarTypeAdverb {
 				err := lookAround(curRmId, playerId, world)
-				if isDevelopmentMode() {
-					fmt.Printf("->_LA:%d\n", err)
-				}
+				world.Logger().Debug().Msgf("-->_LA:%d", err)
 				return err
 			}
 		} else {
 			err := lookAround(curRmId, playerId, world)
-			if isDevelopmentMode() {
-				fmt.Printf("->_LOOK:%d\n", err)
-			}
+			world.Logger().Debug().Msgf("-->_LOOK:%d", err)
 			return err
 		}
 	} else if vrb == enums.ActionTypeDescribe || vrb == enums.ActionTypeLook {
-		if isDevelopmentMode() {
-			fmt.Printf("---->DESC\n")
-		}
+		world.Logger().Debug().Msgf("---->DESC\n")
 	}
-	if isDevelopmentMode() {
-		fmt.Printf("->_ERR:%d\n", err)
-	}
+	world.Logger().Debug().Msgf("---->_ERR:%d", err)
 	return 0
 
 }
 
 func lookAround(rId uint32, playerId uint32, world cardinal.WorldContext) uint8 {
 	output := genDescText(playerId, rId, world)
-	if isDevelopmentMode() {
-		logger.Infof("\033[32mROOM DESCRIPTION IS: %s\033[0m", output)
-	}
+	world.Logger().Debug().Msgf("ROOM DESCRIPTION IS: %s", output)
 	return 0
 }
 
@@ -73,9 +59,7 @@ func genDescText(playerId uint32, id uint32, world cardinal.WorldContext) string
 	rID := types.EntityID(id)
 	room, err := getRoom(rID, world)
 	if err != nil {
-		if isDevelopmentMode() {
-			logger.Errorf("\033[31mError2 getting Room Component: %v\033[0m", err)
-		}
+		world.Logger().Error().Msgf("Error2 getting Room Component: %v", err)
 	}
 
 	if room.RoomType == enums.RoomTypePlain {
@@ -92,11 +76,8 @@ func getRoom(rID types.EntityID, world cardinal.WorldContext) (component.Room, e
 		Each(world, func(id types.EntityID) bool {
 			room, err := cardinal.GetComponent[component.Room](world, rID)
 			if err != nil {
-				if isDevelopmentMode() {
-					logger.Errorf("\033[31mError getting Room Component: %v\033[0m", err)
-				}
+				world.Logger().Error().Msgf("Error getting Room Component: %v", err)
 				return true
-
 			}
 
 			if room.ID == uint32(rID) {
