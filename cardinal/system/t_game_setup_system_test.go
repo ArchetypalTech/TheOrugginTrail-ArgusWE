@@ -20,7 +20,7 @@ type GameSetupInterface interface {
 	setupRooms()
 	setupPlain()
 	createAction(actionType enums.ActionType, desc string, enabled bool, dBit bool, revert bool, affectsID uint32, affectedByID uint32) uint32
-	createDirObject(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.DirObjectType, mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32
+	createDirObject(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType, mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32
 	createObject(objType enums.ObjectType, mType enums.MaterialType, desc, objName string, actionObjects [32]uint32) uint32
 	_textGuid(desc string) string
 	createPlace(roomID uint32, roomType enums.RoomType, dObjs [32]uint32, objs [32]uint32, tid string)
@@ -38,7 +38,7 @@ func (m *MockGameSetup) setupPlain() {}
 func (m *MockGameSetup) createActionTest(actionType enums.ActionType, desc string, enabled bool, dBit bool, revert bool, affectsID uint32, affectedByID uint32) uint32 {
 	return 1
 }
-func (m *MockGameSetup) createDirObjectTest(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.DirObjectType, mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32 {
+func (m *MockGameSetup) createDirObjectTest(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType, mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32 {
 	return 1
 }
 func (m *MockGameSetup) createObjectTest(objType enums.ObjectType, mType enums.MaterialType, desc, objName string, actionObjects [32]uint32) uint32 {
@@ -137,7 +137,7 @@ func (m *MockEngineContext) GetSignerForPersonaTag(tag string) (sign.SignerCompo
 type GameSetupTest struct {
 	worldCtx       cardinal.WorldContext
 	RoomStore      *component.RoomStore
-	DirObjectStore *component.DirObjectStore
+	DirObjectStore *component.ObjectStore
 	ObjectStore    *component.ObjectStore
 	ActionStore    *component.ActionStore
 	TxtDefStore    *component.TxtDefStore
@@ -148,25 +148,25 @@ func NewGameSetupTest(world cardinal.WorldContext) *GameSetupTest {
 	return &GameSetupTest{
 		worldCtx:       world,
 		RoomStore:      component.NewRoomStore(),
-		DirObjectStore: component.NewDirObjectStore(),
+		DirObjectStore: component.NewObjectStore(),
 		ObjectStore:    component.NewObjectStore(),
 		ActionStore:    component.NewActionStore(),
 		TxtDefStore:    component.NewTxtDefStore(),
 	}
 }
 
-func (s *GameSetupTest) createDirObjectTest(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.DirObjectType, mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32 {
+func (s *GameSetupTest) createDirObjectTest(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType, mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32 {
 	txtID := s._textGuidTest(desc)
 	s.TxtDefStore.Set(txtID, enums.TxtDefTypeDirObject, desc)
-	dirObjData := component.DirObject{
+	directionObjData := component.Object{
 		DirType:         dirType,
 		DestID:          dstID,
-		ObjType:         dOType,
-		MatType:         mType,
+		ObjectType:      dOType,
+		MaterialType:    mType,
 		TxtDefID:        txtID,
 		ObjectActionIDs: actionObjects,
 	}
-	dirObjID := s.DirObjectStore.Add(dirObjData)
+	dirObjID := s.ObjectStore.Add(directionObjData)
 	log.Printf("Directional object created - ID: %d, Type: %s, Destination Room Type: %s, Material: %s, Description: %s", dirObjID, dirType, dstID, mType, desc)
 	return dirObjID
 }
@@ -242,7 +242,7 @@ func TestGameSetup(t *testing.T) {
 	actionID := mockSetup.createActionTest(enums.ActionType(1), "Test Action", true, false, true, 0, 0)
 	assert.Equal(t, uint32(1), actionID)
 
-	dirObjID := mockSetup.createDirObjectTest(enums.DirectionType(1), enums.RoomType(1), enums.DirObjectType(1), enums.MaterialType(1), "Test DirObject", [32]uint32{})
+	dirObjID := mockSetup.createDirObjectTest(enums.DirectionType(1), enums.RoomType(1), enums.ObjectType(1), enums.MaterialType(1), "Test DirObject", [32]uint32{})
 	assert.Equal(t, uint32(1), dirObjID)
 
 	objID := mockSetup.createObjectTest(enums.ObjectType(1), enums.MaterialType(1), "Test Object", "Test Name", [32]uint32{})

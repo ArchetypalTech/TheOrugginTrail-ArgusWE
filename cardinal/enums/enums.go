@@ -92,45 +92,6 @@ var toEnumDirection = map[string]DirectionType{
 	"Backward": DirectionTypeBackward,
 }
 
-// DirObjectType - Custom type for direction object types
-type DirObjectType int
-
-const (
-	DirObjectTypeNone   DirObjectType = iota // Starts at  0
-	DirObjectTypeDoor                        // 1
-	DirObjectTypeWindow                      // 2
-	DirObjectTypeStairs                      // 3
-	DirObjectTypeLadder                      // 4
-	DirObjectTypePath                        // 5
-	DirObjectTypeTrail                       // 6
-)
-
-func (d DirObjectType) String() string {
-	return toStringDObject[d]
-}
-
-// Map to store the string representations of the enum
-var toStringDObject = map[DirObjectType]string{
-	DirObjectTypeNone:   "None",
-	DirObjectTypeDoor:   "Door",
-	DirObjectTypeWindow: "Window",
-	DirObjectTypeStairs: "Stairs",
-	DirObjectTypeLadder: "Ladder",
-	DirObjectTypePath:   "Path",
-	DirObjectTypeTrail:  "Trail",
-}
-
-// Map to store the enum values by string
-var toEnumDObject = map[string]DirObjectType{
-	"None":   DirObjectTypeNone,
-	"Door":   DirObjectTypeDoor,
-	"Window": DirObjectTypeWindow,
-	"Stairs": DirObjectTypeStairs,
-	"Ladder": DirObjectTypeLadder,
-	"Path":   DirObjectTypePath,
-	"Trail":  DirObjectTypeTrail,
-}
-
 // ActionType - Custom type for action types
 type ActionType int
 
@@ -223,6 +184,12 @@ const (
 	ObjectTypeBottle                     // 4
 	ObjectTypeStraw                      // 5
 	ObjectTypePetrol                     // 6
+	ObjectTypeDoor                       // 7
+	ObjectTypeWindow                     // 8
+	ObjectTypeStairs                     // 9
+	ObjectTypeLadder                     // 10
+	ObjectTypePath                       // 11
+	ObjectTypeTrail                      // 12
 )
 
 func (o ObjectType) String() string {
@@ -238,6 +205,12 @@ var toStringObject = map[ObjectType]string{
 	ObjectTypeBottle:   "Bottle",
 	ObjectTypeStraw:    "Straw",
 	ObjectTypePetrol:   "Petrol",
+	ObjectTypeDoor:     "Door",
+	ObjectTypeWindow:   "Window",
+	ObjectTypeStairs:   "Stairs",
+	ObjectTypeLadder:   "Ladder",
+	ObjectTypePath:     "Path",
+	ObjectTypeTrail:    "Trail",
 }
 
 // Map to store the enum values by string
@@ -249,6 +222,12 @@ var toEnumObject = map[string]ObjectType{
 	"Bottle":   ObjectTypeBottle,
 	"Straw":    ObjectTypeStraw,
 	"Petrol":   ObjectTypePetrol,
+	"Door":     ObjectTypeDoor,
+	"Window":   ObjectTypeWindow,
+	"Stairs":   ObjectTypeStairs,
+	"Ladder":   ObjectTypeLadder,
+	"Path":     ObjectTypePath,
+	"Trail":    ObjectTypeTrail,
 }
 
 // MaterialType - Custom type for material types
@@ -342,22 +321,24 @@ const (
 	GrammarTypeNone              GrammarType = iota // Starts at 0
 	GrammarTypeDefinitionArticle                    // 1
 	GrammarTypePreposition                          // 2
-	GrammarTypePrepo                                // 2
 	GrammarTypeAdverb                               // 3
 )
 
 var toStringGrammar = map[GrammarType]string{
 	GrammarTypeNone:              "None",
 	GrammarTypeDefinitionArticle: "The",
-	GrammarTypePreposition:       "To",
-	GrammarTypePrepo:             "at",
 	GrammarTypeAdverb:            "Around",
+}
+
+var toArrayGrammar = map[GrammarType][]string{
+	GrammarTypePreposition: {"To", "At", "With"},
 }
 
 var toEnumGrammar = map[string]GrammarType{
 	"None":   GrammarTypeNone,
 	"The":    GrammarTypeDefinitionArticle,
 	"To":     GrammarTypePreposition,
-	"at":     GrammarTypePrepo,
+	"At":     GrammarTypePreposition,
+	"With":   GrammarTypePreposition,
 	"Around": GrammarTypeAdverb,
 }

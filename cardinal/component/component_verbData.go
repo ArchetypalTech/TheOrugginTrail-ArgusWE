@@ -12,11 +12,10 @@ import (
 
 // VerbData represents the data structure for verb-related information
 type VerbData struct {
-	Verb            enums.ActionType      // The action/verb from the command
-	DirectObject    enums.ObjectType      // The direct object of the action
-	IndirectObject  enums.DirObjectType   // The indirect directional object of the action
-	IndirectObjNoun enums.ObjectType      // The indirect Object noun
-	ErrCode         *constants.ErrorTypes // Error code for parsing the tokens
+	Verb           enums.ActionType      // The action/verb from the command
+	DirectObject   enums.ObjectType      // The direct object of the action
+	IndirectObject enums.ObjectType      // The indirect  object of the action
+	ErrCode        *constants.ErrorTypes // Error code for parsing the tokens
 }
 
 // Name returns the name of the structure, used for identification

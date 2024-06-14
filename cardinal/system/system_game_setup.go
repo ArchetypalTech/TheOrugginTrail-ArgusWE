@@ -50,7 +50,7 @@ func NGameSetupSystem(world cardinal.WorldContext) error {
 type GameSetup struct {
 	worldCtx       cardinal.WorldContext
 	RoomStore      *component.RoomStore
-	DirObjectStore *component.DirObjectStore
+	DirObjectStore *component.ObjectStore
 	ObjectStore    *component.ObjectStore
 	ActionStore    *component.ActionStore
 	TxtDefStore    *component.TxtDefStore
@@ -60,7 +60,7 @@ func NewGameSetup(worldCtx cardinal.WorldContext) *GameSetup {
 	return &GameSetup{
 		worldCtx:       worldCtx,
 		RoomStore:      component.NewRoomStore(),
-		DirObjectStore: component.NewDirObjectStore(),
+		DirObjectStore: component.NewObjectStore(),
 		ObjectStore:    component.NewObjectStore(),
 		ActionStore:    component.NewActionStore(),
 		TxtDefStore:    component.NewTxtDefStore(),
@@ -99,7 +99,7 @@ func (s *GameSetup) setupPlain() {
 
 	plainBarn := [32]uint32{open2Barn}
 	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeNorth, enums.RoomTypePlain,
-		enums.DirObjectTypePath, enums.MaterialTypeDirt,
+		enums.ObjectTypePath, enums.MaterialTypeDirt,
 		"path", plainBarn)}
 
 	open2Path := s.createAction(enums.ActionTypeOpen, "the door opens and a small hinge demon curses you\n"+
@@ -107,7 +107,7 @@ func (s *GameSetup) setupPlain() {
 
 	plainPath := [32]uint32{open2Path}
 	dObjs[1] = s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeWoodCabin,
-		enums.DirObjectTypePath, enums.MaterialTypeMud,
+		enums.ObjectTypePath, enums.MaterialTypeMud,
 		"path", plainPath)
 
 	kick := s.createAction(enums.ActionTypeKick, "the ball (such as it is)\n"+
@@ -160,7 +160,7 @@ func (s *GameSetup) setupBarn() {
 	open2South := s.createAction(enums.ActionTypeOpen, "the door opens\n", true, true, true, 0, 0)
 	barnPlain := [32]uint32{open2South}
 	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeSouth, enums.RoomTypePlain,
-		enums.DirObjectTypeDoor, enums.MaterialTypeWood,
+		enums.ObjectTypeDoor, enums.MaterialTypeWood,
 		"door", barnPlain)}
 
 	open2Forest := s.createAction(enums.ActionTypeOpen, "the window, glass and frame smashed\n"+
@@ -173,7 +173,7 @@ func (s *GameSetup) setupBarn() {
 
 	windowActions := [32]uint32{open2Forest, smashWindow}
 	dObjs[1] = s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeForge,
-		enums.DirObjectTypeWindow, enums.MaterialTypeWood,
+		enums.ObjectTypeWindow, enums.MaterialTypeWood,
 		"window", windowActions)
 
 	roomID := s.RoomStore.Add(component.Room{
@@ -217,7 +217,7 @@ func (s *GameSetup) setupMountainPath() {
 	pathActions := [32]uint32{open2West}
 
 	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeWest, enums.RoomTypePlain,
-		enums.DirObjectTypePath, enums.MaterialTypeStone,
+		enums.ObjectTypePath, enums.MaterialTypeStone,
 		"path", pathActions)}
 
 	roomID := s.RoomStore.Add(component.Room{
@@ -252,7 +252,7 @@ func (s *GameSetup) setupMountainPath() {
 }
 
 // createDirObject creates a directional object in the game world.
-func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.DirObjectType,
+func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType,
 	mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32 {
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
@@ -261,20 +261,20 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 	s.TxtDefStore.Set(txtID, enums.TxtDefTypeDirObject, desc)
 
 	// Create directional object data
-	dirObjData := component.DirObject{
+	directionObjData := component.Object{
 		DirType:         dirType,
 		DestID:          dstID,
-		ObjType:         dOType,
-		MatType:         mType,
+		ObjectType:      dOType,
+		MaterialType:    mType,
 		TxtDefID:        txtID,
 		ObjectActionIDs: actionObjects,
 	}
 
 	// Add the directional object data to the DirObjectStore
-	dirObjID := s.DirObjectStore.Add(dirObjData)
+	dirObjID := s.ObjectStore.Add(directionObjData)
 
 	// Update the DirObject data with the assigned ID
-	dirObjData.ID = dirObjID
+	directionObjData.ObjectID = dirObjID
 
 	if isDevelopmentMode() {
 		// Log the directional object creation
@@ -308,7 +308,7 @@ func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialT
 	objID := s.ObjectStore.Add(objData)
 
 	// Update the Object data with the assigned ID
-	objData.ID = objID
+	objData.ObjectID = objID
 
 	if isDevelopmentMode() {
 		// Log the object creation
@@ -335,7 +335,7 @@ func (s *GameSetup) createAction(actionType enums.ActionType, desc string, enabl
 // _textGuid generates a text GUID for the given description.
 func (s *GameSetup) _textGuid(desc string) string {
 	// Just a placeholder for actual GUID generation
-	return "txt-" + desc
+	return desc
 }
 
 // createPlace creates a room in the game world and populates it with objects and directional objects.
@@ -343,7 +343,7 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [3
 	// Create an entity representing the room with its components
 	entityID, err := cardinal.Create(s.worldCtx,
 		component.Room{
-			ID:          roomID,
+			ID:          roomID - 1,
 			Description: tid,
 			RoomType:    roomType,
 			ObjectIDs:   objs,  // Populate ObjectIDs with the IDs of objects
