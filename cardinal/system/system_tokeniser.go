@@ -128,13 +128,11 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	var IObj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
 
 	data.Verb = VRB // Set the verb in VerbData
+	data.ErrCode = constants.NOERR
 
 	switch {
 	case DObj == enums.ObjectTypeNone && IObj == enums.ObjectTypeNone:
 		data.ErrCode = constants.ErrNoDirectObject
-		if isDevelopmentMode() {
-			logger.Errorf("\033[31mE--->1err:%s\033[0m", data.ErrCode)
-		}
 	case len(tokens) <= 3:
 		switch {
 		case DObj != enums.ObjectTypeNone:
@@ -142,9 +140,6 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 			IObj = enums.ObjectTypeNone
 		case DObj == enums.ObjectTypeNone:
 			data.ErrCode = constants.ErrNoDirectObject
-			if isDevelopmentMode() {
-				logger.Errorf("\033[31mE--->2err:%s\033[0m", data.ErrCode)
-			}
 		}
 	case len(tokens) > 3:
 		switch {
@@ -155,9 +150,6 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 				DObj = ts.objLookup[tokens[2]]
 				if DObj == enums.ObjectTypeNone {
 					data.ErrCode = constants.ErrNoDirectObject
-					if isDevelopmentMode() {
-						logger.Errorf("\033[31mE--->3err:%s\033[0m", data.ErrCode)
-					}
 				}
 			}
 		case DObj != enums.ObjectTypeNone:
@@ -172,9 +164,7 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	// Set the direct noun, indirect directional noun, and error code in VerbData
 	data.DirectObject = DObj
 	data.IndirectObject = IObj
-	if isDevelopmentMode() {
-		logger.Infof("\033[35mP--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectObject, data.IndirectObject, data.Verb)
-	}
+	//world.Logger().Debug().Msgf("P--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectObject, data.IndirectObject, data.Verb)
 	return data
 }
 

@@ -4,43 +4,18 @@ import (
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/component"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
 	"pkg.world.dev/world-engine/cardinal"
-
-	"github.com/sirupsen/logrus"
 )
-
-// Initialize logrus logger
-var (
-	logger = logrus.New()
-)
-
-func initLogger() {
-	// Set log level
-	logger.SetLevel(logrus.DebugLevel)
-
-	// Define a custom formatter with colors
-	formatter := &logrus.TextFormatter{
-		ForceColors:     true,
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	}
-
-	logger.SetFormatter(formatter)
-}
 
 // NGameSetupSystem initializes the game setup system.
 func NGameSetupSystem(world cardinal.WorldContext) error {
 
 	setup := NewGameSetup(world)
 	setup.Init(world)
-	initLogger()
 
-	if isDevelopmentMode() {
-		// LOG FOR TESTING TxtDefStore entries
-		// Log the number of entries and contents of TxtDefStore
-		logger.Debugf("\033[34mTxtDefStore initialized with %d entries\033[0m", len(setup.TxtDefStore.TxtDefs))
-		for key, value := range setup.TxtDefStore.TxtDefs {
-			logger.Debugf("\033[34mTxtDefStore entry - Key: %s, Value: %+v\033[0m", key, value)
-		}
+	// Log the number of entries and contents of TxtDefStore
+	world.Logger().Debug().Msgf("TxtDefStore initialized with %d entries\033[0m", len(setup.TxtDefStore.TxtDefs))
+	for key, value := range setup.TxtDefStore.TxtDefs {
+		world.Logger().Debug().Msgf("TxtDefStore entry - Key: %s, Value: %+v\033[0m", key, value)
 	}
 
 	return nil
@@ -326,15 +301,8 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [3
 
 	// Check for errors during entity creation
 	if err != nil {
-		world.Logger().Debug().Msgf("Failed to create entity for room with ID %d: %v", roomID, err)
+		world.Logger().Error().Msgf("Failed to create entity for room with ID %d: %v", roomID, err)
 	}
 
-	world.Logger().Debug().Msgf("Room with ID %d created successfully, entity ID: %d", roomID, entityID)
-
-}
-
-// isDevelopmentMode returns true if the application is running in development/debug mode.
-func isDevelopmentMode() bool {
-
-	return false // Change this based on if you run in dev or production.
+	world.Logger().Info().Msgf("Room with ID %d created successfully, entity ID: %d", roomID, entityID)
 }
