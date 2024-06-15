@@ -20,8 +20,11 @@ This Zork-like engine will be piloted by a text adventure called the O'ruggin Tr
 
 WARNING: attempting a crossing to the frontiers of crypto country ultimately always results in horrible death... physical, moral, ego, or otherwise.
 
-Pre death you'll want to run `pnpm install` at the root 
+Pre death you'll want a front end to talk to and right now there isn't one
+
+When there is then you'll probably want to run run `pnpm install` at the root 
 of this repo because we aren't checking in the node_modules folder.
 cruft....
 
 **Really**. Run `pnpm install` at the project root. Or be dead. Pfft.
+**Also** watch this space for something you can `pnpm` !
