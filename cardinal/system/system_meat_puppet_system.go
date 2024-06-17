@@ -40,7 +40,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 
 			// we have gone through the TOKENS, give err feedback if needed
 			if er != 0 {
-				world.Logger().Debug().Msgf("---->PCE: PCR_ERR: %v:\033[0m", er)
+				world.Logger().Error().Msgf("---->PCE: PCR_ERR: %v:\033[0m", er)
 				var errMsg string
 				errMsg = insultMeat(er, "")
 				// HERE GOES OUTPUT SET
@@ -61,7 +61,11 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 
 			world.Logger().Debug().Msg("---->Processing tokens completed")
 
-			ts.FishTokens(messageData.Msg.Tokens)
+			verbData := ts.FishTokens(messageData.Msg.Tokens)
+			world.Logger().Debug().Msgf("P--->d.dobj:%s iobj:%s vrb:%s", verbData.DirectObject, verbData.IndirectObject, verbData.Verb)
+			if verbData.ErrCode != constants.NOERR {
+				world.Logger().Error().Msgf("E---err:%s", verbData.ErrCode)
+			}
 
 			return msg.ProcessCommandsReply{
 				Success: true,
@@ -79,7 +83,7 @@ func getPlayerEntity(world cardinal.WorldContext, pEID types.EntityID) (componen
 		Each(world, func(id types.EntityID) bool {
 			player, err := cardinal.GetComponent[component.Player](world, id)
 			if err != nil {
-				world.Logger().Debug().Msgf("GetPlayerEntity: Error getting Player Component: %v", err)
+				world.Logger().Error().Msgf("GetPlayerEntity: Error getting Player Component: %v", err)
 				return true
 			}
 

@@ -34,6 +34,8 @@ func (e *ErrorTypes) Error() string {
 
 // Define Error Constants
 var (
+	NOERR = &ErrorTypes{Code: 0, Message: "NO ERROR"}
+
 	ErrDirectionRoutineND         = &ErrorTypes{Code: 122, Message: "Error DirectionRoutine DR"}
 	ErrDirectionRoutineNOP        = &ErrorTypes{Code: 123, Message: "Error DirectionRoutine NOP"}
 	ErrParserRoutineND            = &ErrorTypes{Code: 124, Message: "Error ParserRoutine ND"}

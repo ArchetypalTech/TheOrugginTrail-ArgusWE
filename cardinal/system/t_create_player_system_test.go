@@ -124,9 +124,6 @@ func createNewPlayerTest(playerName string, createEntity func(entity interface{}
 	// Create a new player entity.
 	playerManagerID, err := createEntity(&component.Player{})
 	if err != nil {
-		if isDevelopmentMode() {
-			logger.Errorf("\033[31mFailed to create player entity: %v\033[0m", err)
-		}
 		return 0, err
 	}
 
@@ -150,9 +147,6 @@ func assignPlayerToRoomTest(playerID uint32, roomID types.EntityID, getRoom getR
 	// Get the Room based on the roomID.
 	selectedRoom, err := getRoom(roomID)
 	if err != nil {
-		if isDevelopmentMode() {
-			logger.Errorf("\033[31mFailed to retrieve room component: %v\033[0m", err)
-		}
 		return err
 	}
 
@@ -166,9 +160,6 @@ func assignPlayerToRoomTest(playerID uint32, roomID types.EntityID, getRoom getR
 
 	// Update the room entity.
 	if err := setRoom(roomID, selectedRoom); err != nil {
-		if isDevelopmentMode() {
-			logger.Errorf("\033[31mFailed to update room component: %v\033[0m", err)
-		}
 		return err
 	}
 
@@ -179,17 +170,11 @@ func assignPlayerToRoomTest(playerID uint32, roomID types.EntityID, getRoom getR
 func updatePlayerRoomIDTest(playerManagerID types.EntityID, roomID types.EntityID, getPlayer getPlayerFunc, setPlayer setPlayerFunc) error {
 	playerManager, err := getPlayer(playerManagerID)
 	if err != nil {
-		if isDevelopmentMode() {
-			logger.Errorf("\033[31mError getting Player Component: %v\033[0m", err)
-		}
 		return err
 	}
 
 	playerManager.RoomID = uint32(roomID)
 	if err := setPlayer(playerManagerID, playerManager); err != nil {
-		if isDevelopmentMode() {
-			logger.Errorf("\033[31mError updating the Player entity: %v\033[0m", err)
-		}
 		return err
 	}
 
