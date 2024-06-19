@@ -53,6 +53,7 @@ func lookAround(rId uint32, playerId uint32, world cardinal.WorldContext) uint8 
 	return 0
 }
 
+// Generates the description on that will be shown
 func genDescText(playerId uint32, id uint32, world cardinal.WorldContext) string {
 
 	desc := "You are standing "
@@ -67,9 +68,14 @@ func genDescText(playerId uint32, id uint32, world cardinal.WorldContext) string
 	} else {
 		desc += fmt.Sprintf("in %s\n", room.Description)
 	}
+
+	desc += " " + ObjectDescription(room, world)
+	desc += " " + DirObjectDescription(room, world)
+
 	return desc
 }
 
+// Gets the room
 func getRoom(rID types.EntityID, world cardinal.WorldContext) (component.Room, error) {
 	var exisingRoom component.Room
 	err := cardinal.NewSearch().Entity(filter.Exact(filter.Component[component.Room]())).
@@ -89,4 +95,40 @@ func getRoom(rID types.EntityID, world cardinal.WorldContext) (component.Room, e
 		})
 
 	return exisingRoom, err
+}
+
+// Gets the Objects descriptions that exists on the room
+func ObjectDescription(room component.Room, world cardinal.WorldContext) string {
+	var object component.Object
+	var description string
+
+	for _, lookingObject := range room.Objects {
+		if lookingObject.ObjectID != 0 {
+			object = room.Objects[int(lookingObject.ObjectID)]
+			description = fmt.Sprintf("You see a %s", object.Description)
+
+			world.Logger().Debug().Msgf("Descriptions for object with ID: %d is: %v", lookingObject.ObjectID, description)
+		}
+	}
+
+	return description
+
+}
+
+// Gets the DirectionalObjects descriptions that exists on the room
+func DirObjectDescription(room component.Room, world cardinal.WorldContext) string {
+	var dirObject component.Object
+	var description string
+
+	for _, lookingDirObject := range room.DirObjs {
+		if lookingDirObject.ObjectID != 0 {
+			dirObject = room.DirObjs[int(lookingDirObject.ObjectID)]
+			description = fmt.Sprintf("You see a %s", dirObject.Description)
+
+			world.Logger().Debug().Msgf("Descriptions for dirObject with ID: %d is: %v", lookingDirObject.ObjectID, description)
+		}
+	}
+
+	return description
+
 }

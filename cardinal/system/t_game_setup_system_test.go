@@ -163,7 +163,7 @@ func (s *GameSetupTest) createDirObjectTest(dirType enums.DirectionType, dstID e
 		DestID:          dstID,
 		ObjectType:      dOType,
 		MaterialType:    mType,
-		TxtDefID:        txtID,
+		Description:     txtID,
 		ObjectActionIDs: actionObjects,
 	}
 	dirObjID := s.ObjectStore.Add(directionObjData)
@@ -172,12 +172,12 @@ func (s *GameSetupTest) createDirObjectTest(dirType enums.DirectionType, dstID e
 }
 
 func (s *GameSetupTest) createObjectTest(objType enums.ObjectType, mType enums.MaterialType, desc, objName string, actionObjects [32]uint32) uint32 {
-	txtID := s._textGuidTest(desc)
-	s.TxtDefStore.Set(txtID, enums.TxtDefTypeObject, desc)
+	txt := s._textGuidTest(desc)
+	s.TxtDefStore.Set(txt, enums.TxtDefTypeObject, desc)
 	objData := component.Object{
 		ObjectType:      objType,
 		MaterialType:    mType,
-		TxtDefID:        txtID,
+		Description:     txt,
 		ObjectActionIDs: actionObjects,
 		ObjectName:      objName,
 	}
@@ -197,14 +197,14 @@ func (s *GameSetupTest) _textGuidTest(desc string) string {
 	return "txt-" + desc
 }
 
-func (s *GameSetupTest) createPlaceTest(roomID uint32, roomType enums.RoomType, dObjs [32]uint32, objs [32]uint32, tid string) {
+func (s *GameSetupTest) createPlaceTest(roomID uint32, roomType enums.RoomType, dObjs []component.Object, objs []component.Object, tid string) {
 	entityID, err := cardinal.Create(s.worldCtx,
 		component.Room{
 			ID:          roomID,
 			Description: tid,
 			RoomType:    roomType,
-			ObjectIDs:   objs,
-			DirObjIDs:   dObjs,
+			Objects:     make(map[int]component.Object),
+			DirObjs:     make(map[int]component.Object),
 		},
 	)
 	if err != nil {
@@ -213,13 +213,13 @@ func (s *GameSetupTest) createPlaceTest(roomID uint32, roomType enums.RoomType, 
 	log.Printf("Room with ID %d created successfully, entity ID: %d", roomID, entityID)
 	objDescriptions := make([]string, 0, len(objs))
 	for _, objID := range objs {
-		objDef, _ := s.TxtDefStore.Get(fmt.Sprintf("%d", objID))
+		objDef, _ := s.TxtDefStore.Get(fmt.Sprintf("%v", objID))
 		objDescriptions = append(objDescriptions, objDef.Description)
 	}
 	log.Printf("Objects added to the room: %v", objDescriptions)
 	dirObjDescriptions := make([]string, 0, len(dObjs))
 	for _, dirObjID := range dObjs {
-		dirObjDef, _ := s.TxtDefStore.Get(fmt.Sprintf("%d", dirObjID))
+		dirObjDef, _ := s.TxtDefStore.Get(fmt.Sprintf("%v", dirObjID))
 		dirObjDescriptions = append(dirObjDescriptions, dirObjDef.Description)
 	}
 	log.Printf("Directional objects added to the room: %v", dirObjDescriptions)

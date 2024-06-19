@@ -69,7 +69,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 		"you can actually smell fart", true, true, true, 0, 0)
 
 	plainBarn := [32]uint32{open2Barn}
-	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeNorth, enums.RoomTypePlain,
+	dObjs := []component.Object{s.createDirObject(enums.DirectionTypeNorth, enums.RoomTypePlain,
 		enums.ObjectTypePath, enums.MaterialTypeDirt,
 		"path", plainBarn, world)}
 
@@ -77,19 +77,17 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 		"your nose is really itchy", true, true, true, 0, 0)
 
 	plainPath := [32]uint32{open2Path}
-	dObjs[1] = s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeWoodCabin,
+	dObjs = append(dObjs, s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeWoodCabin,
 		enums.ObjectTypePath, enums.MaterialTypeMud,
-		"path", plainPath, world)
+		"path", plainPath, world))
 
 	kick := s.createAction(enums.ActionTypeKick, "the ball (such as it is)\n"+
 		"bounces feebly\n then rolls into some fresh dog eggs\n"+
 		"none the less you briefly feel a little better", true, false, true, 0, 0)
 
 	ballActions := [32]uint32{kick}
-	objs := [32]uint32{s.createObject(enums.ObjectTypeFootball, enums.MaterialTypeFlesh,
-		"A slightly deflated knock off uefa football,\n"+
-			"not quite spherical, it's "+
-			"kickable though", "football", ballActions, world)}
+	objs := []component.Object{s.createObject(enums.ObjectTypeFootball, enums.MaterialTypeFlesh,
+		"A slightly deflated knock off uefa football, not quite spherical, it's kickable though.", "football", ballActions, world)}
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a windswept plain",
@@ -97,18 +95,17 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 	})
 
 	tidPlain := s._textGuid("a windsept plain")
-	s.TxtDefStore.Set(tidPlain, enums.TxtDefTypePlace, "the wind blowing is cold and\n"+
-		"bison skulls in piles taller than houses\n"+
-		"cover the plains as far as your eye can see\n"+
-		"the air tastes of burnt grease and bensons.",
-	)
+	tidPlain += " " + ("where the wind blowing is cold and" +
+		" bison skulls in piles taller than houses" +
+		" cover the plains as far as your eye can see" +
+		" the air tastes of burnt grease and bensons.")
 
 	// Logs to verify the ID's in the setup
 	world.Logger().Debug().Msgf("Object IDs for room %d: %v\033[0m", roomID, objs)
 	world.Logger().Debug().Msgf("Directional Object IDs for room %d: %v", roomID, dObjs)
 
 	// Inspect Data Passed to Setup Functions
-	world.Logger().Debug().Msgf("ata passed to createPlace for room %d: %+v\033[0m", roomID, objs)
+	world.Logger().Debug().Msgf("Data passed to createPlace for room %d: %+v\033[0m", roomID, objs)
 	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
 
 	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain, world)
@@ -123,7 +120,7 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 	// KBARN -> S
 	open2South := s.createAction(enums.ActionTypeOpen, "the door opens\n", true, true, true, 0, 0)
 	barnPlain := [32]uint32{open2South}
-	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeSouth, enums.RoomTypePlain,
+	dObjs := []component.Object{s.createDirObject(enums.DirectionTypeSouth, enums.RoomTypePlain,
 		enums.ObjectTypeDoor, enums.MaterialTypeWood,
 		"door", barnPlain, world)}
 
@@ -131,14 +128,14 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 		"falls open", false, false, false, 0, 0)
 
 	smashWindow := s.createAction(enums.ActionTypeBreak, "I love the sound of breaking glass\n"+
-		"especially when I'm lonely , the panes and the frame shatter\n"+
+		"especially when I'm lonely, the panes and the frame shatter\n"+
 		"satisfyingly spreading broken joy on the floor",
 		true, false, false, open2Forest, 0)
 
 	windowActions := [32]uint32{open2Forest, smashWindow}
-	dObjs[1] = s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeForge,
+	dObjs = append(dObjs, s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeForge,
 		enums.ObjectTypeWindow, enums.MaterialTypeWood,
-		"window", windowActions, world)
+		"window", windowActions, world))
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a barn",
@@ -146,11 +143,9 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 	})
 
 	tidBarn := s._textGuid("a barn")
-	s.TxtDefStore.Set(tidBarn, enums.TxtDefTypePlace,
-		"The place is dusty and full of spiderwebs,\n"+
-			"something died in here, possibly your own self\n"+
-			"plenty of corners and dark shadows",
-	)
+	tidBarn += (". The place is dusty and full of spiderwebs," +
+		" something died in here, possibly your own self" +
+		" plenty of corners and dark shadows")
 
 	// Logs to verify the ID's in the setup
 	world.Logger().Debug().Msgf("Object IDs for room %d: %v\033[0m", roomID, [32]uint32{})
@@ -160,7 +155,7 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 	world.Logger().Debug().Msgf("ata passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
 	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypeWoodCabin, dObjs, [32]uint32{}, tidBarn, world) // Pass empty array instead of nil for the objects.
+	s.createPlace(roomID, enums.RoomTypeWoodCabin, dObjs, nil, tidBarn, world) // Pass empty array instead of nil for the objects.
 
 	world.Logger().Debug().Msg("---->Barn setup complete")
 
@@ -174,7 +169,7 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 	open2West := s.createAction(enums.ActionTypeOpen, "the path is passable", true, true, false, 0, 0)
 	pathActions := [32]uint32{open2West}
 
-	dObjs := [32]uint32{s.createDirObject(enums.DirectionTypeWest, enums.RoomTypePlain,
+	dObjs := []component.Object{s.createDirObject(enums.DirectionTypeWest, enums.RoomTypePlain,
 		enums.ObjectTypePath, enums.MaterialTypeStone,
 		"path", pathActions, world)}
 
@@ -184,13 +179,11 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 	})
 
 	tidMpath := s._textGuid("a high mountain pass")
-	s.TxtDefStore.Set(tidMpath, enums.TxtDefTypePlace,
-		"it winds through the mountains, the path is treacherous\n"+
-			"toilet papered trees cover the steep \n valley sides below you.\n"+
-			"On closer inspection the TP might \nbe the remains of a cricket team\n"+
-			"or perhaps a lost and very dead KKK picnic group.\n"+
-			"It's brass monkeys.",
-	)
+	tidMpath += " " + ("where it winds through the mountains, the path is treacherous" +
+		" toilet papered trees cover the steep valley sides below you." +
+		" On closer inspection the TP might \nbe the remains of a cricket team" +
+		" or perhaps a lost and very dead KKK picnic group." +
+		" It's brass monkeys.")
 
 	// Logs to verify the ID's in the setup
 	world.Logger().Debug().Msgf("Object IDs for room %d: %v\033[0m", roomID, [32]uint32{})
@@ -200,14 +193,14 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 	world.Logger().Debug().Msgf("ata passed to createPlace for room %d: %+v\033[0m", roomID, [32]uint32{})
 	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v\033[0m", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, [32]uint32{}, tidMpath, world) // Pass empty array instead of nil for the objects.
+	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, nil, tidMpath, world) // Pass empty array instead of nil for the objects.
 
 	world.Logger().Debug().Msg("---->Mountain path setup complete")
 }
 
 // createDirObject creates a directional object in the game world.
 func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType,
-	mType enums.MaterialType, desc string, actionObjects [32]uint32, world cardinal.WorldContext) uint32 {
+	mType enums.MaterialType, desc string, actionObjects [32]uint32, world cardinal.WorldContext) component.Object {
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
 
@@ -220,7 +213,7 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 		DestID:          dstID,
 		ObjectType:      dOType,
 		MaterialType:    mType,
-		TxtDefID:        txtID,
+		Description:     txtID,
 		ObjectActionIDs: actionObjects,
 	}
 
@@ -233,12 +226,12 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 	world.Logger().Debug().Msgf("Directional object created - ID: %d, Type: %s, Destination Room Type: %s, Material: %s, Description: %s",
 		dirObjID, dirType, dstID, mType, desc)
 
-	return dirObjID
+	return directionObjData
 }
 
 // createObject creates an object in the game world.
 func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialType, desc, objName string,
-	actionObjects [32]uint32, world cardinal.WorldContext) uint32 {
+	actionObjects [32]uint32, world cardinal.WorldContext) component.Object {
 
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
@@ -251,7 +244,7 @@ func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialT
 		ObjectName:      objName,
 		ObjectType:      objType,
 		MaterialType:    mType,
-		TxtDefID:        txtID,
+		Description:     desc,
 		ObjectActionIDs: actionObjects,
 	}
 
@@ -263,7 +256,7 @@ func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialT
 
 	world.Logger().Debug().Msgf("Object created - ID: %d, Type: %s, Material: %s, Description: %s", objID, objType, mType, desc)
 
-	return objID
+	return objData
 }
 
 // createAction creates an action in the game world.
@@ -287,15 +280,15 @@ func (s *GameSetup) _textGuid(desc string) string {
 }
 
 // createPlace creates a room in the game world and populates it with objects and directional objects.
-func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [32]uint32, objs [32]uint32, tid string, world cardinal.WorldContext) {
+func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs []component.Object, objs []component.Object, tid string, world cardinal.WorldContext) {
 	// Create an entity representing the room with its components
-	entityID, err := cardinal.Create(s.worldCtx,
+	roomManagerID, err := cardinal.Create(s.worldCtx,
 		component.Room{
 			ID:          roomID - 1,
 			Description: tid,
 			RoomType:    roomType,
-			ObjectIDs:   objs,  // Populate ObjectIDs with the IDs of objects
-			DirObjIDs:   dObjs, // Populate DirObjIDs with the IDs of directional objects
+			Objects:     make(map[int]component.Object),
+			DirObjs:     make(map[int]component.Object),
 		},
 	)
 
@@ -304,5 +297,24 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs [3
 		world.Logger().Error().Msgf("Failed to create entity for room with ID %d: %v", roomID, err)
 	}
 
-	world.Logger().Info().Msgf("Room with ID %d created successfully, entity ID: %d", roomID, entityID)
+	roomManager, err := cardinal.GetComponent[component.Room](world, roomManagerID)
+	if err != nil {
+		world.Logger().Error().Msgf("Error getting Object Component: %v", err)
+	}
+
+	//Populate Objects map with the objects passed. Uses as identifier the object ID
+	for _, Obj := range objs {
+		if Obj.ObjectID != 0 {
+			roomManager.Objects[int(Obj.ObjectID)] = Obj
+		}
+	}
+
+	// Populate DirObjs map with the directional objects passed. Uses as identifier the Object ID
+	for _, dirObj := range dObjs {
+		if dirObj.ObjectID != 0 {
+			roomManager.DirObjs[int(dirObj.ObjectID)] = dirObj
+		}
+	}
+
+	world.Logger().Info().Msgf("Room with ID %d created successfully, entity ID: %d", roomID, roomManagerID)
 }
