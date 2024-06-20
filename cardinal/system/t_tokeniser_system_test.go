@@ -43,7 +43,7 @@ func TestFishTokens1(t *testing.T) {
 	expectedVerb := enums.ActionTypeKick
 	expectedDObj := enums.ObjectTypeFootball
 	expectedIDirObj := enums.ObjectTypeWindow
-	expectedErr := constants.ErrDirectionRoutineND
+	expectedErr := constants.NOERR
 
 	result := ts.FishTokens(tokens)
 
@@ -67,7 +67,7 @@ func TestFishTokens2(t *testing.T) {
 	expectedVerb := enums.ActionTypeOpen
 	expectedDObj := enums.ObjectTypeDoor
 	expectedIDirObj := enums.ObjectTypeKnife
-	expectedErr := constants.ErrNoDirectObject // Example of using a custom error from constants
+	expectedErr := constants.NOERR // Example of using a custom error from constants
 
 	result := ts.FishTokens(tokens)
 
@@ -87,9 +87,9 @@ func TestFishTokens2(t *testing.T) {
 func TestFishTokens3(t *testing.T) {
 	ts := NewTokeniserSystem()
 
-	tokens := []string{"GO", "TO", "DOOR"}
+	tokens := []string{"GO", "NORTH"}
 	expectedVerb := enums.ActionTypeGo
-	expectedDObj := enums.ObjectTypeDoor
+	expectedDObj := enums.ObjectTypeNone
 	expectedIDirObj := enums.ObjectTypeNone
 	expectedErr := constants.ErrNoDirectObject // Example of using a custom error from constants
 

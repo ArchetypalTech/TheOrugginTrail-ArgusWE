@@ -116,38 +116,38 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 	if uint8(len(tokens)) > constants.MAX_TOK {
 		er = constants.ErrParserRoutineTKCX.Code
 		output = constants.ErrParserRoutineTKCX.Message
-	}
-
-	var tok1 string
-	tok1 = tokens[0]
-	world.Logger().Debug().Msgf("---->CMD: %s", tok1)
-	tokD := ts.GetDirectionType(tok1)
-
-	if tokD != enums.DirectionTypeNone {
-		move = true
-		// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
-	} else if ts.GetActionType(tok1) != enums.ActionTypeNone {
-		if uint8(len(tokens)) >= constants.MIN_TOK {
-			world.Logger().Debug().Msgf("---->tok.len %d", len(tokens))
-			if ts.GetActionType(tok1) == enums.ActionTypeGo {
-				// GO: form
-				move = true
-				output = "GOING TO NEXT ROOM - DIRECTION SYSTEM - TO BE IMPLEMENTED"
-				// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
-			} else {
-				// VERB: form
-				output, er = handleVerb(tokens, rID, pID, world)
-				move = false
-			}
-
-		} else {
-			er = handleAlias(tokens, pID, world)
-			move = false
-			output = "VERB GOES TO HANDLE ALIAS. TO BE IMPLEMENTED"
-		}
 	} else {
-		er = constants.ErrParserRoutineNOP.Code
-		output = constants.ErrParserRoutineNOP.Message
+		var tok1 string
+		tok1 = tokens[0]
+		world.Logger().Debug().Msgf("---->CMD: %s", tok1)
+		tokD := ts.GetDirectionType(tok1)
+
+		if tokD != enums.DirectionTypeNone {
+			move = true
+			// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
+		} else if ts.GetActionType(tok1) != enums.ActionTypeNone {
+			if uint8(len(tokens)) >= constants.MIN_TOK {
+				world.Logger().Debug().Msgf("---->tok.len %d", len(tokens))
+				if ts.GetActionType(tok1) == enums.ActionTypeGo {
+					// GO: form
+					move = true
+					output = "GOING TO NEXT ROOM - DIRECTION SYSTEM - TO BE IMPLEMENTED"
+					// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
+				} else {
+					// VERB: form
+					output, er = handleVerb(tokens, rID, pID, world)
+					move = false
+				}
+
+			} else {
+				er = handleAlias(tokens, pID, world)
+				move = false
+				output = "VERB GOES TO HANDLE ALIAS. TO BE IMPLEMENTED"
+			}
+		} else {
+			er = constants.ErrParserRoutineNOP.Code
+			output = constants.ErrParserRoutineNOP.Message
+		}
 	}
 
 	return output, move, er
