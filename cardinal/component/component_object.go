@@ -5,13 +5,13 @@ import (
 )
 
 type Object struct {
-	ObjectID        uint32 `json:"id"`
-	ObjectName      string
+	ObjectID        uint32              `json:"id"`
+	ObjectName      string              `json:"object_name"`
 	ObjectType      enums.ObjectType    `json:"object_type"`
 	MaterialType    enums.MaterialType  `json:"material_type"`
 	DirType         enums.DirectionType `json:"dir_type"`
 	DestID          enums.RoomType      `json:"dest_id"`
-	TxtDefID        string              `json:"txt_def_id"`
+	Description     string              `json:"description"`
 	ObjectActionIDs [32]uint32          `json:"object_action_ids"`
 }
 
