@@ -46,7 +46,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 				// HERE GOES OUTPUT SET
 				return msg.ProcessCommandsReply{
 					Success: false,
-					Message: fmt.Sprintf("Error processing the commands: %v", errMsg),
+					Message: fmt.Sprintf("Error: %v processing the commands: %s", er, errMsg),
 					Result:  errMsg,
 				}, err
 			} else {
@@ -161,11 +161,11 @@ func handleAlias(tokens []string, playerID uint32, world cardinal.WorldContext) 
 	if vrb == enums.ActionTypeInventory {
 		// HERE GOES INVENTORY FROM INVENTORY SYSTEM
 		world.Logger().Debug().Msg("---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM")
-		e = 0
+		e = 135 // This just for showing errors
 	} else if vrb == enums.ActionTypeLook {
 		// HERE GOES STUFF FROM LOOK SYSTEM
 		world.Logger().Debug().Msg("--->HANDLE ALIAS: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
-		e = 0
+		e = 130 // This just for showing errors
 	}
 	return e
 }
@@ -209,9 +209,8 @@ func insultMeat(cErr uint8, badCmd string) string {
 	case constants.ErrParserRoutineTKCX.Code:
 		eMsg = "WTF, slow down cowboy, you're gonna hurt yourself"
 
-	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code:
-		eMsg = "Nope, gibberish\n" +
-			"Stop breathing with your mouth."
+	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code, constants.ErrNoObjectsToHandle.Code, constants.ErrBadLookCommand.Code:
+		eMsg = "Nope, gibberish. Stop breathing with your mouth."
 
 	case constants.ErrParserRoutineND.Code, constants.ErrDirectionRoutineND.Code:
 		eMsg = "Go where pilgrim?"
