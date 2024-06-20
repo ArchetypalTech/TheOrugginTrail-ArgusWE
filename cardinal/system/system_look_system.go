@@ -16,11 +16,12 @@ func LookSystem(world cardinal.WorldContext) error {
 	return nil
 }
 
-func Stuff(tokens []string, curRmId uint32, playerId uint32, world cardinal.WorldContext) uint8 {
+func Stuff(tokens []string, curRmId uint32, playerId uint32, world cardinal.WorldContext) (string, uint8) {
 	world.Logger().Debug().Msgf("---->SEE T:%s, R:%d\n", tokens[0], curRmId)
 	vrb := ts.GetActionType(tokens[0])
 	var gObj enums.GrammarType
 	var err uint8
+	var output string
 
 	// we know it is an action because the commandProcessors has pre-parsed for us
 	// so we dont need to test for a garbage vrb token
@@ -30,27 +31,27 @@ func Stuff(tokens []string, curRmId uint32, playerId uint32, world cardinal.Worl
 		if len(tokens) > 1 {
 			gObj = ts.GetGrammarType(tokens[len(tokens)-1])
 			if gObj != enums.GrammarTypeAdverb {
-				err := lookAround(curRmId, playerId, world)
+				output, err := lookAround(curRmId, playerId, world)
 				world.Logger().Debug().Msgf("-->_LA:%d", err)
-				return err
+				return output, err
 			}
 		} else {
-			err := lookAround(curRmId, playerId, world)
+			output, err := lookAround(curRmId, playerId, world)
 			world.Logger().Debug().Msgf("-->_LOOK:%d", err)
-			return err
+			return output, err
 		}
 	} else if vrb == enums.ActionTypeDescribe || vrb == enums.ActionTypeLook {
 		world.Logger().Debug().Msgf("---->DESC\n")
 	}
 	world.Logger().Debug().Msgf("---->_ERR:%d", err)
-	return 0
+	return output, 0
 
 }
 
-func lookAround(rId uint32, playerId uint32, world cardinal.WorldContext) uint8 {
+func lookAround(rId uint32, playerId uint32, world cardinal.WorldContext) (string, uint8) {
 	output := genDescText(playerId, rId, world)
 	world.Logger().Debug().Msgf("ROOM DESCRIPTION IS: %s", output)
-	return 0
+	return output, 0
 }
 
 // Generates the description on that will be shown

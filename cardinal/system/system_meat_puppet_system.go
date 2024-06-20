@@ -36,7 +36,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 				}, err
 			}
 
-			move, er := ProcessCommandsTokensLogic(messageData.Msg.Tokens, player, world)
+			output, move, er := ProcessCommandsTokensLogic(messageData.Msg.Tokens, player, world)
 
 			// we have gone through the TOKENS, give err feedback if needed
 			if er != 0 {
@@ -46,7 +46,8 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 				// HERE GOES OUTPUT SET
 				return msg.ProcessCommandsReply{
 					Success: false,
-					Message: fmt.Sprintf("%v", errMsg),
+					Message: fmt.Sprintf("Error processing the commands: %v", errMsg),
+					Result:  errMsg,
 				}, err
 			} else {
 				// either a do something or move rooms command
@@ -70,6 +71,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 			return msg.ProcessCommandsReply{
 				Success: true,
 				Message: "Processing tokens completed",
+				Result:  output,
 			}, nil
 
 		},
@@ -99,12 +101,13 @@ func getPlayerEntity(world cardinal.WorldContext, pEID types.EntityID) (componen
 }
 
 // Process the Commands tokens, this is the function dedicated to it.
-func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world cardinal.WorldContext) (bool, uint8) {
+func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world cardinal.WorldContext) (string, bool, uint8) {
 	pID := Player.PlayerID
 	rID := Player.RoomID
 	tokens := Tokens
 	var er uint8
 	var move bool
+	var output string
 	//var nxt uint32 ---> Not used YET
 
 	// Start a new token system
@@ -112,6 +115,7 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 
 	if uint8(len(tokens)) > constants.MAX_TOK {
 		er = constants.ErrParserRoutineTKCX.Code
+		output = constants.ErrParserRoutineTKCX.Message
 	}
 
 	var tok1 string
@@ -128,22 +132,25 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 			if ts.GetActionType(tok1) == enums.ActionTypeGo {
 				// GO: form
 				move = true
+				output = "GOING TO NEXT ROOM - DIRECTION SYSTEM - TO BE IMPLEMENTED"
 				// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
 			} else {
 				// VERB: form
-				er = handleVerb(tokens, rID, pID, world)
+				output, er = handleVerb(tokens, rID, pID, world)
 				move = false
 			}
 
 		} else {
 			er = handleAlias(tokens, pID, world)
 			move = false
+			output = "VERB GOES TO HANDLE ALIAS. TO BE IMPLEMENTED"
 		}
 	} else {
 		er = constants.ErrParserRoutineNOP.Code
+		output = constants.ErrParserRoutineNOP.Message
 	}
 
-	return move, er
+	return output, move, er
 
 }
 
@@ -164,7 +171,7 @@ func handleAlias(tokens []string, playerID uint32, world cardinal.WorldContext) 
 }
 
 // Handle if the token is a verb
-func handleVerb(tokens []string, roomID uint32, playerID uint32, world cardinal.WorldContext) (err uint8) {
+func handleVerb(tokens []string, roomID uint32, playerID uint32, world cardinal.WorldContext) (output string, err uint8) {
 	vrb := ts.GetActionType(tokens[0])
 	var e uint8
 	var resultStr string
@@ -173,24 +180,26 @@ func handleVerb(tokens []string, roomID uint32, playerID uint32, world cardinal.
 	switch vrb {
 	case enums.ActionTypeLook, enums.ActionTypeDescribe:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
-		e = Stuff(tokens, roomID, playerID, world)
+		resultStr, e = Stuff(tokens, roomID, playerID, world)
 
 	case enums.ActionTypeTake:
-		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
+		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO TAKE FROM INVENTORY SYSTEM")
+		resultStr = "---->HANDLE VERB: NOW SHOULD BE GOING TO TAKE FROM INVENTORY SYSTEM"
 		e = 0
 
 	case enums.ActionTypeDrop:
-		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
+		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO DROP FROM INVENTORY SYSTEM")
+		resultStr = "---->HANDLE VERB: NOW SHOULD BE GOING TO DROP FROM INVENTORY SYSTEM"
 		e = 0
 
 	default:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM")
-
-		e, resultStr = 0, "testing"
+		resultStr = "---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM"
+		e = 0
 		world.Logger().Debug().Msgf("---->HANDLE VERB:resultStr: %s", resultStr)
 	}
 
-	return e
+	return resultStr, e
 }
 
 // returns a string to be used on the message variable of the transaction/message
