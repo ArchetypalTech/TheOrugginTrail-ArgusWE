@@ -6,7 +6,7 @@ type ProcessCommandsMsg struct {
 }
 
 type ProcessCommandsReply struct {
-	Success bool   `json:"Success"` // Indicates whether the move was successful or not.
+	Success bool   `json:"Success"` // Indicates whether the transaction was successful or not.
 	Message string `json:"Message"` // Optional message providing additional information.
-
+	Result  string `json:"Result"`  // The result of the processed command.
 }
