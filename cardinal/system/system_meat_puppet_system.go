@@ -46,7 +46,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 				// HERE GOES OUTPUT SET
 				return msg.ProcessCommandsReply{
 					Success: false,
-					Message: fmt.Sprintf("Error processing the commands: %v", errMsg),
+					Message: fmt.Sprintf("Error: %v processing the commands: %s", er, errMsg),
 					Result:  errMsg,
 				}, err
 			} else {
@@ -116,38 +116,38 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 	if uint8(len(tokens)) > constants.MAX_TOK {
 		er = constants.ErrParserRoutineTKCX.Code
 		output = constants.ErrParserRoutineTKCX.Message
-	}
-
-	var tok1 string
-	tok1 = tokens[0]
-	world.Logger().Debug().Msgf("---->CMD: %s", tok1)
-	tokD := ts.GetDirectionType(tok1)
-
-	if tokD != enums.DirectionTypeNone {
-		move = true
-		// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
-	} else if ts.GetActionType(tok1) != enums.ActionTypeNone {
-		if uint8(len(tokens)) >= constants.MIN_TOK {
-			world.Logger().Debug().Msgf("---->tok.len %d", len(tokens))
-			if ts.GetActionType(tok1) == enums.ActionTypeGo {
-				// GO: form
-				move = true
-				output = "GOING TO NEXT ROOM - DIRECTION SYSTEM - TO BE IMPLEMENTED"
-				// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
-			} else {
-				// VERB: form
-				output, er = handleVerb(tokens, rID, pID, world)
-				move = false
-			}
-
-		} else {
-			er = handleAlias(tokens, pID, world)
-			move = false
-			output = "VERB GOES TO HANDLE ALIAS. TO BE IMPLEMENTED"
-		}
 	} else {
-		er = constants.ErrParserRoutineNOP.Code
-		output = constants.ErrParserRoutineNOP.Message
+		var tok1 string
+		tok1 = tokens[0]
+		world.Logger().Debug().Msgf("---->CMD: %s", tok1)
+		tokD := ts.GetDirectionType(tok1)
+
+		if tokD != enums.DirectionTypeNone {
+			move = true
+			// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
+		} else if ts.GetActionType(tok1) != enums.ActionTypeNone {
+			if uint8(len(tokens)) >= constants.MIN_TOK {
+				world.Logger().Debug().Msgf("---->tok.len %d", len(tokens))
+				if ts.GetActionType(tok1) == enums.ActionTypeGo {
+					// GO: form
+					move = true
+					output = "GOING TO NEXT ROOM - DIRECTION SYSTEM - TO BE IMPLEMENTED"
+					// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
+				} else {
+					// VERB: form
+					output, er = handleVerb(tokens, rID, pID, world)
+					move = false
+				}
+
+			} else {
+				er = handleAlias(tokens, pID, world)
+				move = false
+				output = "VERB GOES TO HANDLE ALIAS. TO BE IMPLEMENTED"
+			}
+		} else {
+			er = constants.ErrParserRoutineNOP.Code
+			output = constants.ErrParserRoutineNOP.Message
+		}
 	}
 
 	return output, move, er
@@ -161,11 +161,11 @@ func handleAlias(tokens []string, playerID uint32, world cardinal.WorldContext) 
 	if vrb == enums.ActionTypeInventory {
 		// HERE GOES INVENTORY FROM INVENTORY SYSTEM
 		world.Logger().Debug().Msg("---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM")
-		e = 0
+		e = 135 // This just for showing errors
 	} else if vrb == enums.ActionTypeLook {
 		// HERE GOES STUFF FROM LOOK SYSTEM
 		world.Logger().Debug().Msg("--->HANDLE ALIAS: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
-		e = 0
+		e = 130 // This just for showing errors
 	}
 	return e
 }
@@ -209,9 +209,8 @@ func insultMeat(cErr uint8, badCmd string) string {
 	case constants.ErrParserRoutineTKCX.Code:
 		eMsg = "WTF, slow down cowboy, you're gonna hurt yourself"
 
-	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code:
-		eMsg = "Nope, gibberish\n" +
-			"Stop breathing with your mouth."
+	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code, constants.ErrNoObjectsToHandle.Code, constants.ErrBadLookCommand.Code:
+		eMsg = "Nope, gibberish. Stop breathing with your mouth."
 
 	case constants.ErrParserRoutineND.Code, constants.ErrDirectionRoutineND.Code:
 		eMsg = "Go where pilgrim?"
