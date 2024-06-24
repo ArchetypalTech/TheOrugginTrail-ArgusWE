@@ -2,6 +2,7 @@ package system
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/component"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
@@ -31,12 +32,12 @@ func Stuff(tokens []string, curRmId uint32, playerId uint32, ts *TokeniserSystem
 		if len(tokens) > 1 {
 			gObj = ts.GetGrammarType(tokens[len(tokens)-1])
 			if gObj != enums.GrammarTypeAdverb {
-				output, err := lookAround(curRmId, playerId, world)
+				output, err := LookAround(curRmId, playerId, ts, world)
 				world.Logger().Debug().Msgf("-->_LA:%d", err)
 				return output, err
 			}
 		} else {
-			output, err := lookAround(curRmId, playerId, world)
+			output, err := LookAround(curRmId, playerId, ts, world)
 			world.Logger().Debug().Msgf("-->_LOOK:%d", err)
 			return output, err
 		}
@@ -45,21 +46,20 @@ func Stuff(tokens []string, curRmId uint32, playerId uint32, ts *TokeniserSystem
 	}
 	world.Logger().Debug().Msgf("---->_ERR:%d", err)
 	return output, 0
-
 }
 
-func lookAround(rId uint32, playerId uint32, world cardinal.WorldContext) (string, uint8) {
-	output := genDescText(playerId, rId, world)
+func LookAround(rId uint32, playerId uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
+	output := GenDescText(playerId, rId, ts, world)
 	world.Logger().Debug().Msgf("ROOM DESCRIPTION IS: %s", output)
 	return output, 0
 }
 
 // Generates the description on that will be shown
-func genDescText(playerId uint32, id uint32, world cardinal.WorldContext) string {
+func GenDescText(playerId uint32, id uint32, ts *TokeniserSystem, world cardinal.WorldContext) string {
 
 	desc := "You are standing "
 	rID := types.EntityID(id)
-	room, err := getRoom(rID, world)
+	room, err := GetRoom(rID, world)
 	if err != nil {
 		world.Logger().Error().Msgf("Error2 getting Room Component: %v", err)
 	}
@@ -71,13 +71,14 @@ func genDescText(playerId uint32, id uint32, world cardinal.WorldContext) string
 	}
 
 	desc += " " + ObjectDescription(room, world)
-	desc += " " + DirObjectDescription(room, world)
+	desc += " " + DirObjectDescription(room, ts, world)
+	desc += " " + GetPlayersPresence(room, playerId, world)
 
 	return desc
 }
 
 // Gets the room
-func getRoom(rID types.EntityID, world cardinal.WorldContext) (component.Room, error) {
+func GetRoom(rID types.EntityID, world cardinal.WorldContext) (component.Room, error) {
 	var exisingRoom component.Room
 	err := cardinal.NewSearch().Entity(filter.Exact(filter.Component[component.Room]())).
 		Each(world, func(id types.EntityID) bool {
@@ -113,23 +114,72 @@ func ObjectDescription(room component.Room, world cardinal.WorldContext) string 
 	}
 
 	return description
-
 }
 
 // Gets the DirectionalObjects descriptions that exists on the room
-func DirObjectDescription(room component.Room, world cardinal.WorldContext) string {
-	var dirObject component.Object
-	var description string
+func DirObjectDescription(room component.Room, ts *TokeniserSystem, world cardinal.WorldContext) string {
+	var descriptions []string
+	isFirst := true
 
 	for _, lookingDirObject := range room.DirObjs {
 		if lookingDirObject.ObjectID != 0 {
-			dirObject = room.DirObjs[int(lookingDirObject.ObjectID)]
-			description = fmt.Sprintf("You see a %s", dirObject.Description)
-
+			dirObject := room.DirObjs[int(lookingDirObject.ObjectID)]
+			var description string
+			if isFirst {
+				description = "There is a " + fmt.Sprintf(dirObject.Description) +
+					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) + " " +
+					"to the" + " " + dirObject.DirType.String()
+				isFirst = false
+			} else {
+				description = "and there is a " + fmt.Sprintf(dirObject.Description) +
+					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) + " " +
+					"to the" + " " + dirObject.DirType.String() + "."
+			}
 			world.Logger().Debug().Msgf("Descriptions for dirObject with ID: %d is: %v", lookingDirObject.ObjectID, description)
+			descriptions = append(descriptions, description)
 		}
 	}
 
-	return description
+	return strings.Join(descriptions, " ")
+}
 
+func GenMaterialDesc(material string, dirObj enums.ObjectType, ts *TokeniserSystem) string {
+	var description string
+	if dirObj == enums.ObjectTypePath || dirObj == enums.ObjectTypeTrail {
+		description = " made mainly from" + " " + ts.GetRevMaterialType(material).String()
+
+	} else {
+		description = ts.GetRevMaterialType(material).String() + " "
+	}
+	return description
+}
+
+func GetPlayersPresence(room component.Room, playerID uint32, world cardinal.WorldContext) string {
+	var descriptions []string
+	isFirst := true
+	for _, lookingPlayer := range room.Players {
+		if lookingPlayer.PlayerID != playerID && lookingPlayer.PlayerID != 0 {
+			player := room.Players[int(lookingPlayer.PlayerID)]
+			var description string
+			if isFirst {
+				description = "In this room is " + player.PlayerName
+				isFirst = false
+			} else {
+				description = player.PlayerName
+			}
+			world.Logger().Debug().Msgf("Players found in the room are: %s", player.PlayerName)
+			descriptions = append(descriptions, description)
+		}
+	}
+
+	if len(descriptions) == 0 {
+		return "There is no other poor soul here apart from you."
+	}
+
+	// Handle proper punctuation for multiple players
+	if len(descriptions) == 1 {
+		return descriptions[0]
+	}
+
+	return descriptions[0] + ", and " + strings.Join(descriptions[1:], ", ")
 }

@@ -10,6 +10,7 @@ import (
 	"pkg.world.dev/world-engine/cardinal/types"
 
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/constants"
+	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/msg"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/system"
 
@@ -21,6 +22,130 @@ const (
 	createMsgName         = "game.create-player"
 )
 
+// #region Create Player Test
+func TestSystem_CreatePlayer_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+}
+
+func TestFindExistingPlayer_NoFind(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+	var expectedID types.EntityID
+	var expectedErr error = nil
+
+	id, err := system.FindExistingPlayer(cardinal.NewReadOnlyWorldContext(tf.World), playerName)
+
+	assert.Equal(t, expectedID, id)
+	assert.Equal(t, expectedErr, err)
+}
+
+func TestFindExistingPlayer_Find(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+	var expectedID types.EntityID = 3
+	var expectedErr error
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	id, err := system.FindExistingPlayer(cardinal.NewReadOnlyWorldContext(tf.World), playerName)
+
+	assert.Equal(t, expectedID, id)
+	assert.Equal(t, expectedErr, err)
+}
+
+func TestCreateNewPlayer_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+	var expectedID types.EntityID = 3
+	var expectedErr error
+
+	id, err := system.CreateNewPlayer(cardinal.NewWorldContext(tf.World), playerName)
+	tf.DoTick()
+
+	assert.Equal(t, expectedID, id)
+	assert.Equal(t, expectedErr, err)
+}
+
+func TestGetPlayer_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+	var pID types.EntityID = 3
+	var expectedErr error = nil
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	player, err := system.GetPlayer(pID, cardinal.NewWorldContext(tf.World))
+	playerID := player.PlayerID
+	tf.DoTick()
+
+	assert.Equal(t, uint32(pID), playerID)
+	assert.Equal(t, expectedErr, err)
+}
+
+func TestAssignPlayerToRoom_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+	var pID types.EntityID = 3
+	var expectedErr error = nil
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	player, err := system.GetPlayer(pID, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+	rID := types.EntityID(roomSpawn)
+
+	err = system.AssignPlayerToRoom(cardinal.NewWorldContext(tf.World), player, rID)
+
+	assert.Equal(t, expectedErr, err)
+}
+
+// #endregion Create Player Test
+
 // #region ProcessCommandTokens Test
 func TestSystem_ProcessCommands_Success(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
@@ -29,8 +154,11 @@ func TestSystem_ProcessCommands_Success(t *testing.T) {
 	const playerName = "Hueyu"
 	const roomSpawn = 0
 	var tokens = []string{"LOOK", "WITH", "BOTTLE", "AT", "THE", "WINDOW"}
-	expectedOut := "You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see the air tastes of burnt grease and bensons.\n You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though. You see a path"
-
+	var expectedOut string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+		" the air tastes of burnt grease and bensons.\n " +
+		"You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
+		" There is no other poor soul here apart from you.")
 	// Create an initial player
 	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
 		PlayersName: playerName,
@@ -109,7 +237,6 @@ func setup() {
 	ts = system.NewTokeniserSystem()
 }
 
-// THIS NEEDS TO GET THE SYSTEMS
 func TestHandleVerb_Success(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
@@ -178,7 +305,11 @@ func TestHandleAlias_Success(t *testing.T) {
 	const roomSpawn = 0
 
 	tokens := []string{"LOOK"}
-	expectedOutSt := "You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see the air tastes of burnt grease and bensons.\n You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though. You see a path"
+	var expectedOutSt string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+		" the air tastes of burnt grease and bensons.\n " +
+		"You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
+		" There is no other poor soul here apart from you.")
 	var expectedOutErr uint8 = 0
 
 	// Create an initial player
@@ -254,6 +385,244 @@ func TestInsultMeat_Failure(t *testing.T) {
 }
 
 // #endregion ProcessCommandTokens Test
+
+// #region Look System Test
+
+func TestStuff_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"LOOK"}
+	var expectedOutSt string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+		" the air tastes of burnt grease and bensons.\n " +
+		"You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" There is a path made mainly from mud to the East and there is a path made mainly from dirt to the North." +
+		" There is no other poor soul here apart from you.")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output, er := system.Stuff(tokens, roomSpawn, playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestLookAround_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	var expectedOutSt string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+		" the air tastes of burnt grease and bensons.\n " +
+		"You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
+		" There is no other poor soul here apart from you.")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output, er := system.LookAround(roomSpawn, playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestDescriptionText_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	var expectedOutSt string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+		" the air tastes of burnt grease and bensons.\n " +
+		"You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
+		" There is no other poor soul here apart from you.")
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output := system.GenDescText(playerID, roomSpawn, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+}
+
+func TestDirObjsDesc_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+	setup()
+
+	const roomID = 0
+	rID := types.EntityID(roomID)
+	expectedOutSt := "There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East."
+
+	room, err := system.GetRoom(rID, cardinal.NewReadOnlyWorldContext(tf.World))
+	if err != nil {
+		fmt.Printf("Error getting Room Component: %v", err)
+	}
+	tf.DoTick()
+
+	output := system.DirObjectDescription(room, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+}
+
+func TestGetRoom_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+	setup()
+
+	const roomID = 0
+	rID := types.EntityID(roomID)
+	const expectedOutSt = "RoomID is: 0"
+	var output string
+
+	room, err := system.GetRoom(rID, cardinal.NewReadOnlyWorldContext(tf.World))
+	if err != nil {
+		fmt.Printf("Error getting Room Component: %v", err)
+
+	} else {
+		output = fmt.Sprintf("RoomID is: %v", room.ID)
+	}
+
+	assert.Equal(t, expectedOutSt, output)
+}
+func TestGetRoom_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+	setup()
+
+	const roomID = 5
+	rID := types.EntityID(roomID)
+
+	room, err := system.GetRoom(rID, cardinal.NewReadOnlyWorldContext(tf.World))
+	if err != nil {
+		fmt.Printf("Error getting Room Component: %v", err)
+
+	} else {
+		fmt.Sprintf("RoomID is: %v", room.ID)
+	}
+}
+func TestGetMaterial_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+	setup()
+
+	const material = "mud"
+	const dirObj = enums.ObjectTypePath
+	expectedOutSt := " made mainly from mud"
+
+	matDes := system.GenMaterialDesc(material, dirObj, ts)
+	assert.Equal(t, expectedOutSt, matDes)
+}
+
+func TestGetPlayersPresence_NoOtherPlayerAround(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+	setup()
+
+	const roomID = 0
+	const playerName = "Hueyu"
+	const pID = 3
+	rID := types.EntityID(roomID)
+	expectedOutSt := "There is no other poor soul here apart from you."
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomID,
+	})
+	tf.DoTick()
+
+	room, err := system.GetRoom(rID, cardinal.NewReadOnlyWorldContext(tf.World))
+	if err != nil {
+		fmt.Printf("Error getting Room Component: %v", err)
+	}
+	tf.DoTick()
+
+	output := system.GetPlayersPresence(room, pID, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+}
+func TestGetPlayersPresence_OtherPlayerAround(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+	setup()
+
+	const roomID = 0
+	const playerName1 = "Hueyu"
+	const playerName2 = "Tatron"
+	const playerName3 = "GOD"
+
+	const pID = 3
+	rID := types.EntityID(roomID)
+	expectedOutSt := "In this room is Tatron, and GOD"
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName1,
+		RoomID:      roomID,
+	})
+	tf.DoTick()
+
+	// Create an second player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName2,
+		RoomID:      roomID,
+	})
+	tf.DoTick()
+
+	// Create an second player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName3,
+		RoomID:      roomID,
+	})
+	tf.DoTick()
+
+	room, err := system.GetRoom(rID, cardinal.NewReadOnlyWorldContext(tf.World))
+	if err != nil {
+		fmt.Printf("Error getting Room Component: %v", err)
+	}
+	tf.DoTick()
+
+	output := system.GetPlayersPresence(room, pID, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+}
+
+// #endregion Look System Test
 
 func getCreateMsgID(t *testing.T, world *cardinal.World) types.MessageID {
 	return getMsgID(t, world, createMsgName)

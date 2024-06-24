@@ -20,6 +20,8 @@ type TokeniserSystem struct {
 	objLookup      map[string]enums.ObjectType             // Lookup table for object strings to ObjectType
 	grammarLookup  map[string]enums.GrammarType            // Lookup table for GrammarType
 	responseLookup map[enums.ActionType][]enums.ActionType // Lookup table for action responses
+	revMat         map[string]enums.MaterialType           // Material type map in lowercase
+	revDirLookup   map[string]enums.DirectionType          // ookup table for direction object strings to DirObjectType in lowercase
 }
 
 // NewTokeniserSystem creates a new instance of TokeniserSystem and initializes lookup tables
@@ -31,6 +33,8 @@ func NewTokeniserSystem() *TokeniserSystem {
 		objLookup:      make(map[string]enums.ObjectType),
 		grammarLookup:  make(map[string]enums.GrammarType),
 		responseLookup: make(map[enums.ActionType][]enums.ActionType),
+		revMat:         make(map[string]enums.MaterialType),
+		revDirLookup:   make(map[string]enums.DirectionType),
 	}
 	ts.initLUTS()
 	return ts
@@ -44,6 +48,8 @@ func (ts *TokeniserSystem) initLUTS() {
 	ts.setupDirObjs()
 	ts.setupGrammar()
 	ts.setupVrbAct()
+	ts.setupRevDirs()
+	ts.setupMaterial()
 }
 
 // setupCmds initializes the command lookup table with predefined actions
@@ -89,6 +95,17 @@ func (ts *TokeniserSystem) setupDirs() {
 	ts.dirLookup["BACKWARD"] = enums.DirectionTypeBackward
 }
 
+func (ts *TokeniserSystem) setupRevDirs() {
+	ts.revDirLookup["north"] = enums.DirectionTypeNorth
+	ts.revDirLookup["south"] = enums.DirectionTypeSouth
+	ts.revDirLookup["east"] = enums.DirectionTypeEast
+	ts.revDirLookup["west"] = enums.DirectionTypeWest
+	ts.revDirLookup["up"] = enums.DirectionTypeUp
+	ts.revDirLookup["down"] = enums.DirectionTypeDown
+	ts.revDirLookup["foward"] = enums.DirectionTypeForward
+	ts.revDirLookup["backward"] = enums.DirectionTypeBackward
+}
+
 // setupDirObjs initializes the directional object lookup table with predefined directional objects
 func (ts *TokeniserSystem) setupDirObjs() {
 	ts.objLookup["DOOR"] = enums.ObjectTypeDoor
@@ -115,6 +132,18 @@ func (ts *TokeniserSystem) setupGrammar() {
 	ts.grammarLookup["AT"] = enums.GrammarTypePreposition
 	ts.grammarLookup["WITH"] = enums.GrammarTypePreposition
 	ts.grammarLookup["AROUND"] = enums.GrammarTypeAdverb
+}
+
+func (ts *TokeniserSystem) setupMaterial() {
+	ts.revMat["wood"] = enums.MaterialTypeWood
+	ts.revMat["stone"] = enums.MaterialTypeStone
+	ts.revMat["iron"] = enums.MaterialTypeIron
+	ts.revMat["shit"] = enums.MaterialTypeShit
+	ts.revMat["IKEA"] = enums.MaterialTypeIKEA
+	ts.revMat["flesh"] = enums.MaterialTypeFlesh
+	ts.revMat["dirt"] = enums.MaterialTypeDirt
+	ts.revMat["mud"] = enums.MaterialTypeMud
+	ts.revMat["glass"] = enums.MaterialTypeGlass
 }
 
 // FishTokens processes the tokenized command and returns VerbData
@@ -205,6 +234,22 @@ func (ts *TokeniserSystem) GetGrammarType(key string) enums.GrammarType {
 func (ts *TokeniserSystem) GetDirectionType(key string) enums.DirectionType {
 	if direction, ok := ts.dirLookup[key]; ok {
 		return direction
+	}
+	return enums.DirectionTypeNone
+}
+
+// GetMaterial type returns the material type for a given material key
+func (ts *TokeniserSystem) GetRevMaterialType(key string) enums.MaterialType {
+	if material, ok := ts.revMat[key]; ok {
+		return material
+	}
+	return enums.MaterialTypeNone
+}
+
+// GetMaterial type returns the material type for a given material key
+func (ts *TokeniserSystem) GetRevDirectionType(key string) enums.DirectionType {
+	if revDirection, ok := ts.revDirLookup[key]; ok {
+		return revDirection
 	}
 	return enums.DirectionTypeNone
 }
