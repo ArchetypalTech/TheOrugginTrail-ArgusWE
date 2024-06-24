@@ -11,6 +11,7 @@ import (
 
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/constants"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/msg"
+	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/system"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -102,18 +103,154 @@ func TestSystem_ProcessCommands_Failure(t *testing.T) {
 	assert.Equal(t, expectedOut, processCommandsReply.Result)
 }
 
+var ts *system.TokeniserSystem
+
+func setup() {
+	ts = system.NewTokeniserSystem()
+}
+
 // THIS NEEDS TO GET THE SYSTEMS
-func TestHandleVerb(t *testing.T) {
+func TestHandleVerb_Success(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
+	setup()
 
 	const playerName = "Hueyu"
+	const playerID = 3
 	const roomSpawn = 0
-	/*
-		tokens := []string{"LOOK", "TO", "THE", "WINDOW"}
-		print(mts)
-		sut = handleVerb()
-	*/
+
+	tokens := []string{"DROP", "THE", "KNIFE"}
+	expectedOutSt := "---->HANDLE VERB: NOW SHOULD BE GOING TO DROP FROM INVENTORY SYSTEM"
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output, er := system.HandleVerb(tokens, roomSpawn, playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+/*
+The HandleVerb does not have a failure itself as the erros come from the function that calls this function one
+or from the functions that this function calls like stuff from the look system.
+The switch case has a default case which returns a value of 0 for the error so no error and the expected output for now is
+"---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM"
+*/
+func TestHandleVerb_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"GO"}
+	expectedOutSt := "---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM"
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output, er := system.HandleVerb(tokens, roomSpawn, playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestHandleAlias_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"LOOK"}
+	expectedOutSt := "You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see the air tastes of burnt grease and bensons.\n You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though. You see a path"
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output, er := system.HandleAlias(tokens, roomSpawn, playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+/*
+The HandleAlias does not have a failure itself as the erros come from the function that calls this function one
+or from the functions that this function calls like stuff from the look system.
+The switch case is either a look or inventory type. For now is testing if the error is the same for the inventory type as it has not been impleented yet.
+*/
+func TestHandleAlias_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"INVENTORY"}
+	expectedOutSt := "---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM"
+	var expectedOutErr uint8 = 135
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output, er := system.HandleAlias(tokens, roomSpawn, playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutSt, output)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestInsultMeat_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	const erroR = 130
+	const badCommand = "SEE"
+	expectedOutSt := "Nope, gibberish. Stop breathing with your mouth."
+
+	output := system.InsultMeat(erroR, badCommand)
+
+	assert.Equal(t, expectedOutSt, output)
+}
+
+/*
+The insult meat does not have an error itself, it recieves an uint8 and depending on tha value it will use a swtich case.
+For this test we are sending a value that is part of the default and returns the following string: "What are you doing?!?!"
+*/
+func TestInsultMeat_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	var erroR uint8
+	const badCommand = "SEE"
+	expectedOutSt := "What are you doing?!?!"
+
+	output := system.InsultMeat(erroR, badCommand)
+
+	assert.Equal(t, expectedOutSt, output)
 }
 
 // #endregion ProcessCommandTokens Test
