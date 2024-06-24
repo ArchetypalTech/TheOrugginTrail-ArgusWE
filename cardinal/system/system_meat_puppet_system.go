@@ -42,7 +42,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 			if er != 0 {
 				world.Logger().Error().Msgf("---->PCE: PCR_ERR: %v:\033[0m", er)
 				var errMsg string
-				errMsg = insultMeat(er, "")
+				errMsg = InsultMeat(er, "")
 				// HERE GOES OUTPUT SET
 				return msg.ProcessCommandsReply{
 					Success: false,
@@ -135,14 +135,13 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 					// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
 				} else {
 					// VERB: form
-					output, er = handleVerb(tokens, rID, pID, world)
+					output, er = HandleVerb(tokens, rID, pID, ts, world)
 					move = false
 				}
 
 			} else {
-				er = handleAlias(tokens, pID, world)
+				output, er = HandleAlias(tokens, rID, pID, ts, world)
 				move = false
-				output = "VERB GOES TO HANDLE ALIAS. TO BE IMPLEMENTED"
 			}
 		} else {
 			er = constants.ErrParserRoutineNOP.Code
@@ -155,23 +154,25 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 }
 
 // handle if the token is an alias
-func handleAlias(tokens []string, playerID uint32, world cardinal.WorldContext) (err uint8) {
+func HandleAlias(tokens []string, roomID uint32, playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext) (output string, err uint8) {
 	vrb := ts.GetActionType(tokens[0])
+	var resultStr string
 	var e uint8
 	if vrb == enums.ActionTypeInventory {
 		// HERE GOES INVENTORY FROM INVENTORY SYSTEM
 		world.Logger().Debug().Msg("---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM")
+		resultStr = "---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM"
 		e = 135 // This just for showing errors
 	} else if vrb == enums.ActionTypeLook {
 		// HERE GOES STUFF FROM LOOK SYSTEM
 		world.Logger().Debug().Msg("--->HANDLE ALIAS: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
-		e = 130 // This just for showing errors
+		resultStr, e = Stuff(tokens, roomID, playerID, ts, world)
 	}
-	return e
+	return resultStr, e
 }
 
 // Handle if the token is a verb
-func handleVerb(tokens []string, roomID uint32, playerID uint32, world cardinal.WorldContext) (output string, err uint8) {
+func HandleVerb(tokens []string, roomID uint32, playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext) (output string, err uint8) {
 	vrb := ts.GetActionType(tokens[0])
 	var e uint8
 	var resultStr string
@@ -180,7 +181,7 @@ func handleVerb(tokens []string, roomID uint32, playerID uint32, world cardinal.
 	switch vrb {
 	case enums.ActionTypeLook, enums.ActionTypeDescribe:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
-		resultStr, e = Stuff(tokens, roomID, playerID, world)
+		resultStr, e = Stuff(tokens, roomID, playerID, ts, world)
 
 	case enums.ActionTypeTake:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO TAKE FROM INVENTORY SYSTEM")
@@ -203,7 +204,7 @@ func handleVerb(tokens []string, roomID uint32, playerID uint32, world cardinal.
 }
 
 // returns a string to be used on the message variable of the transaction/message
-func insultMeat(cErr uint8, badCmd string) string {
+func InsultMeat(cErr uint8, badCmd string) string {
 	var eMsg string
 	switch cErr {
 	case constants.ErrParserRoutineTKCX.Code:
@@ -223,6 +224,7 @@ func insultMeat(cErr uint8, badCmd string) string {
 
 	default:
 		// Add a default case if needed for handling unexpected cErr values
+		eMsg = "What are you doing?!?!"
 	}
 
 	return eMsg

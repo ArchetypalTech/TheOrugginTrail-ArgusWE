@@ -68,7 +68,7 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 				}, err
 			}
 
-			world.Logger().Debug().Msg("Player entity created successfully")
+			world.Logger().Info().Msgf("Player entity created successfully with ID: %v", playerManagerID)
 
 			return msg.CreatePlayerReply{
 				Success:        true,

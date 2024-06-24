@@ -16,7 +16,7 @@ func LookSystem(world cardinal.WorldContext) error {
 	return nil
 }
 
-func Stuff(tokens []string, curRmId uint32, playerId uint32, world cardinal.WorldContext) (string, uint8) {
+func Stuff(tokens []string, curRmId uint32, playerId uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
 	world.Logger().Debug().Msgf("---->SEE T:%s, R:%d\n", tokens[0], curRmId)
 	vrb := ts.GetActionType(tokens[0])
 	var gObj enums.GrammarType
