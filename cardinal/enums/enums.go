@@ -253,29 +253,29 @@ func (m MaterialType) String() string {
 // Map to store the string representations of the enum
 var toStringMaterial = map[MaterialType]string{
 	MaterialTypeNone:  "None",
-	MaterialTypeWood:  "Wood",
-	MaterialTypeStone: "Stone",
-	MaterialTypeIron:  "Iron",
-	MaterialTypeShit:  "Shit",
+	MaterialTypeWood:  "wood",
+	MaterialTypeStone: "stone",
+	MaterialTypeIron:  "iron",
+	MaterialTypeShit:  "shit",
 	MaterialTypeIKEA:  "IKEA",
-	MaterialTypeFlesh: "Flesh",
-	MaterialTypeDirt:  "Dirt",
-	MaterialTypeMud:   "Mud",
-	MaterialTypeGlass: "Glass",
+	MaterialTypeFlesh: "flesh",
+	MaterialTypeDirt:  "dirt",
+	MaterialTypeMud:   "mud",
+	MaterialTypeGlass: "glass",
 }
 
 // Map to store the enum values by string
 var toEnumMaterial = map[string]MaterialType{
 	"None":  MaterialTypeNone,
-	"Wood":  MaterialTypeWood,
-	"Stone": MaterialTypeStone,
-	"Iron":  MaterialTypeIron,
-	"Shit":  MaterialTypeShit,
+	"wood":  MaterialTypeWood,
+	"stone": MaterialTypeStone,
+	"iron":  MaterialTypeIron,
+	"shit":  MaterialTypeShit,
 	"IKEA":  MaterialTypeIKEA,
-	"Flesh": MaterialTypeFlesh,
-	"Dirt":  MaterialTypeDirt,
-	"Mud":   MaterialTypeMud,
-	"Glass": MaterialTypeGlass,
+	"flesh": MaterialTypeFlesh,
+	"dirt":  MaterialTypeDirt,
+	"mud":   MaterialTypeMud,
+	"glass": MaterialTypeGlass,
 }
 
 // TxtDefType - Custom type for text definition types

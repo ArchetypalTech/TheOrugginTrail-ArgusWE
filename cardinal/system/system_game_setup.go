@@ -289,6 +289,7 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs []
 			RoomType:    roomType,
 			Objects:     make(map[int]component.Object),
 			DirObjs:     make(map[int]component.Object),
+			Players:     make(map[int]component.Player),
 		},
 	)
 

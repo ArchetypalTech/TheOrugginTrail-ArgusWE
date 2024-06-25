@@ -10,7 +10,7 @@ type Room struct {
 	RoomType    enums.RoomType `json:"room_type"`
 	Objects     map[int]Object `json:"object_ids"`
 	DirObjs     map[int]Object `json:"dir_obj_ids"`
-	Players     [32]uint32     `json:"players"`
+	Players     map[int]Player `json:"players"`
 }
 
 type RoomStore struct {

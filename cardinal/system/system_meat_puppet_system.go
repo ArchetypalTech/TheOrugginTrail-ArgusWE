@@ -20,7 +20,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 	return cardinal.EachMessage[msg.ProcessCommandsMsg, msg.ProcessCommandsReply](
 		world,
 		func(messageData cardinal.TxData[msg.ProcessCommandsMsg]) (msg.ProcessCommandsReply, error) {
-			playerEntity, err := findExistingPlayer(world, messageData.Msg.PlayerName)
+			playerEntity, err := FindExistingPlayer(world, messageData.Msg.PlayerName)
 			if err != nil {
 				return msg.ProcessCommandsReply{
 					Success: false,

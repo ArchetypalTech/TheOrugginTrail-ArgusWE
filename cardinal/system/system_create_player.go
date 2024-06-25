@@ -17,7 +17,7 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 		world,
 		func(createPlayerData cardinal.TxData[msg.CreatePlayerMsg]) (msg.CreatePlayerReply, error) {
 			// Search for an existing player by name
-			existingPlayerEntityID, err := findExistingPlayer(world, createPlayerData.Msg.PlayersName)
+			existingPlayerEntityID, err := FindExistingPlayer(world, createPlayerData.Msg.PlayersName)
 			if err != nil {
 				return msg.CreatePlayerReply{
 					Success: false,
@@ -37,7 +37,7 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 			}
 
 			// Create a new player entity
-			playerManagerID, err := createNewPlayer(world, createPlayerData.Msg.PlayersName)
+			playerManagerID, err := CreateNewPlayer(world, createPlayerData.Msg.PlayersName)
 			if err != nil {
 				return msg.CreatePlayerReply{
 					Success: false,
@@ -45,11 +45,11 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 				}, err
 			}
 
-			playerID := uint32(playerManagerID) // Convert EntityID to uint32
+			player, err := GetPlayer(playerManagerID, world)
 
 			// Assign the player to the specified room
 			roomID := types.EntityID(createPlayerData.Msg.RoomID)
-			if err := assignPlayerToRoom(world, playerID, roomID); err != nil {
+			if err := AssignPlayerToRoom(world, player, roomID); err != nil {
 				world.Logger().Debug().Msgf("Failed to assign player to the room: %v", err)
 
 				return msg.CreatePlayerReply{
@@ -80,7 +80,7 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 }
 
 // Search for existing player by name
-func findExistingPlayer(world cardinal.WorldContext, playerName string) (types.EntityID, error) {
+func FindExistingPlayer(world cardinal.WorldContext, playerName string) (types.EntityID, error) {
 	var existingPlayerEntityID types.EntityID
 	err := cardinal.NewSearch().Entity(filter.Exact(filter.Component[component.Player]())).
 		Each(world, func(id types.EntityID) bool {
@@ -101,7 +101,7 @@ func findExistingPlayer(world cardinal.WorldContext, playerName string) (types.E
 }
 
 // Create a new player entity
-func createNewPlayer(world cardinal.WorldContext, playerName string) (types.EntityID, error) {
+func CreateNewPlayer(world cardinal.WorldContext, playerName string) (types.EntityID, error) {
 	playerManagerID, err := cardinal.Create(world, &component.Player{})
 	if err != nil {
 		world.Logger().Debug().Msgf("Failed to create player entity: %v", err)
@@ -123,7 +123,7 @@ func createNewPlayer(world cardinal.WorldContext, playerName string) (types.Enti
 }
 
 // Assign player to a specified room
-func assignPlayerToRoom(world cardinal.WorldContext, playerID uint32, roomID types.EntityID) error {
+func AssignPlayerToRoom(world cardinal.WorldContext, player component.Player, roomID types.EntityID) error {
 	// Get the Room based on the roomID
 	selectedRoom, err := cardinal.GetComponent[component.Room](world, roomID)
 	if err != nil {
@@ -132,12 +132,7 @@ func assignPlayerToRoom(world cardinal.WorldContext, playerID uint32, roomID typ
 	}
 
 	// Add the player to the room using the player ID
-	for i := 0; i < len(selectedRoom.Players); i++ {
-		if selectedRoom.Players[i] == 0 {
-			selectedRoom.Players[i] = playerID
-			break
-		}
-	}
+	selectedRoom.Players[int(player.PlayerEntityID)] = player
 
 	// Update the room entity
 	if err := cardinal.SetComponent[component.Room](world, roomID, selectedRoom); err != nil {
@@ -163,4 +158,26 @@ func updatePlayerRoomID(world cardinal.WorldContext, playerManagerID types.Entit
 	}
 
 	return nil
+}
+
+// Gets the just created player
+func GetPlayer(pID types.EntityID, world cardinal.WorldContext) (component.Player, error) {
+	var existingPlayer component.Player
+	err := cardinal.NewSearch().Entity(filter.Exact(filter.Component[component.Player]())).
+		Each(world, func(id types.EntityID) bool {
+			player, err := cardinal.GetComponent[component.Player](world, pID)
+			if err != nil {
+				world.Logger().Error().Msgf("Error getting Player Component: %v", err)
+				return true
+			}
+
+			if player.PlayerID == uint32(pID) {
+				existingPlayer = *player
+				return false
+			}
+
+			return true
+		})
+
+	return existingPlayer, err
 }
