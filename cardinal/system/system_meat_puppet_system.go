@@ -161,8 +161,7 @@ func HandleAlias(tokens []string, roomID uint32, playerID uint32, ts *TokeniserS
 	if vrb == enums.ActionTypeInventory {
 		// HERE GOES INVENTORY FROM INVENTORY SYSTEM
 		world.Logger().Debug().Msg("---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM")
-		resultStr = "---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM"
-		e = 135 // This just for showing errors
+		resultStr, e = Inventory(playerID, ts, world)
 	} else if vrb == enums.ActionTypeLook {
 		// HERE GOES STUFF FROM LOOK SYSTEM
 		world.Logger().Debug().Msg("--->HANDLE ALIAS: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
@@ -185,8 +184,7 @@ func HandleVerb(tokens []string, roomID uint32, playerID uint32, ts *TokeniserSy
 
 	case enums.ActionTypeTake:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO TAKE FROM INVENTORY SYSTEM")
-		resultStr = "---->HANDLE VERB: NOW SHOULD BE GOING TO TAKE FROM INVENTORY SYSTEM"
-		e = 0
+		resultStr, e = Take(tokens, playerID, roomID, ts, world)
 
 	case enums.ActionTypeDrop:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO DROP FROM INVENTORY SYSTEM")

@@ -386,6 +386,66 @@ func TestInsultMeat_Failure(t *testing.T) {
 
 // #endregion ProcessCommandTokens Test
 
+// #region Tokeniser System Test
+func TestFishTokens_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	var tokens = []string{"look", "WITH", "BOTTLE", "AT", "THE", "window"}
+	const expectedVrb = "Look"
+	const expectedDObj = "Bottle"
+	const expectedIObj = "Window"
+
+	tf.DoTick()
+
+	data := system.NewTokeniserSystem().FishTokens(tokens)
+
+	assert.Equal(t, expectedVrb, data.Verb.String())
+	assert.Equal(t, expectedDObj, data.DirectObject.String())
+	assert.Equal(t, expectedIObj, data.IndirectObject.String())
+}
+
+func TestFishTokens_NoDObj(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	var tokens = []string{"burn", "AT", "THE", "window"}
+	const expectedVrb = "Burn"
+	const expectedDObj = "None"
+	const expectedIObj = "Window"
+
+	tf.DoTick()
+
+	data := system.NewTokeniserSystem().FishTokens(tokens)
+
+	assert.Equal(t, expectedVrb, data.Verb.String())
+	assert.Equal(t, expectedDObj, data.DirectObject.String())
+	assert.Equal(t, expectedIObj, data.IndirectObject.String())
+}
+
+func TestFishTokens_NoIObj(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	var tokens = []string{"KICK", "THE", "window"}
+	const expectedVrb = "Kick"
+	const expectedDObj = "Window"
+	const expectedIObj = "None"
+
+	tf.DoTick()
+
+	data := system.NewTokeniserSystem().FishTokens(tokens)
+
+	assert.Equal(t, expectedVrb, data.Verb.String())
+	assert.Equal(t, expectedDObj, data.DirectObject.String())
+	assert.Equal(t, expectedIObj, data.IndirectObject.String())
+}
+
+// #endregion Tokeniser System Test
+
 // #region Look System Test
 
 func TestStuff_Success(t *testing.T) {
@@ -623,6 +683,122 @@ func TestGetPlayersPresence_OtherPlayerAround(t *testing.T) {
 }
 
 // #endregion Look System Test
+
+// #region Inventory System Test
+func TestInventory_WithItem(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"take", "ball"}
+	var expectedOutInventory string = ("You have a Football.")
+	var expectedOutTake string = ("You picked up a Football.")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputTake, er := system.Take(tokens, playerID, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	output, er := system.Inventory(playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutInventory, output)
+	assert.Equal(t, expectedOutTake, outputTake)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestInventory_WithNOItem(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+	var expectedOutInventory string = ("Your carrier bag doesn't even have a spiderweb.")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	output, er := system.Inventory(playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+
+	assert.Equal(t, expectedOutInventory, output)
+
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestTake_Sucess(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"take", "ball"}
+	var expectedOutTake string = ("You picked up a Football.")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputTake, er := system.Take(tokens, playerID, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutTake, outputTake)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestTake_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"take", "car"}
+	var expectedOutTake string = ("Can't pick something that doesn't exists, right?")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputTake, er := system.Take(tokens, playerID, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutTake, outputTake)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+// #endregion Inventory System Test
 
 func getCreateMsgID(t *testing.T, world *cardinal.World) types.MessageID {
 	return getMsgID(t, world, createMsgName)

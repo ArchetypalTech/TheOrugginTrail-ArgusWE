@@ -59,6 +59,7 @@ func MustInitWorld(w *cardinal.World) {
 		system.ProcessCommandsTokens,
 		system.NTokeniserSystem,
 		system.LookSystem,
+		system.InventorySystem,
 	))
 
 	// Register the init system when the world is initiated.

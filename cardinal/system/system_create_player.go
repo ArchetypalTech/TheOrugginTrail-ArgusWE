@@ -113,6 +113,7 @@ func CreateNewPlayer(world cardinal.WorldContext, playerName string) (types.Enti
 		PlayerEntityID:   playerManagerID,
 		PlayerName:       playerName,
 		PlayerID:         playerID,
+		Inventory:        make(map[int]component.Object),
 		PlayerConnection: true,
 	}); err != nil {
 		world.Logger().Debug().Msgf("Error updating the Player entity: %v when creating", err)

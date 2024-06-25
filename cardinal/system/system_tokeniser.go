@@ -14,27 +14,35 @@ func NTokeniserSystem(world cardinal.WorldContext) error {
 
 // TokeniserSystem structure
 type TokeniserSystem struct {
-	vrbLookup      map[string]enums.ActionType             // Lookup table for command strings to ActionType
-	dirLookup      map[string]enums.DirectionType          // Lookup table for direction strings to DirectionType
-	dirObjLookup   map[string]enums.ObjectType             // Lookup table for direction object strings to DirObjectType
-	objLookup      map[string]enums.ObjectType             // Lookup table for object strings to ObjectType
-	grammarLookup  map[string]enums.GrammarType            // Lookup table for GrammarType
-	responseLookup map[enums.ActionType][]enums.ActionType // Lookup table for action responses
-	revMat         map[string]enums.MaterialType           // Material type map in lowercase
-	revDirLookup   map[string]enums.DirectionType          // ookup table for direction object strings to DirObjectType in lowercase
+	vrbLookup        map[string]enums.ActionType             // Lookup table for command strings to ActionType
+	dirLookup        map[string]enums.DirectionType          // Lookup table for direction strings to DirectionType
+	dirObjLookup     map[string]enums.ObjectType             // Lookup table for directional object strings ObjectType
+	objLookup        map[string]enums.ObjectType             // Lookup table for object strings to ObjectType
+	grammarLookup    map[string]enums.GrammarType            // Lookup table for GrammarType
+	responseLookup   map[enums.ActionType][]enums.ActionType // Lookup table for action responses
+	revVrbLookup     map[string]enums.ActionType             // Lookup table for command string to ObjectType in lowercase
+	revObjLookup     map[string]enums.ObjectType             //Lookup table for the object string in lowercase
+	revDirObjLookup  map[string]enums.ObjectType             // Lookup table for directional object strings ObjectType in lowercase
+	revGrammarLookup map[string]enums.GrammarType            // Lookup table for the grammar type in lowercase
+	revMat           map[string]enums.MaterialType           // Material type map in lowercase
+	revDirLookup     map[string]enums.DirectionType          // ookup table for direction object strings to DirObjectType in lowercase
 }
 
 // NewTokeniserSystem creates a new instance of TokeniserSystem and initializes lookup tables
 func NewTokeniserSystem() *TokeniserSystem {
 	ts := &TokeniserSystem{
-		vrbLookup:      make(map[string]enums.ActionType),
-		dirLookup:      make(map[string]enums.DirectionType),
-		dirObjLookup:   make(map[string]enums.ObjectType),
-		objLookup:      make(map[string]enums.ObjectType),
-		grammarLookup:  make(map[string]enums.GrammarType),
-		responseLookup: make(map[enums.ActionType][]enums.ActionType),
-		revMat:         make(map[string]enums.MaterialType),
-		revDirLookup:   make(map[string]enums.DirectionType),
+		vrbLookup:        make(map[string]enums.ActionType),
+		dirLookup:        make(map[string]enums.DirectionType),
+		dirObjLookup:     make(map[string]enums.ObjectType),
+		objLookup:        make(map[string]enums.ObjectType),
+		grammarLookup:    make(map[string]enums.GrammarType),
+		responseLookup:   make(map[enums.ActionType][]enums.ActionType),
+		revVrbLookup:     make(map[string]enums.ActionType),
+		revObjLookup:     make(map[string]enums.ObjectType),
+		revDirObjLookup:  make(map[string]enums.ObjectType),
+		revGrammarLookup: make(map[string]enums.GrammarType),
+		revMat:           make(map[string]enums.MaterialType),
+		revDirLookup:     make(map[string]enums.DirectionType),
 	}
 	ts.initLUTS()
 	return ts
@@ -48,7 +56,6 @@ func (ts *TokeniserSystem) initLUTS() {
 	ts.setupDirObjs()
 	ts.setupGrammar()
 	ts.setupVrbAct()
-	ts.setupRevDirs()
 	ts.setupMaterial()
 }
 
@@ -71,6 +78,25 @@ func (ts *TokeniserSystem) setupCmds() {
 	ts.vrbLookup["INVENTORY"] = enums.ActionTypeInventory
 	ts.vrbLookup["BURN"] = enums.ActionTypeBurn
 	ts.vrbLookup["LIGHT"] = enums.ActionTypeLight
+
+	// lowercase
+	ts.revVrbLookup["go"] = enums.ActionTypeGo
+	ts.revVrbLookup["move"] = enums.ActionTypeMove
+	ts.revVrbLookup["loot"] = enums.ActionTypeLoot
+	ts.revVrbLookup["describe"] = enums.ActionTypeDescribe
+	ts.revVrbLookup["take"] = enums.ActionTypeTake
+	ts.revVrbLookup["kick"] = enums.ActionTypeKick
+	ts.revVrbLookup["lock"] = enums.ActionTypeLock
+	ts.revVrbLookup["unlock"] = enums.ActionTypeUnlock
+	ts.revVrbLookup["open"] = enums.ActionTypeOpen
+	ts.revVrbLookup["look"] = enums.ActionTypeLook
+	ts.revVrbLookup["close"] = enums.ActionTypeClose
+	ts.revVrbLookup["break"] = enums.ActionTypeBreak
+	ts.revVrbLookup["throw"] = enums.ActionTypeThrow
+	ts.revVrbLookup["drop"] = enums.ActionTypeDrop
+	ts.revVrbLookup["inventory"] = enums.ActionTypeInventory
+	ts.revVrbLookup["burn"] = enums.ActionTypeBurn
+	ts.revVrbLookup["light"] = enums.ActionTypeLight
 }
 
 // setupObjects initializes the object lookup table with predefined objects
@@ -81,6 +107,17 @@ func (ts *TokeniserSystem) setupObjects() {
 	ts.objLookup["KNIFE"] = enums.ObjectTypeKnife
 	ts.objLookup["BOTTLE"] = enums.ObjectTypeBottle
 
+	// lowercase
+	ts.revObjLookup["football"] = enums.ObjectTypeFootball
+	ts.revObjLookup["ball"] = enums.ObjectTypeFootball
+	ts.revObjLookup["key"] = enums.ObjectTypeKey
+	ts.revObjLookup["knife"] = enums.ObjectTypeKnife
+	ts.revObjLookup["bottle"] = enums.ObjectTypeBottle
+	ts.revObjLookup["Football"] = enums.ObjectTypeFootball
+	ts.revObjLookup["Ball"] = enums.ObjectTypeFootball
+	ts.revObjLookup["Key"] = enums.ObjectTypeKey
+	ts.revObjLookup["Knife"] = enums.ObjectTypeKnife
+	ts.revObjLookup["Bottle"] = enums.ObjectTypeBottle
 }
 
 // setupDirs initializes the direction lookup table with predefined directions
@@ -93,9 +130,8 @@ func (ts *TokeniserSystem) setupDirs() {
 	ts.dirLookup["DOWN"] = enums.DirectionTypeDown
 	ts.dirLookup["FORWARD"] = enums.DirectionTypeForward
 	ts.dirLookup["BACKWARD"] = enums.DirectionTypeBackward
-}
 
-func (ts *TokeniserSystem) setupRevDirs() {
+	// lowercase
 	ts.revDirLookup["north"] = enums.DirectionTypeNorth
 	ts.revDirLookup["south"] = enums.DirectionTypeSouth
 	ts.revDirLookup["east"] = enums.DirectionTypeEast
@@ -114,6 +150,14 @@ func (ts *TokeniserSystem) setupDirObjs() {
 	ts.objLookup["LADDER"] = enums.ObjectTypeLadder
 	ts.objLookup["PATH"] = enums.ObjectTypePath
 	ts.objLookup["TRAIL"] = enums.ObjectTypeTrail
+
+	// lowercase
+	ts.revObjLookup["door"] = enums.ObjectTypeDoor
+	ts.revObjLookup["window"] = enums.ObjectTypeWindow
+	ts.revObjLookup["stairs"] = enums.ObjectTypeStairs
+	ts.revObjLookup["ladder"] = enums.ObjectTypeLadder
+	ts.revObjLookup["path"] = enums.ObjectTypePath
+	ts.revObjLookup["trail"] = enums.ObjectTypeTrail
 }
 
 // setupVrbAct initializes the verb action response lookup table with predefined responses
@@ -132,6 +176,13 @@ func (ts *TokeniserSystem) setupGrammar() {
 	ts.grammarLookup["AT"] = enums.GrammarTypePreposition
 	ts.grammarLookup["WITH"] = enums.GrammarTypePreposition
 	ts.grammarLookup["AROUND"] = enums.GrammarTypeAdverb
+
+	// lowercase
+	ts.revGrammarLookup["the"] = enums.GrammarTypeDefinitionArticle
+	ts.revGrammarLookup["to"] = enums.GrammarTypePreposition
+	ts.revGrammarLookup["at"] = enums.GrammarTypePreposition
+	ts.revGrammarLookup["with"] = enums.GrammarTypePreposition
+	ts.revGrammarLookup["aroundD"] = enums.GrammarTypeAdverb
 }
 
 func (ts *TokeniserSystem) setupMaterial() {
@@ -146,15 +197,55 @@ func (ts *TokeniserSystem) setupMaterial() {
 	ts.revMat["glass"] = enums.MaterialTypeGlass
 }
 
+// lookupTokenVRB checks both the primary and reverse maps for a given token and returns the corresponding value and a boolean indicating success.
+func LookupTokenVRB(primary map[string]enums.ActionType, reverse map[string]enums.ActionType, token string) (enums.ActionType, bool) {
+	if value, ok := primary[token]; ok {
+		return value, true
+	}
+	if value, ok := reverse[token]; ok {
+		return value, true
+	}
+	return enums.ActionTypeNone, false
+}
+
+// lookupTokenDOBJ checks both the primary and reverse maps for a given token and returns the corresponding value and a boolean indicating success.
+func LookupTokenDOBJ(primary map[string]enums.ObjectType, reverse map[string]enums.ObjectType, token string) (enums.ObjectType, bool) {
+	if value, ok := primary[token]; ok {
+		return value, true
+	}
+	if value, ok := reverse[token]; ok {
+		return value, true
+	}
+	return enums.ObjectTypeNone, false
+}
+
+// lookupTokenIOB checks both the primary and reverse maps for a given token and returns the corresponding value and a boolean indicating success.
+func LookupTokenIOBJ(primary map[string]enums.ObjectType, reverse map[string]enums.ObjectType, token string) (enums.ObjectType, bool) {
+	if value, ok := primary[token]; ok {
+		return value, true
+	}
+	if value, ok := reverse[token]; ok {
+		return value, true
+	}
+	return enums.ObjectTypeNone, false
+}
+
 // FishTokens processes the tokenized command and returns VerbData
 func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	var data component.VerbData // Initialize VerbData to store the result
 	lenTokens := len(tokens) - 1
 
-	// Look up the verb, object, and directional object from the tokens
-	var VRB enums.ActionType = ts.vrbLookup[(tokens[0])]
-	var DObj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
-	var IObj enums.ObjectType = ts.objLookup[(tokens[lenTokens])]
+	// Look up the verb from the tokens
+	var VRB enums.ActionType
+	VRB, _ = LookupTokenVRB(ts.vrbLookup, ts.revVrbLookup, tokens[0])
+
+	// Look up the direct object from the tokens
+	var DObj enums.ObjectType
+	DObj, _ = LookupTokenDOBJ(ts.objLookup, ts.revObjLookup, tokens[lenTokens])
+
+	// Look up the indirect object from the tokens
+	var IObj enums.ObjectType
+	IObj, _ = LookupTokenIOBJ(ts.objLookup, ts.revObjLookup, tokens[lenTokens])
 
 	data.Verb = VRB // Set the verb in VerbData
 	data.ErrCode = constants.NOERR
@@ -174,9 +265,9 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 		switch {
 		case IObj != enums.ObjectTypeNone:
 			// We have IOBJ, find DOBJ
-			DObj = ts.objLookup[tokens[1]]
+			DObj, _ = LookupTokenDOBJ(ts.objLookup, ts.revObjLookup, tokens[1])
 			if DObj == enums.ObjectTypeNone {
-				DObj = ts.objLookup[tokens[2]]
+				DObj, _ = LookupTokenDOBJ(ts.objLookup, ts.revObjLookup, tokens[2])
 				if DObj == enums.ObjectTypeNone {
 					data.ErrCode = constants.ErrNoDirectObject
 				}
@@ -193,7 +284,6 @@ func (ts *TokeniserSystem) FishTokens(tokens []string) component.VerbData {
 	// Set the direct noun, indirect directional noun, and error code in VerbData
 	data.DirectObject = DObj
 	data.IndirectObject = IObj
-	//world.Logger().Debug().Msgf("P--->d.dobj:%s iobj:%s vrb:%s\033[0m", data.DirectObject, data.IndirectObject, data.Verb)
 	return data
 }
 
@@ -207,10 +297,22 @@ func (ts *TokeniserSystem) GetResponseForVerb(key enums.ActionType) []enums.Acti
 
 // GetObjectType returns the ObjectType for a given object key
 func (ts *TokeniserSystem) GetObjectType(key string) enums.ObjectType {
-	if object, ok := ts.objLookup[key]; ok {
+	if object, ok := ts.objLookup[key]; ok { // Upercase
 		return object
+	} else if revObject, ok := ts.revObjLookup[key]; ok { // lowercase
+		return revObject
 	}
 	return enums.ObjectTypeNone
+}
+
+// GetDirectionType returns the DirectionType for a given direction key
+func (ts *TokeniserSystem) GetDirectionType(key string) enums.DirectionType {
+	if direction, ok := ts.dirLookup[key]; ok { // upercase
+		return direction
+	} else if revDirection, ok := ts.revDirLookup[key]; ok { // lowercase
+		return revDirection
+	}
+	return enums.DirectionTypeNone
 }
 
 // GetActionType returns the ActionType for a given action key
@@ -218,24 +320,20 @@ func (ts *TokeniserSystem) GetActionType(key string) enums.ActionType {
 	//return ts.cmdLookup[key]
 	if action, ok := ts.vrbLookup[key]; ok {
 		return action
+	} else if revAction, ok := ts.revVrbLookup[key]; ok {
+		return revAction
 	}
 	return enums.ActionTypeNone
 }
 
 // GetGrammarType returns the GrammarType for a given grammar key
 func (ts *TokeniserSystem) GetGrammarType(key string) enums.GrammarType {
-	if grammar, ok := ts.grammarLookup[key]; ok {
+	if grammar, ok := ts.grammarLookup[key]; ok { // Upercase
 		return grammar
+	} else if revGrammar, ok := ts.revGrammarLookup[key]; ok { // lowercase
+		return revGrammar
 	}
 	return enums.GrammarTypeNone
-}
-
-// GetDirectionType returns the DirectionType for a given direction key
-func (ts *TokeniserSystem) GetDirectionType(key string) enums.DirectionType {
-	if direction, ok := ts.dirLookup[key]; ok {
-		return direction
-	}
-	return enums.DirectionTypeNone
 }
 
 // GetMaterial type returns the material type for a given material key
@@ -244,12 +342,4 @@ func (ts *TokeniserSystem) GetRevMaterialType(key string) enums.MaterialType {
 		return material
 	}
 	return enums.MaterialTypeNone
-}
-
-// GetMaterial type returns the material type for a given material key
-func (ts *TokeniserSystem) GetRevDirectionType(key string) enums.DirectionType {
-	if revDirection, ok := ts.revDirLookup[key]; ok {
-		return revDirection
-	}
-	return enums.DirectionTypeNone
 }
