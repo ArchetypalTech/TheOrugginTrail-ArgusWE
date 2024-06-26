@@ -35,8 +35,8 @@ func Inventory(playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext
 		errInv = 0
 	} else {
 		// Iterate over the inventory objects and build the description
-		for _, inInventoryObject := range player.Inventory {
-			object := player.Inventory[int(inInventoryObject.ObjectID)]
+		for _, InventoryObject := range player.Inventory {
+			object := player.Inventory[int(InventoryObject.ObjectID)]
 			objectDescription := ts.GetObjectType(object.ObjectType.String()).String()
 			if len(descriptions) == 0 {
 				// First item
@@ -59,7 +59,7 @@ func Inventory(playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext
 
 func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
 	var tok_err uint8
-	var hasBeenPickedUp bool
+	var PickedUp bool
 	var tok string
 	var description string
 	tok = tokens[1]
@@ -80,9 +80,9 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 	ObjectType := ts.GetObjectType(tok)
 
 	if ObjectType != enums.ObjectTypeNone {
-		for _, lookingObject := range room.Objects {
-			if lookingObject.ObjectID != 0 && lookingObject.CanBePickedUp {
-				object := room.Objects[int(lookingObject.ObjectID)]
+		for _, inventoryItem := range room.Objects {
+			if inventoryItem.ObjectID != 0 && inventoryItem.CanBePickedUp {
+				object := room.Objects[int(inventoryItem.ObjectID)]
 				if object.ObjectName == ObjectType.String() {
 					// Add the object to the player inventory
 					player.Inventory[int(object.ObjectID)] = object
@@ -103,7 +103,7 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 					description = fmt.Sprintf("You picked up a %s.", object.ObjectName)
 					tok_err = 0
-					hasBeenPickedUp = true
+					PickedUp = true
 					break
 				}
 			}
@@ -111,7 +111,7 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 	}
 
-	if hasBeenPickedUp == false {
+	if PickedUp == false {
 		description = "Can't pick something that doesn't exists, right?"
 		tok_err = 0
 	}
@@ -121,7 +121,7 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 func Drop(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
 	var tok_err uint8
-	var hasBeenDrop bool
+	var dropped bool
 	var tok string
 	var description string
 	tok = tokens[1]
@@ -142,9 +142,9 @@ func Drop(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 	ObjectType := ts.GetObjectType(tok)
 
 	if ObjectType != enums.ObjectTypeNone {
-		for _, lookingObject := range player.Inventory {
-			if lookingObject.ObjectID != 0 && lookingObject.CanBePickedUp {
-				object := player.Inventory[int(lookingObject.ObjectID)]
+		for _, inventoryItem := range player.Inventory {
+			if inventoryItem.ObjectID != 0 && inventoryItem.CanBePickedUp {
+				object := player.Inventory[int(inventoryItem.ObjectID)]
 				if object.ObjectName == ObjectType.String() {
 					// Add the object to the room
 					room.Objects[int(object.ObjectID)] = object
@@ -165,9 +165,9 @@ func Drop(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 						world.Logger().Error().Msgf("Error updating the room entity: %v, after dropping an object in the inventory system", err)
 					}
 
-					description = fmt.Sprintf("You drop a %s.", object.ObjectName)
+					description = fmt.Sprintf("You dropped the %s.", object.ObjectName)
 					tok_err = 0
-					hasBeenDrop = true
+					dropped = true
 					break
 				}
 			}
@@ -175,7 +175,7 @@ func Drop(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 	}
 
-	if hasBeenDrop == false {
+	if dropped == false {
 		description = "Can't drop something that you don't even have, right?"
 		tok_err = 0
 	}

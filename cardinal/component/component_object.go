@@ -12,7 +12,7 @@ type Object struct {
 	DirType         enums.DirectionType `json:"dir_type"`
 	DestID          enums.RoomType      `json:"dest_id"`
 	Description     string              `json:"description"`
-	ObjectActionIDs [32]uint32          `json:"object_action_ids"`
+	ObjectActionIDs []uint32            `json:"object_action_ids"`
 	CanBePickedUp   bool                `json:"can_be_pickedUp"`
 }
 

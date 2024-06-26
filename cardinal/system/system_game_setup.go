@@ -68,7 +68,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 	open2Barn := s.createAction(enums.ActionTypeOpen, "the door opens with a farty noise\n"+
 		"you can actually smell fart", true, true, true, 0, 0)
 
-	plainBarn := [32]uint32{open2Barn}
+	plainBarn := []uint32{open2Barn}
 	dObjs := []component.Object{s.createDirObject(enums.DirectionTypeNorth, enums.RoomTypePlain,
 		enums.ObjectTypePath, enums.MaterialTypeDirt,
 		"path", plainBarn, world)}
@@ -76,7 +76,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 	open2Path := s.createAction(enums.ActionTypeOpen, "the door opens and a small hinge demon curses you\n"+
 		"your nose is really itchy", true, true, true, 0, 0)
 
-	plainPath := [32]uint32{open2Path}
+	plainPath := []uint32{open2Path}
 	dObjs = append(dObjs, s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeWoodCabin,
 		enums.ObjectTypePath, enums.MaterialTypeMud,
 		"path", plainPath, world))
@@ -85,7 +85,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 		"bounces feebly\n then rolls into some fresh dog eggs\n"+
 		"none the less you briefly feel a little better", true, false, true, 0, 0)
 
-	ballActions := [32]uint32{kick}
+	ballActions := []uint32{kick}
 	objs := []component.Object{s.createObject(enums.ObjectTypeFootball, enums.MaterialTypeFlesh,
 		"A slightly deflated knock off uefa football, not quite spherical, it's kickable though.", enums.ObjectTypeFootball.String(), ballActions, world)}
 
@@ -119,7 +119,7 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 	world.Logger().Debug().Msg("---->Setting up the barn.....")
 	// KBARN -> S
 	open2South := s.createAction(enums.ActionTypeOpen, "the door opens\n", true, true, true, 0, 0)
-	barnPlain := [32]uint32{open2South}
+	barnPlain := []uint32{open2South}
 	dObjs := []component.Object{s.createDirObject(enums.DirectionTypeSouth, enums.RoomTypePlain,
 		enums.ObjectTypeDoor, enums.MaterialTypeWood,
 		"door", barnPlain, world)}
@@ -132,7 +132,7 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 		"satisfyingly spreading broken joy on the floor",
 		true, false, false, open2Forest, 0)
 
-	windowActions := [32]uint32{open2Forest, smashWindow}
+	windowActions := []uint32{open2Forest, smashWindow}
 	dObjs = append(dObjs, s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeForge,
 		enums.ObjectTypeWindow, enums.MaterialTypeWood,
 		"window", windowActions, world))
@@ -167,7 +167,7 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 
 	// KPATH -> W
 	open2West := s.createAction(enums.ActionTypeOpen, "the path is passable", true, true, false, 0, 0)
-	pathActions := [32]uint32{open2West}
+	pathActions := []uint32{open2West}
 
 	dObjs := []component.Object{s.createDirObject(enums.DirectionTypeWest, enums.RoomTypePlain,
 		enums.ObjectTypePath, enums.MaterialTypeStone,
@@ -200,7 +200,7 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 
 // createDirObject creates a directional object in the game world.
 func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType,
-	mType enums.MaterialType, desc string, actionObjects [32]uint32, world cardinal.WorldContext) component.Object {
+	mType enums.MaterialType, desc string, actionObjects []uint32, world cardinal.WorldContext) component.Object {
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)
 
@@ -232,7 +232,7 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 
 // createObject creates an object in the game world.
 func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialType, desc, objName string,
-	actionObjects [32]uint32, world cardinal.WorldContext) component.Object {
+	actionObjects []uint32, world cardinal.WorldContext) component.Object {
 
 	// Generate a text GUID for the description
 	txtID := s._textGuid(desc)

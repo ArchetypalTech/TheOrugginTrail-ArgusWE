@@ -821,7 +821,7 @@ func TestDrop_Sucess(t *testing.T) {
 	tokens1 := []string{"take", "ball"}
 	tokens2 := []string{"drop", "ball"}
 	var expectedOutTake string = ("You picked up a Football.")
-	var expectedOutDrop string = ("You drop a Football.")
+	var expectedOutDrop string = ("You dropped the Football.")
 	var expectedOutErr uint8 = 0
 
 	// Create an initial player
@@ -873,6 +873,131 @@ func TestDrop_Failure(t *testing.T) {
 }
 
 // #endregion Inventory System Test
+
+// #region Direction System Test
+func TestFishDirectionToken_1Token(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"north"}
+	var expectedOutTake string = ("north")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputToken, er := system.FishDirectionTok(tokens, ts)
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutTake, outputToken)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestFishDirectionToken_ShortForm(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"go", "backward"}
+	var expectedOutTake string = ("backward")
+	var expectedOutErr uint8 = 0
+
+	tf.DoTick()
+
+	outputToken, er := system.FishDirectionTok(tokens, ts)
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutTake, outputToken)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestFishDirectionToken_LongForm(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"GO", "to", "the", "SOUTH"}
+	var expectedOutTake string = ("SOUTH")
+	var expectedOutErr uint8 = 0
+
+	tf.DoTick()
+
+	outputToken, er := system.FishDirectionTok(tokens, ts)
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutTake, outputToken)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestDirectionCheck_CanMove_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+	const direction = enums.DirectionTypeNorth
+
+	var expectedOutBool bool = true
+
+	tf.DoTick()
+
+	outputDirCheck, component := system.DirectionCheck(roomSpawn, direction, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	print(component.Description)
+
+	assert.Equal(t, expectedOutBool, outputDirCheck)
+
+}
+
+func TestDirectionCheck_CanMove_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 2
+	const direction = enums.DirectionTypeEast
+
+	var expectedOutBool bool = false
+
+	tf.DoTick()
+
+	outputDirCheck, component := system.DirectionCheck(roomSpawn, direction, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	print(component.Description)
+
+	assert.Equal(t, expectedOutBool, outputDirCheck)
+
+}
+
+// #endregion Direction System Test
 
 func getCreateMsgID(t *testing.T, world *cardinal.World) types.MessageID {
 	return getMsgID(t, world, createMsgName)
