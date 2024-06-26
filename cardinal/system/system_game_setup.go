@@ -87,7 +87,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 
 	ballActions := [32]uint32{kick}
 	objs := []component.Object{s.createObject(enums.ObjectTypeFootball, enums.MaterialTypeFlesh,
-		"A slightly deflated knock off uefa football, not quite spherical, it's kickable though.", "football", ballActions, world)}
+		"A slightly deflated knock off uefa football, not quite spherical, it's kickable though.", enums.ObjectTypeFootball.String(), ballActions, world)}
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a windswept plain",
@@ -215,6 +215,7 @@ func (s *GameSetup) createDirObject(dirType enums.DirectionType, dstID enums.Roo
 		MaterialType:    mType,
 		Description:     txtID,
 		ObjectActionIDs: actionObjects,
+		CanBePickedUp:   false,
 	}
 
 	// Add the directional object data to the DirObjectStore
@@ -246,6 +247,7 @@ func (s *GameSetup) createObject(objType enums.ObjectType, mType enums.MaterialT
 		MaterialType:    mType,
 		Description:     desc,
 		ObjectActionIDs: actionObjects,
+		CanBePickedUp:   true,
 	}
 
 	// Add the object data to the ObjectStore

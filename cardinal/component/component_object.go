@@ -13,6 +13,7 @@ type Object struct {
 	DestID          enums.RoomType      `json:"dest_id"`
 	Description     string              `json:"description"`
 	ObjectActionIDs [32]uint32          `json:"object_action_ids"`
+	CanBePickedUp   bool                `json:"can_be_pickedUp"`
 }
 
 type ObjectStore struct {
