@@ -188,8 +188,7 @@ func HandleVerb(tokens []string, roomID uint32, playerID uint32, ts *TokeniserSy
 
 	case enums.ActionTypeDrop:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO DROP FROM INVENTORY SYSTEM")
-		resultStr = "---->HANDLE VERB: NOW SHOULD BE GOING TO DROP FROM INVENTORY SYSTEM"
-		e = 0
+		resultStr, e = Drop(tokens, playerID, roomID, ts, world)
 
 	default:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM")

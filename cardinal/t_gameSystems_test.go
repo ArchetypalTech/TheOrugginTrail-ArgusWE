@@ -246,8 +246,11 @@ func TestHandleVerb_Success(t *testing.T) {
 	const playerID = 3
 	const roomSpawn = 0
 
-	tokens := []string{"DROP", "THE", "KNIFE"}
-	expectedOutSt := "---->HANDLE VERB: NOW SHOULD BE GOING TO DROP FROM INVENTORY SYSTEM"
+	tokens := []string{"TAKE", "ball"}
+	var expectedOutTake string = ("You picked up a Football.")
+
+	tokens2 := []string{"DROP", "ball"}
+	expectedOutStDrop := "You drop a Football."
 	var expectedOutErr uint8 = 0
 
 	// Create an initial player
@@ -257,10 +260,18 @@ func TestHandleVerb_Success(t *testing.T) {
 	})
 	tf.DoTick()
 
-	output, er := system.HandleVerb(tokens, roomSpawn, playerID, ts, cardinal.NewReadOnlyWorldContext(tf.World))
+	outputTake, er := system.HandleVerb(tokens, roomSpawn, playerID, ts, cardinal.NewWorldContext(tf.World))
 
-	assert.Equal(t, expectedOutSt, output)
+	tf.DoTick()
+
+	outputDrop, er := system.HandleVerb(tokens2, roomSpawn, playerID, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutTake, outputTake)
+	assert.Equal(t, expectedOutStDrop, outputDrop)
 	assert.Equal(t, expectedOutErr, er)
+
 }
 
 /*
@@ -328,7 +339,7 @@ func TestHandleAlias_Success(t *testing.T) {
 /*
 The HandleAlias does not have a failure itself as the erros come from the function that calls this function one
 or from the functions that this function calls like stuff from the look system.
-The switch case is either a look or inventory type. For now is testing if the error is the same for the inventory type as it has not been impleented yet.
+The switch case is either a look or inventory type. This is testing if the inventory returns a string if there is no item inside it..
 */
 func TestHandleAlias_Failure(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
@@ -340,8 +351,8 @@ func TestHandleAlias_Failure(t *testing.T) {
 	const roomSpawn = 0
 
 	tokens := []string{"INVENTORY"}
-	expectedOutSt := "---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM"
-	var expectedOutErr uint8 = 135
+	expectedOutSt := "Your carrier bag doesn't even have a spiderweb."
+	var expectedOutErr uint8 = 0
 
 	// Create an initial player
 	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
@@ -795,6 +806,69 @@ func TestTake_Failure(t *testing.T) {
 	tf.DoTick()
 
 	assert.Equal(t, expectedOutTake, outputTake)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestDrop_Sucess(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens1 := []string{"take", "ball"}
+	tokens2 := []string{"drop", "ball"}
+	var expectedOutTake string = ("You picked up a Football.")
+	var expectedOutDrop string = ("You drop a Football.")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputTake, er := system.Take(tokens1, playerID, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	outputDrop, er := system.Drop(tokens2, playerID, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutTake, outputTake)
+	assert.Equal(t, expectedOutDrop, outputDrop)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestDrop_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"drop", "ball"}
+	var expectedOutDrop string = ("Can't drop something that you don't even have, right?")
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputDrop, er := system.Drop(tokens, playerID, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutDrop, outputDrop)
 	assert.Equal(t, expectedOutErr, er)
 }
 

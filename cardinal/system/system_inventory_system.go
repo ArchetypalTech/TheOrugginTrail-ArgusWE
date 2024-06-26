@@ -93,12 +93,12 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 					// Update the player entity
 					if err := cardinal.SetComponent[component.Player](world, types.EntityID(playerID), &player); err != nil {
-						world.Logger().Debug().Msgf("Error updating the room entity: %v, after taking an object in the inventory system", err)
+						world.Logger().Error().Msgf("Error updating the room entity: %v, after taking an object in the inventory system", err)
 					}
 
 					// Update the room entity
 					if err := cardinal.SetComponent[component.Room](world, types.EntityID(roomID), &room); err != nil {
-						world.Logger().Debug().Msgf("Error updating the room entity: %v, after taking an object in the inventory system", err)
+						world.Logger().Error().Msgf("Error updating the room entity: %v, after taking an object in the inventory system", err)
 					}
 
 					description = fmt.Sprintf("You picked up a %s.", object.ObjectName)
@@ -113,6 +113,70 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 	if hasBeenPickedUp == false {
 		description = "Can't pick something that doesn't exists, right?"
+		tok_err = 0
+	}
+
+	return description, tok_err
+}
+
+func Drop(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
+	var tok_err uint8
+	var hasBeenDrop bool
+	var tok string
+	var description string
+	tok = tokens[1]
+
+	// Get the room
+	room, err := GetRoom(types.EntityID(roomID), world)
+	if err != nil {
+		world.Logger().Error().Msgf("Error getting the room with ID: %v, for the Inventory System %v", roomID, err)
+	}
+
+	// Get the player
+	player, err := GetPlayer(types.EntityID(playerID), world)
+	if err != nil {
+		world.Logger().Error().Msgf("Error getting the player wiht ID: %v, for the Inventory System: %v", playerID, err)
+	}
+
+	// Get the Object Type
+	ObjectType := ts.GetObjectType(tok)
+
+	if ObjectType != enums.ObjectTypeNone {
+		for _, lookingObject := range player.Inventory {
+			if lookingObject.ObjectID != 0 && lookingObject.CanBePickedUp {
+				object := player.Inventory[int(lookingObject.ObjectID)]
+				if object.ObjectName == ObjectType.String() {
+					// Add the object to the room
+					room.Objects[int(object.ObjectID)] = object
+					//player.Inventory[int(object.ObjectID)] = object
+					// Remove the object from the player inventory
+					//delete(room.Objects, int(object.ObjectID))
+					delete(player.Inventory, int(object.ObjectID))
+
+					room.Players[int(player.PlayerID)] = player
+
+					// Update the player entity
+					if err := cardinal.SetComponent[component.Player](world, types.EntityID(playerID), &player); err != nil {
+						world.Logger().Error().Msgf("Error updating the room entity: %v, after dropping an object in the inventory system", err)
+					}
+
+					// Update the room entity
+					if err := cardinal.SetComponent[component.Room](world, types.EntityID(roomID), &room); err != nil {
+						world.Logger().Error().Msgf("Error updating the room entity: %v, after dropping an object in the inventory system", err)
+					}
+
+					description = fmt.Sprintf("You drop a %s.", object.ObjectName)
+					tok_err = 0
+					hasBeenDrop = true
+					break
+				}
+			}
+		}
+
+	}
+
+	if hasBeenDrop == false {
+		description = "Can't drop something that you don't even have, right?"
 		tok_err = 0
 	}
 
