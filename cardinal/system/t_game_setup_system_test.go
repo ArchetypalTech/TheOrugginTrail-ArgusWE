@@ -155,7 +155,7 @@ func NewGameSetupTest(world cardinal.WorldContext) *GameSetupTest {
 	}
 }
 
-func (s *GameSetupTest) createDirObjectTest(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType, mType enums.MaterialType, desc string, actionObjects [32]uint32) uint32 {
+func (s *GameSetupTest) createDirObjectTest(dirType enums.DirectionType, dstID enums.RoomType, dOType enums.ObjectType, mType enums.MaterialType, desc string, actionObjects []uint32) uint32 {
 	txtID := s._textGuidTest(desc)
 	s.TxtDefStore.Set(txtID, enums.TxtDefTypeDirObject, desc)
 	directionObjData := component.Object{
@@ -171,7 +171,7 @@ func (s *GameSetupTest) createDirObjectTest(dirType enums.DirectionType, dstID e
 	return dirObjID
 }
 
-func (s *GameSetupTest) createObjectTest(objType enums.ObjectType, mType enums.MaterialType, desc, objName string, actionObjects [32]uint32) uint32 {
+func (s *GameSetupTest) createObjectTest(objType enums.ObjectType, mType enums.MaterialType, desc, objName string, actionObjects []uint32) uint32 {
 	txt := s._textGuidTest(desc)
 	s.TxtDefStore.Set(txt, enums.TxtDefTypeObject, desc)
 	objData := component.Object{

@@ -1,6 +1,8 @@
 package component
 
 import (
+	"sync"
+
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
 )
 
@@ -20,6 +22,9 @@ type ActionStore struct {
 	nextID  uint32
 }
 
+var instance *ActionStore
+var once sync.Once
+
 func (ActionStore) Name() string {
 	return "ActionStore"
 }
@@ -29,10 +34,17 @@ func (Action) Name() string {
 }
 
 func NewActionStore() *ActionStore {
-	return &ActionStore{
-		actions: make(map[uint32]Action),
-		nextID:  1,
-	}
+	once.Do(func() {
+		instance = &ActionStore{
+			actions: make(map[uint32]Action),
+			nextID:  1,
+		}
+	})
+	return instance
+}
+
+func GetActionStore() *ActionStore {
+	return instance
 }
 
 func (store *ActionStore) Add(action Action) uint32 {

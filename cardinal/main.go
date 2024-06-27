@@ -60,6 +60,7 @@ func MustInitWorld(w *cardinal.World) {
 		system.NTokeniserSystem,
 		system.LookSystem,
 		system.InventorySystem,
+		system.DirectionSystem,
 	))
 
 	// Register the init system when the world is initiated.
