@@ -13,6 +13,33 @@ func DirectionSystem(world cardinal.WorldContext) error {
 	return nil
 }
 
+func GetNextRoom(tokens []string, currRoomID uint32, ts *TokeniserSystem, world cardinal.WorldContext) (uint32, uint8) {
+	// Get the Direction token and error
+	tok, tok_err := FishDirectionTok(tokens, ts)
+
+	// Check if the error value, case is not 0, return empty room and the error value
+	if tok_err != 0 {
+		return 0x10000, tok_err
+	}
+
+	// Test Direction
+	dir := ts.GetDirectionType(tok)
+
+	// Check the direction object and if can move
+	move, dirObj := DirectionCheck(currRoomID, dir, ts, world)
+
+	if move {
+		nextRoomType := dirObj.DestID
+		world.Logger().Debug().Msgf("Next roomType is: %v", nextRoomType.String())
+		return uint32(nextRoomType), 0
+	} else {
+		/* 	Check reason we didnt move. Currently, can only
+		   	be because there was no exit.
+		*/
+		return dirObj.ObjectID, constants.ErrNoExit.Code
+	}
+}
+
 func CanMove(dirObject component.Object, world cardinal.WorldContext) bool {
 	var canMove bool
 	// Accessing the instance of the ActionStore that was created when the game was setup
