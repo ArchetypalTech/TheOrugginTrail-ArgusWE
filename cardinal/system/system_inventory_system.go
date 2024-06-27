@@ -35,8 +35,8 @@ func Inventory(playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext
 		errInv = 0
 	} else {
 		// Iterate over the inventory objects and build the description
-		for _, InventoryObject := range player.Inventory {
-			object := player.Inventory[int(InventoryObject.ObjectID)]
+		for _, inventoryObject := range player.Inventory {
+			object := player.Inventory[int(inventoryObject.ObjectID)]
 			objectDescription := ts.GetObjectType(object.ObjectType.String()).String()
 			if len(descriptions) == 0 {
 				// First item
@@ -59,7 +59,7 @@ func Inventory(playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext
 
 func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
 	var tok_err uint8
-	var PickedUp bool
+	var pickedUp bool
 	var tok string
 	var description string
 	tok = tokens[1]
@@ -103,7 +103,7 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 					description = fmt.Sprintf("You picked up a %s.", object.ObjectName)
 					tok_err = 0
-					PickedUp = true
+					pickedUp = true
 					break
 				}
 			}
@@ -111,7 +111,7 @@ func Take(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 
 	}
 
-	if PickedUp == false {
+	if pickedUp == false {
 		description = "Can't pick something that doesn't exists, right?"
 		tok_err = 0
 	}
@@ -139,18 +139,16 @@ func Drop(tokens []string, playerID uint32, roomID uint32, ts *TokeniserSystem, 
 	}
 
 	// Get the Object Type
-	ObjectType := ts.GetObjectType(tok)
+	objectType := ts.GetObjectType(tok)
 
-	if ObjectType != enums.ObjectTypeNone {
+	if objectType != enums.ObjectTypeNone {
 		for _, inventoryItem := range player.Inventory {
 			if inventoryItem.ObjectID != 0 && inventoryItem.CanBePickedUp {
 				object := player.Inventory[int(inventoryItem.ObjectID)]
-				if object.ObjectName == ObjectType.String() {
+				if object.ObjectName == objectType.String() {
 					// Add the object to the room
 					room.Objects[int(object.ObjectID)] = object
-					//player.Inventory[int(object.ObjectID)] = object
 					// Remove the object from the player inventory
-					//delete(room.Objects, int(object.ObjectID))
 					delete(player.Inventory, int(object.ObjectID))
 
 					room.Players[int(player.PlayerID)] = player
