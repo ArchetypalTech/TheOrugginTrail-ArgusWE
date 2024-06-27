@@ -36,7 +36,7 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 				}, err
 			}
 
-			output, move, er := ProcessCommandsTokensLogic(messageData.Msg.Tokens, player, world)
+			output, move, nextRoomType, er := ProcessCommandsTokensLogic(messageData.Msg.Tokens, player, world)
 
 			// we have gone through the TOKENS, give err feedback if needed
 			if er != 0 {
@@ -53,7 +53,11 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 				// either a do something or move rooms command
 				if move {
 					// Here Goes Enter Room
-					world.Logger().Debug().Msg("---->GOING TO ROOM")
+					world.Logger().Debug().Msg("---->GOING TO NEW ROOM")
+					output, er, err = EnterRoom(nextRoomType, player, world)
+					if err != nil {
+						world.Logger().Error().Msgf("ProcessCommandsTokens: Error getting Room Component: %v", err)
+					}
 				} else {
 					// hit look libs_ perhaps?
 					world.Logger().Debug().Msg("---->hit look libs_ perhaps?")
@@ -76,6 +80,59 @@ func ProcessCommandsTokens(world cardinal.WorldContext) error {
 
 		},
 	)
+}
+
+// Go into the new room
+func EnterRoom(roomType uint32, player component.Player, world cardinal.WorldContext) (string, uint8, error) {
+	var description string
+	var nextRoom component.Room
+
+	// Get the current room the player is
+	oldRoom, err := GetRoom(types.EntityID(player.RoomID), world)
+	if err != nil {
+		world.Logger().Error().Msgf("EnterRoom: Error getting current Room Component: %v", err)
+	}
+
+	// Get the New Room
+	err = cardinal.NewSearch().Entity(filter.Exact(filter.Component[component.Room]())).
+		Each(world, func(id types.EntityID) bool {
+			room, err := cardinal.GetComponent[component.Room](world, id)
+			if err != nil {
+				world.Logger().Error().Msgf("EnterRoom: Error getting new Room Component: %v", err)
+				return true
+			}
+
+			if room.RoomType == enums.RoomType(roomType) {
+				nextRoom = *room
+				world.Logger().Debug().Msgf("EnterRoom: your new room is: %v", nextRoom.RoomType.String())
+				return false
+			}
+
+			return true
+		})
+
+	// Add the player to the new room using the player ID
+	nextRoom.Players[int(player.PlayerEntityID)] = player
+	// Delete the player from the room he was using the player ID
+	delete(oldRoom.Players, int(player.PlayerID))
+	// Update the player's current room
+	err = updatePlayerRoomID(world, player.PlayerEntityID, types.EntityID(nextRoom.ID))
+	if err != nil {
+		world.Logger().Error().Msgf("EnterRoom: Error updating the player's roomID: %v", err)
+	}
+	// Update the old room
+	if err := cardinal.SetComponent[component.Room](world, types.EntityID(oldRoom.ID), &oldRoom); err != nil {
+		world.Logger().Debug().Msgf("EnterRoom: Failed to update old room component: %v", err)
+	}
+	// Update the new room
+	if err := cardinal.SetComponent[component.Room](world, types.EntityID(nextRoom.ID), &nextRoom); err != nil {
+		world.Logger().Debug().Msgf("EnterRoom: Failed to update new room component: %v", err)
+	}
+
+	// Get the description upon entering the new room
+	description = GenDescText(player.PlayerID, nextRoom.ID, ts, world)
+
+	return description, 0, err
 }
 
 // Returns the player entity component based on the id
@@ -101,15 +158,14 @@ func getPlayerEntity(world cardinal.WorldContext, pEID types.EntityID) (componen
 }
 
 // Process the Commands tokens, this is the function dedicated to it.
-func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world cardinal.WorldContext) (string, bool, uint8) {
+func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world cardinal.WorldContext) (string, bool, uint32, uint8) {
 	pID := Player.PlayerID
 	rID := Player.RoomID
 	tokens := Tokens
 	var er uint8
 	var move bool
 	var output string
-	//var nxt uint32 ---> Not used YET
-
+	var nxt uint32
 	// Start a new token system
 	ts = NewTokeniserSystem()
 
@@ -125,14 +181,17 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 		if tokD != enums.DirectionTypeNone {
 			move = true
 			// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
+			/* Dir Form */
+			nxt, er = GetNextRoom(tokens, rID, ts, world)
 		} else if ts.GetActionType(tok1) != enums.ActionTypeNone {
 			if uint8(len(tokens)) >= constants.MIN_TOK {
 				world.Logger().Debug().Msgf("---->tok.len %d", len(tokens))
 				if ts.GetActionType(tok1) == enums.ActionTypeGo {
 					// GO: form
 					move = true
-					output = "GOING TO NEXT ROOM - DIRECTION SYSTEM - TO BE IMPLEMENTED"
+					world.Logger().Debug().Msg("Going to GetNextRoom in the Direction System from PCTL")
 					// HERE GOES GET NEXT ROOM - DIRECTION SYSTEM
+					nxt, er = GetNextRoom(tokens, rID, ts, world)
 				} else {
 					// VERB: form
 					output, er = HandleVerb(tokens, rID, pID, ts, world)
@@ -149,8 +208,7 @@ func ProcessCommandsTokensLogic(Tokens []string, Player component.Player, world 
 		}
 	}
 
-	return output, move, er
-
+	return output, move, nxt, er
 }
 
 // handle if the token is an alias
@@ -217,7 +275,7 @@ func InsultMeat(cErr uint8, badCmd string) string {
 		eMsg = "Go " + badCmd + " is nowhere I know of bellend"
 
 	case constants.ErrNoExit.Code:
-		eMsg = "Can't go that away " + badCmd
+		eMsg = "Can't go that way " + badCmd
 
 	default:
 		// Add a default case if needed for handling unexpected cErr values

@@ -65,9 +65,9 @@ func GenDescText(playerId uint32, id uint32, ts *TokeniserSystem, world cardinal
 	}
 
 	if room.RoomType == enums.RoomTypePlain {
-		desc += fmt.Sprintf("on %s\n", room.Description)
+		desc += fmt.Sprintf("on %s", room.Description)
 	} else {
-		desc += fmt.Sprintf("in %s\n", room.Description)
+		desc += fmt.Sprintf("in %s", room.Description)
 	}
 
 	desc += " " + ObjectDescription(room, world)

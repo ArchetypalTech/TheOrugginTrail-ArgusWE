@@ -146,17 +146,18 @@ func TestAssignPlayerToRoom_Success(t *testing.T) {
 
 // #endregion Create Player Test
 
-// #region ProcessCommandTokens Test
+// #region ProcessCommandTokens System Test
 func TestSystem_ProcessCommands_Success(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
+	tf.DoTick()
 
 	const playerName = "Hueyu"
 	const roomSpawn = 0
 	var tokens = []string{"LOOK", "WITH", "BOTTLE", "AT", "THE", "WINDOW"}
 	var expectedOut string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
-		" the air tastes of burnt grease and bensons.\n " +
-		"You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" the air tastes of burnt grease and bensons." +
+		" You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
 		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
 		" There is no other poor soul here apart from you.")
 	// Create an initial player
@@ -228,6 +229,108 @@ func TestSystem_ProcessCommands_Failure(t *testing.T) {
 	// Access the fields
 	assert.Equal(t, false, processCommandsReply.Success)
 	assert.Equal(t, (fmt.Sprintf("Error: %v processing the commands: %s", er, expectedOut)), processCommandsReply.Message)
+	assert.Equal(t, expectedOut, processCommandsReply.Result)
+}
+
+func TestSystem_ProcessCommands_Success_GoNextRoom(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName1 = "Hueyu"
+	const playerName2 = "GOD"
+	const roomSpawn1 = 2
+	const roomSpawn2 = 0
+	var tokens = []string{"go", "west"}
+	var expectedOut string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+		" the air tastes of burnt grease and bensons." +
+		" You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
+		" In this room is GOD")
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName1,
+		RoomID:      roomSpawn1,
+	})
+	tf.DoTick()
+
+	// Create second player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName2,
+		RoomID:      roomSpawn2,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName1,
+		Tokens:     tokens,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt := getReceiptFromPastTick(t, tf.World, processTxHash)
+	if errs := processReceipt.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply, ok := processReceipt.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt.Result)
+	}
+	// Access the fields
+	assert.Equal(t, true, processCommandsReply.Success)
+	assert.Equal(t, "Processing tokens completed", processCommandsReply.Message)
+	assert.Equal(t, expectedOut, processCommandsReply.Result)
+}
+
+func TestSystem_ProcessCommands_Failure_GoNextRoom(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName1 = "Hueyu"
+	const playerName2 = "GOD"
+	const roomSpawn1 = 2
+	const roomSpawn2 = 0
+	var tokens = []string{"go", "south"}
+	var expectedOut string = ("Can't go that way ")
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName1,
+		RoomID:      roomSpawn1,
+	})
+	tf.DoTick()
+
+	// Create second player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName2,
+		RoomID:      roomSpawn2,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName1,
+		Tokens:     tokens,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt := getReceiptFromPastTick(t, tf.World, processTxHash)
+	if errs := processReceipt.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply, ok := processReceipt.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt.Result)
+	}
+	// Access the fields
+	assert.Equal(t, false, processCommandsReply.Success)
+	assert.Equal(t, "Error: 8 processing the commands: Can't go that way ", processCommandsReply.Message)
 	assert.Equal(t, expectedOut, processCommandsReply.Result)
 }
 
@@ -317,8 +420,8 @@ func TestHandleAlias_Success(t *testing.T) {
 
 	tokens := []string{"LOOK"}
 	var expectedOutSt string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
-		" the air tastes of burnt grease and bensons.\n " +
-		"You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
+		" the air tastes of burnt grease and bensons." +
+		" You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
 		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
 		" There is no other poor soul here apart from you.")
 	var expectedOutErr uint8 = 0
@@ -395,7 +498,7 @@ func TestInsultMeat_Failure(t *testing.T) {
 	assert.Equal(t, expectedOutSt, output)
 }
 
-// #endregion ProcessCommandTokens Test
+// #endregion ProcessCommandTokens System Test
 
 // #region Tokeniser System Test
 func TestFishTokens_Success(t *testing.T) {
@@ -875,6 +978,68 @@ func TestDrop_Failure(t *testing.T) {
 // #endregion Inventory System Test
 
 // #region Direction System Test
+func TestGetNexRoom_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"GO", "NORTH"}
+	var expectedOutGNR uint32 = uint32(enums.RoomTypePlain)
+	var expectedOutErr uint8 = 0
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputGNR, er := system.GetNextRoom(tokens, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutGNR, outputGNR)
+	assert.Equal(t, expectedOutErr, er)
+}
+
+func TestGetNexRoom_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+
+	tokens := []string{"south"}
+	var expectedOutGNR uint32 = 0x0
+	var expectedOutErr uint8 = constants.ErrNoExit.Code
+	var expectedOutErrMsg string = "Can't go that away south"
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	outputGNR, er := system.GetNextRoom(tokens, roomSpawn, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	outputGNR_ERR_msg := system.InsultMeat(er, tokens[0])
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedOutGNR, outputGNR)
+	assert.Equal(t, expectedOutErr, er)
+	assert.Equal(t, expectedOutErrMsg, outputGNR_ERR_msg)
+}
+
 func TestFishDirectionToken_1Token(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
 	MustInitWorld(tf.World)
