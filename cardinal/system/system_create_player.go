@@ -46,17 +46,7 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 			}
 
 			player, err := GetPlayer(playerManagerID, world)
-
-			// Assign the player to the specified room
 			roomID := types.EntityID(createPlayerData.Msg.RoomID)
-			if err := AssignPlayerToRoom(world, player, roomID); err != nil {
-				world.Logger().Debug().Msgf("Failed to assign player to the room: %v", err)
-
-				return msg.CreatePlayerReply{
-					Success: false,
-					Message: fmt.Sprintf("Failed to assign player to the room: %v", err),
-				}, err
-			}
 
 			// Update the player's room ID
 			if err := updatePlayerRoomID(world, playerManagerID, roomID); err != nil {
@@ -68,12 +58,28 @@ func CreatePlayerSystem(world cardinal.WorldContext) error {
 				}, err
 			}
 
+			playerWithRID, err := GetPlayer(playerManagerID, world)
+
+			// Assign the player to the specified room
+			if err := AssignPlayerToRoom(world, playerWithRID, roomID); err != nil {
+				world.Logger().Debug().Msgf("Failed to assign player to the room: %v", err)
+
+				return msg.CreatePlayerReply{
+					Success: false,
+					Message: fmt.Sprintf("Failed to assign player to the room: %v", err),
+				}, err
+			}
+
+			ts = NewTokeniserSystem()
+			roomDesc := GenDescText(player.PlayerID, uint32(roomID), ts, world)
+
 			world.Logger().Info().Msgf("Player entity created successfully with ID: %v", playerManagerID)
 
 			return msg.CreatePlayerReply{
-				Success:        true,
-				Message:        fmt.Sprintf("Player: %v was created successfully. It's entity ID is: %v and has been placed in room: %v", createPlayerData.Msg.PlayersName, playerManagerID, roomID),
-				PlayerEntityID: playerManagerID,
+				Success:         true,
+				Message:         fmt.Sprintf("Player: %v was created successfully. It's entity ID is: %v and has been placed in room: %v", createPlayerData.Msg.PlayersName, playerManagerID, roomID),
+				PlayerEntityID:  playerManagerID,
+				RoomDescription: roomDesc,
 			}, nil
 		},
 	)
@@ -146,14 +152,14 @@ func AssignPlayerToRoom(world cardinal.WorldContext, player component.Player, ro
 
 // Update player's room ID
 func updatePlayerRoomID(world cardinal.WorldContext, playerManagerID types.EntityID, roomID types.EntityID) error {
-	playerManager, err := cardinal.GetComponent[component.Player](world, playerManagerID)
+	player, err := GetPlayer(playerManagerID, world)
 	if err != nil {
 		world.Logger().Debug().Msgf("Error getting Player Component: %v", err)
 		return err
 	}
 
-	playerManager.RoomID = uint32(roomID)
-	if err := cardinal.SetComponent[component.Player](world, playerManagerID, playerManager); err != nil {
+	player.RoomID = uint32(roomID)
+	if err := cardinal.SetComponent[component.Player](world, playerManagerID, &player); err != nil {
 		world.Logger().Debug().Msgf("Error updating the Player entity: %v", err)
 		return err
 	}

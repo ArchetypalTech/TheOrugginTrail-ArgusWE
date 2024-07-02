@@ -10,8 +10,8 @@ func TestRoomType(t *testing.T) {
 	if RoomTypeNone.String() != "None" {
 		t.Errorf("RoomTypeNone.String() = %v; want %v", RoomTypeNone.String(), "None")
 	}
-	if RoomTypeWoodCabin.String() != "WoodCabin" {
-		t.Errorf("RoomTypeWoodCabin.String() = %v; want %v", RoomTypeWoodCabin.String(), "WoodCabin")
+	if RoomTypeBarn.String() != "Barn" {
+		t.Errorf("RoomTypeBarn.String() = %v; want %v", RoomTypeBarn.String(), "Barn")
 	}
 	if RoomTypeStore.String() != "Store" {
 		t.Errorf("RoomTypeStore.String() = %v; want %v", RoomTypeStore.String(), "Store")
@@ -39,8 +39,8 @@ func TestRoomType(t *testing.T) {
 	if toStringRoom[RoomTypeNone] != "None" {
 		t.Errorf("toStringRoom[RoomTypeNone] = %v; want %v", toStringRoom[RoomTypeNone], "None")
 	}
-	if toStringRoom[RoomTypeWoodCabin] != "WoodCabin" {
-		t.Errorf("toStringRoom[RoomTypeWoodCabin] = %v; want %v", toStringRoom[RoomTypeWoodCabin], "WoodCabin")
+	if toStringRoom[RoomTypeBarn] != "Barn" {
+		t.Errorf("toStringRoom[RoomTypeBarn] = %v; want %v", toStringRoom[RoomTypeBarn], "Barn")
 	}
 	if toStringRoom[RoomTypeStore] != "Store" {
 		t.Errorf("toStringRoom[RoomTypeStore] = %v; want %v", toStringRoom[RoomTypeStore], "Store")
@@ -68,8 +68,8 @@ func TestRoomType(t *testing.T) {
 	if toEnumRoom["None"] != RoomTypeNone {
 		t.Errorf("toEnumRoom[\"None\"] = %v; want %v", toEnumRoom["None"], RoomTypeNone)
 	}
-	if toEnumRoom["WoodCabin"] != RoomTypeWoodCabin {
-		t.Errorf("toEnumRoom[\"WoodCabin\"] = %v; want %v", toEnumRoom["WoodCabin"], RoomTypeWoodCabin)
+	if toEnumRoom["Barn"] != RoomTypeBarn {
+		t.Errorf("toEnumRoom[\"Barn\"] = %v; want %v", toEnumRoom["Barn"], RoomTypeBarn)
 	}
 	if toEnumRoom["Store"] != RoomTypeStore {
 		t.Errorf("toEnumRoom[\"Store\"] = %v; want %v", toEnumRoom["Store"], RoomTypeStore)

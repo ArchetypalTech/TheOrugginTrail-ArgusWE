@@ -234,7 +234,6 @@ func HandleVerb(tokens []string, roomID uint32, playerID uint32, ts *TokeniserSy
 	var e uint8
 	var resultStr string
 
-	//cmdData := ts.FishTokens(tokens) ---> Not used YET
 	switch vrb {
 	case enums.ActionTypeLook, enums.ActionTypeDescribe:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
@@ -250,9 +249,10 @@ func HandleVerb(tokens []string, roomID uint32, playerID uint32, ts *TokeniserSy
 
 	default:
 		world.Logger().Debug().Msg("---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM")
-		resultStr = "---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM"
-		e = 0
+		cmdData := ts.FishTokens(tokens)
+		resultStr, e = Act(cmdData, roomID, playerID, ts, world)
 		world.Logger().Debug().Msgf("---->HANDLE VERB:resultStr: %s", resultStr)
+		world.Logger().Debug().Msgf("---->HANDLE VERB:err: %d", e)
 	}
 
 	return resultStr, e
@@ -265,7 +265,7 @@ func InsultMeat(cErr uint8, badCmd string) string {
 	case constants.ErrParserRoutineTKCX.Code:
 		eMsg = "WTF, slow down cowboy, you're gonna hurt yourself"
 
-	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code, constants.ErrNoObjectsToHandle.Code, constants.ErrBadLookCommand.Code:
+	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code, constants.ErrNoObjectsToHandle.Code, constants.ErrBadLookCommand.Code, constants.ErrActionHandleBadCommand0.Code:
 		eMsg = "Nope, gibberish. Stop breathing with your mouth."
 
 	case constants.ErrParserRoutineND.Code, constants.ErrDirectionRoutineND.Code:

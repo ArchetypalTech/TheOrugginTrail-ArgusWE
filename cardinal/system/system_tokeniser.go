@@ -97,6 +97,25 @@ func (ts *TokeniserSystem) setupCmds() {
 	ts.revVrbLookup["inventory"] = enums.ActionTypeInventory
 	ts.revVrbLookup["burn"] = enums.ActionTypeBurn
 	ts.revVrbLookup["light"] = enums.ActionTypeLight
+
+	ts.revVrbLookup["Go"] = enums.ActionTypeGo
+	ts.revVrbLookup["Move"] = enums.ActionTypeMove
+	ts.revVrbLookup["Loot"] = enums.ActionTypeLoot
+	ts.revVrbLookup["Describe"] = enums.ActionTypeDescribe
+	ts.revVrbLookup["Take"] = enums.ActionTypeTake
+	ts.revVrbLookup["Kick"] = enums.ActionTypeKick
+	ts.revVrbLookup["Lock"] = enums.ActionTypeLock
+	ts.revVrbLookup["Unlock"] = enums.ActionTypeUnlock
+	ts.revVrbLookup["Open"] = enums.ActionTypeOpen
+	ts.revVrbLookup["Look"] = enums.ActionTypeLook
+	ts.revVrbLookup["Close"] = enums.ActionTypeClose
+	ts.revVrbLookup["Break"] = enums.ActionTypeBreak
+	ts.revVrbLookup["Throw"] = enums.ActionTypeThrow
+	ts.revVrbLookup["Drop"] = enums.ActionTypeDrop
+	ts.revVrbLookup["Inventory"] = enums.ActionTypeInventory
+	ts.revVrbLookup["Burn"] = enums.ActionTypeBurn
+	ts.revVrbLookup["Light"] = enums.ActionTypeLight
+
 }
 
 // setupObjects initializes the object lookup table with predefined objects
@@ -140,6 +159,15 @@ func (ts *TokeniserSystem) setupDirs() {
 	ts.revDirLookup["down"] = enums.DirectionTypeDown
 	ts.revDirLookup["foward"] = enums.DirectionTypeForward
 	ts.revDirLookup["backward"] = enums.DirectionTypeBackward
+
+	ts.revDirLookup["North"] = enums.DirectionTypeNorth
+	ts.revDirLookup["South"] = enums.DirectionTypeSouth
+	ts.revDirLookup["East"] = enums.DirectionTypeEast
+	ts.revDirLookup["West"] = enums.DirectionTypeWest
+	ts.revDirLookup["Up"] = enums.DirectionTypeUp
+	ts.revDirLookup["Down"] = enums.DirectionTypeDown
+	ts.revDirLookup["Foward"] = enums.DirectionTypeForward
+	ts.revDirLookup["Backward"] = enums.DirectionTypeBackward
 }
 
 // setupDirObjs initializes the directional object lookup table with predefined directional objects
@@ -158,11 +186,17 @@ func (ts *TokeniserSystem) setupDirObjs() {
 	ts.revObjLookup["ladder"] = enums.ObjectTypeLadder
 	ts.revObjLookup["path"] = enums.ObjectTypePath
 	ts.revObjLookup["trail"] = enums.ObjectTypeTrail
+	ts.revObjLookup["Door"] = enums.ObjectTypeDoor
+	ts.revObjLookup["Window"] = enums.ObjectTypeWindow
+	ts.revObjLookup["Stairs"] = enums.ObjectTypeStairs
+	ts.revObjLookup["Ladder"] = enums.ObjectTypeLadder
+	ts.revObjLookup["Path"] = enums.ObjectTypePath
+	ts.revObjLookup["Trail"] = enums.ObjectTypeTrail
 }
 
 // setupVrbAct initializes the verb action response lookup table with predefined responses
 func (ts *TokeniserSystem) setupVrbAct() {
-	ts.responseLookup[enums.ActionTypeKick] = []enums.ActionType{enums.ActionTypeBreak, enums.ActionTypeHit, enums.ActionTypeDamage}
+	ts.responseLookup[enums.ActionTypeKick] = []enums.ActionType{enums.ActionTypeBreak, enums.ActionTypeHit, enums.ActionTypeDamage, enums.ActionTypeKick}
 	ts.responseLookup[enums.ActionTypeBurn] = []enums.ActionType{enums.ActionTypeBurn, enums.ActionTypeLight, enums.ActionTypeDamage}
 	ts.responseLookup[enums.ActionTypeLight] = []enums.ActionType{enums.ActionTypeBurn, enums.ActionTypeLight, enums.ActionTypeDamage}
 	ts.responseLookup[enums.ActionTypeOpen] = []enums.ActionType{enums.ActionTypeOpen}

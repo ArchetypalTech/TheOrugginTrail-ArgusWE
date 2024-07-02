@@ -9,6 +9,7 @@ import (
 	"pkg.world.dev/world-engine/cardinal/testutils"
 	"pkg.world.dev/world-engine/cardinal/types"
 
+	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/component"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/constants"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/msg"
@@ -703,7 +704,7 @@ func TestGetRoom_Failure(t *testing.T) {
 		fmt.Printf("Error getting Room Component: %v", err)
 
 	} else {
-		fmt.Sprintf("RoomID is: %v", room.ID)
+		print(fmt.Sprintf("RoomID is: %v", room.ID))
 	}
 }
 func TestGetMaterial_Success(t *testing.T) {
@@ -1163,6 +1164,479 @@ func TestDirectionCheck_CanMove_Failure(t *testing.T) {
 }
 
 // #endregion Direction System Test
+
+// #region Action System Test
+
+func TestFetchObjsForType_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+	const actType = enums.ActionTypeKick
+
+	expectedObject := component.Object{
+		ObjectID:        3,
+		ObjectName:      "Football",
+		ObjectType:      enums.ObjectTypeFootball,
+		MaterialType:    enums.MaterialTypeFlesh,
+		DirType:         enums.DirectionTypeNone,
+		DestID:          enums.RoomTypeNone,
+		Description:     "A slightly deflated knock off uefa football, not quite spherical, it's kickable though.",
+		ObjectActionIDs: []uint32{3},
+		CanBePickedUp:   true,
+	}
+
+	tf.DoTick()
+
+	room, roomErr := system.GetRoom(types.EntityID(roomSpawn), cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	fetchedObjs := system.FetchObjsForType(actType, room, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, roomErr, nil)
+	assert.Equal(t, []component.Object([]component.Object{expectedObject}), fetchedObjs)
+}
+
+func TestFetchObjsForType_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+	const actType = enums.ActionTypeLock
+
+	expectedObject := component.Object{
+		ObjectID:        4,
+		ObjectName:      "Knife",
+		ObjectType:      enums.ObjectTypeKnife,
+		MaterialType:    enums.MaterialTypeIron,
+		DirType:         enums.DirectionTypeNone,
+		DestID:          enums.RoomTypeNone,
+		Description:     "A rusty iron knife that is missing some edge.",
+		ObjectActionIDs: []uint32{3},
+		CanBePickedUp:   true,
+	}
+
+	tf.DoTick()
+
+	room, roomErr := system.GetRoom(types.EntityID(roomSpawn), cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	fetchedObjs := system.FetchObjsForType(actType, room, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, roomErr, nil)
+	assert.NotEqual(t, []component.Object([]component.Object{expectedObject}), fetchedObjs)
+}
+
+func TestFetchDirObjsForType_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 1
+	const actType = enums.ActionTypeKick
+
+	expectedObject1 := component.Object{
+		ObjectID:        4,
+		ObjectName:      "",
+		ObjectType:      enums.ObjectTypeDoor,
+		MaterialType:    enums.MaterialTypeWood,
+		DirType:         enums.DirectionTypeSouth,
+		DestID:          enums.RoomTypePlain,
+		Description:     "door",
+		ObjectActionIDs: []uint32{4},
+		CanBePickedUp:   false,
+	}
+
+	expectedObject2 := component.Object{
+		ObjectID:        5,
+		ObjectName:      "",
+		ObjectType:      enums.ObjectTypeWindow,
+		MaterialType:    enums.MaterialTypeWood,
+		DirType:         enums.DirectionTypeEast,
+		DestID:          enums.RoomTypePlain,
+		Description:     "window",
+		ObjectActionIDs: []uint32{5, 6},
+		CanBePickedUp:   false,
+	}
+
+	tf.DoTick()
+
+	room, roomErr := system.GetRoom(types.EntityID(roomSpawn), cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	fetchedObjs := system.FetchDirObjsForType(actType, room, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, roomErr, nil)
+	assert.Equal(t, []component.Object([]component.Object{expectedObject1, expectedObject2, expectedObject2}), fetchedObjs)
+}
+
+func TestFetchDirObjsForType_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 1
+	const actType = enums.ActionTypeKick
+
+	expectedObject1 := component.Object{
+		ObjectID:        4,
+		ObjectName:      "",
+		ObjectType:      enums.ObjectTypeDoor,
+		MaterialType:    enums.MaterialTypeStone,
+		DirType:         enums.DirectionTypeWest,
+		DestID:          enums.RoomTypePlain,
+		Description:     "path",
+		ObjectActionIDs: []uint32{4},
+		CanBePickedUp:   false,
+	}
+
+	expectedObject2 := component.Object{
+		ObjectID:        5,
+		ObjectName:      "",
+		ObjectType:      enums.ObjectTypeWindow,
+		MaterialType:    enums.MaterialTypeWood,
+		DirType:         enums.DirectionTypeEast,
+		DestID:          enums.RoomTypePlain,
+		Description:     "window",
+		ObjectActionIDs: []uint32{5, 6},
+		CanBePickedUp:   false,
+	}
+
+	tf.DoTick()
+
+	room, roomErr := system.GetRoom(types.EntityID(roomSpawn), cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	fetchedObjs := system.FetchDirObjsForType(actType, room, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, roomErr, nil)
+	assert.NotEqual(t, []component.Object([]component.Object{expectedObject1, expectedObject2, expectedObject2}), fetchedObjs)
+}
+
+func TestGetResponseStr_WithIObj(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	cmdData := component.VerbData{
+		Verb:           enums.ActionTypeBurn,
+		DirectObject:   enums.ObjectTypeFootball,
+		IndirectObject: enums.ObjectTypeDoor,
+		ErrCode:        constants.NOERR,
+	}
+	var expectedStr = "You Burn the Football at the Door."
+
+	tf.DoTick()
+
+	responseGot := system.GetResponseStr(cmdData, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedStr, responseGot)
+}
+
+func TestGetResponseStr_WithNOIObj(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	cmdData := component.VerbData{
+		Verb:           enums.ActionTypeKick,
+		DirectObject:   enums.ObjectTypeBottle,
+		IndirectObject: enums.ObjectTypeNone,
+		ErrCode:        constants.NOERR,
+	}
+	var expectedStr = "You Kick the Bottle."
+
+	tf.DoTick()
+
+	responseGot := system.GetResponseStr(cmdData, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, expectedStr, responseGot)
+}
+
+func TestHandleBaseAction_Success(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+	const actType = enums.ActionTypeKick
+
+	expectedObject := component.Object{
+		ObjectID:        3,
+		ObjectName:      "Football",
+		ObjectType:      enums.ObjectTypeFootball,
+		MaterialType:    enums.MaterialTypeFlesh,
+		DirType:         enums.DirectionTypeNone,
+		DestID:          enums.RoomTypeNone,
+		Description:     "A slightly deflated knock off uefa football, not quite spherical, it's kickable though.",
+		ObjectActionIDs: []uint32{3},
+		CanBePickedUp:   true,
+	}
+
+	cmdData := component.VerbData{
+		Verb:           enums.ActionTypeKick,
+		DirectObject:   enums.ObjectTypeFootball,
+		IndirectObject: enums.ObjectTypeNone,
+		ErrCode:        constants.NOERR,
+	}
+
+	var expectedStr = (" The ball (such as it is)" +
+		" bounces feebly then rolls into some fresh dog eggs" +
+		" none the less you briefly feel a little better.")
+
+	tf.DoTick()
+
+	room, roomErr := system.GetRoom(types.EntityID(roomSpawn), cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	fetchedObjs := system.FetchObjsForType(actType, room, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	handleStr, handleErr := system.HandleBaseAction(cmdData, fetchedObjs, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	assert.Equal(t, roomErr, nil)
+	assert.Equal(t, []component.Object([]component.Object{expectedObject}), fetchedObjs)
+	assert.Equal(t, handleErr, uint8(0))
+	assert.Equal(t, expectedStr, handleStr)
+}
+
+func TestHandleBaseAction_Failure(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	setup()
+
+	const playerName = "Hueyu"
+	const playerID = 3
+	const roomSpawn = 0
+	const actType = enums.ActionTypeKick
+
+	expectedObject := component.Object{
+		ObjectID:        3,
+		ObjectName:      "Football",
+		ObjectType:      enums.ObjectTypeFootball,
+		MaterialType:    enums.MaterialTypeFlesh,
+		DirType:         enums.DirectionTypeNone,
+		DestID:          enums.RoomTypeNone,
+		Description:     "A slightly deflated knock off uefa football, not quite spherical, it's kickable though.",
+		ObjectActionIDs: []uint32{3},
+		CanBePickedUp:   true,
+	}
+
+	cmdData := component.VerbData{
+		Verb:           enums.ActionTypeKick,
+		DirectObject:   enums.ObjectTypeDoor,
+		IndirectObject: enums.ObjectTypeNone,
+		ErrCode:        constants.NOERR,
+	}
+
+	var expectedStr = ""
+
+	tf.DoTick()
+
+	room, roomErr := system.GetRoom(types.EntityID(roomSpawn), cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	fetchedObjs := system.FetchObjsForType(actType, room, ts, cardinal.NewWorldContext(tf.World))
+
+	tf.DoTick()
+
+	handleStr, handleErr := system.HandleBaseAction(cmdData, fetchedObjs, cardinal.NewWorldContext(tf.World))
+	print(handleErr)
+	tf.DoTick()
+
+	assert.Equal(t, roomErr, nil)
+	assert.Equal(t, []component.Object([]component.Object{expectedObject}), fetchedObjs)
+	assert.Equal(t, expectedStr, handleStr)
+}
+
+func TestSystem_ProcessCommands_ActionSystemComplete_Success_NoBarn(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+	var tokens = []string{"kick", "the", "ball", "AT", "THE", "path"}
+	var expectedOut string = ("You Kick the Football at the Path.")
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt := getReceiptFromPastTick(t, tf.World, processTxHash)
+	if errs := processReceipt.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply, ok := processReceipt.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt.Result)
+	}
+	// Access the fields
+	assert.Equal(t, true, processCommandsReply.Success)
+	assert.Equal(t, "Processing tokens completed", processCommandsReply.Message)
+	assert.Equal(t, expectedOut, processCommandsReply.Result)
+}
+
+func TestSystem_ProcessCommands_ActionSystemComplete_Success_WithBarn(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 0
+	var tokens1 = []string{"take", "BALL"}
+	var expectedOut1 string = ("You picked up a Football.")
+	var tokens2 = []string{"go", "NORTH"}
+	var expectedOut2 string = ("You are standing in a barn and place is dusty and full of spiderwebs, something died in here, possibly your own self plenty of corners and dark shadows." +
+		"  There is a door wood to the South and there is a window wood to the East. There is no other poor soul here apart from you.")
+	var tokens3 = []string{"drop", "ball"}
+	var expectedOut3 string = ("You dropped the Football.")
+	var tokens4 = []string{"kick", "the", "ball", "to", "the", "window"}
+	var expectedOut4 string = ("You Kick the Football at the Window. I love the sound of breaking glass especially when I'm lonely, the panes and the frame shatter satisfyingly spreading broken joy on the floor.")
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash1 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens1,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt1 := getReceiptFromPastTick(t, tf.World, processTxHash1)
+	if errs := processReceipt1.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply1, ok := processReceipt1.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt1.Result)
+	}
+
+	assert.Equal(t, expectedOut1, processCommandsReply1.Result)
+	tf.DoTick()
+
+	// Process Commands2
+	processTxHash2 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens2,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt2 := getReceiptFromPastTick(t, tf.World, processTxHash2)
+	if errs := processReceipt2.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply2, ok := processReceipt2.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt2.Result)
+	}
+
+	assert.Equal(t, expectedOut2, processCommandsReply2.Result)
+	tf.DoTick()
+
+	// Process Commands3
+	processTxHash3 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens3,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt3 := getReceiptFromPastTick(t, tf.World, processTxHash3)
+	if errs := processReceipt3.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply3, ok := processReceipt3.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt3.Result)
+	}
+
+	assert.Equal(t, expectedOut3, processCommandsReply3.Result)
+	tf.DoTick()
+
+	// Process Commands4
+	processTxHash4 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens4,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt4 := getReceiptFromPastTick(t, tf.World, processTxHash4)
+	if errs := processReceipt4.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply4, ok := processReceipt4.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt4.Result)
+	}
+
+	assert.Equal(t, expectedOut4, processCommandsReply4.Result)
+	tf.DoTick()
+
+}
+
+// #endregion Action System Test
 
 func getCreateMsgID(t *testing.T, world *cardinal.World) types.MessageID {
 	return getMsgID(t, world, createMsgName)

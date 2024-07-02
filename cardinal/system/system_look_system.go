@@ -127,12 +127,12 @@ func DirObjectDescription(room component.Room, ts *TokeniserSystem, world cardin
 			var description string
 			if isFirst {
 				description = "There is a " + fmt.Sprintf(dirObject.Description) +
-					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) + " " +
+					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) +
 					"to the" + " " + dirObject.DirType.String()
 				isFirst = false
 			} else {
 				description = "and there is a " + fmt.Sprintf(dirObject.Description) +
-					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) + " " +
+					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) +
 					"to the" + " " + dirObject.DirType.String() + "."
 			}
 			world.Logger().Debug().Msgf("Descriptions for dirObject with ID: %d is: %v", lookingDirObject.ObjectID, description)
@@ -149,7 +149,7 @@ func GenMaterialDesc(material string, dirObj enums.ObjectType, ts *TokeniserSyst
 		description = " made mainly from" + " " + ts.GetRevMaterialType(material).String()
 
 	} else {
-		description = ts.GetRevMaterialType(material).String() + " "
+		description = " " + ts.GetRevMaterialType(material).String() + " "
 	}
 	return description
 }
