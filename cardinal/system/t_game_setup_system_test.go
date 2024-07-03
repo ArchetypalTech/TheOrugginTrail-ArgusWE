@@ -150,7 +150,7 @@ func NewGameSetupTest(world cardinal.WorldContext) *GameSetupTest {
 		RoomStore:      component.NewRoomStore(),
 		DirObjectStore: component.NewObjectStore(),
 		ObjectStore:    component.NewObjectStore(),
-		ActionStore:    component.NewActionStore(),
+		ActionStore:    component.NewActionStore(world),
 		TxtDefStore:    component.NewTxtDefStore(),
 	}
 }

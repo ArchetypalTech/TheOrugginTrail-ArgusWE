@@ -70,9 +70,9 @@ func GenDescText(playerId uint32, id uint32, ts *TokeniserSystem, world cardinal
 		desc += fmt.Sprintf("in %s", room.Description)
 	}
 
-	desc += " " + ObjectDescription(room, world)
-	desc += " " + DirObjectDescription(room, ts, world)
-	desc += " " + GetPlayersPresence(room, playerId, world)
+	desc += ObjectDescription(room, world)
+	desc += DirObjectDescription(room, ts, world)
+	desc += GetPlayersPresence(room, playerId, world)
 
 	return desc
 }
@@ -107,7 +107,7 @@ func ObjectDescription(room component.Room, world cardinal.WorldContext) string 
 	for _, lookingObject := range room.Objects {
 		if lookingObject.ObjectID != 0 {
 			object = room.Objects[int(lookingObject.ObjectID)]
-			description = fmt.Sprintf("You see a %s", object.Description)
+			description = fmt.Sprintf(" You see a %s", object.Description)
 
 			world.Logger().Debug().Msgf("Descriptions for object with ID: %d is: %v", lookingObject.ObjectID, description)
 		}
@@ -126,7 +126,7 @@ func DirObjectDescription(room component.Room, ts *TokeniserSystem, world cardin
 			dirObject := room.DirObjs[int(lookingDirObject.ObjectID)]
 			var description string
 			if isFirst {
-				description = "There is a " + fmt.Sprintf(dirObject.Description) +
+				description = " There is a " + fmt.Sprintf(dirObject.Description) +
 					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) +
 					"to the" + " " + dirObject.DirType.String()
 				isFirst = false
@@ -146,7 +146,7 @@ func DirObjectDescription(room component.Room, ts *TokeniserSystem, world cardin
 func GenMaterialDesc(material string, dirObj enums.ObjectType, ts *TokeniserSystem) string {
 	var description string
 	if dirObj == enums.ObjectTypePath || dirObj == enums.ObjectTypeTrail {
-		description = " made mainly from" + " " + ts.GetRevMaterialType(material).String()
+		description = " made mainly from" + " " + ts.GetRevMaterialType(material).String() + " "
 
 	} else {
 		description = " " + ts.GetRevMaterialType(material).String() + " "
@@ -162,7 +162,7 @@ func GetPlayersPresence(room component.Room, playerID uint32, world cardinal.Wor
 			player := room.Players[int(lookingPlayer.PlayerID)]
 			var description string
 			if isFirst {
-				description = "In this room is " + player.PlayerName
+				description = " In this room is " + player.PlayerName
 				isFirst = false
 			} else {
 				description = player.PlayerName

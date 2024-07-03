@@ -37,7 +37,7 @@ func NewGameSetup(worldCtx cardinal.WorldContext) *GameSetup {
 		RoomStore:      component.NewRoomStore(),
 		DirObjectStore: component.NewObjectStore(),
 		ObjectStore:    component.NewObjectStore(),
-		ActionStore:    component.NewActionStore(),
+		ActionStore:    component.NewActionStore(worldCtx),
 		TxtDefStore:    component.NewTxtDefStore(),
 	}
 }
@@ -286,7 +286,7 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs []
 	// Create an entity representing the room with its components
 	roomManagerID, err := cardinal.Create(s.worldCtx,
 		component.Room{
-			ID:          roomID - 1,
+			ID:          roomID,
 			Description: tid,
 			RoomType:    roomType,
 			Objects:     make(map[int]component.Object),

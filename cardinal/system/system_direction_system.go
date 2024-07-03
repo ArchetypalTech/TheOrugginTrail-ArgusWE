@@ -43,7 +43,7 @@ func GetNextRoom(tokens []string, currRoomID uint32, ts *TokeniserSystem, world 
 func CanMove(dirObject component.Object, world cardinal.WorldContext) bool {
 	var canMove bool
 	// Accessing the instance of the ActionStore that was created when the game was setup
-	actionStore := component.NewActionStore()
+	actionStore := component.GetActionStore(world)
 
 	for _, actionID := range dirObject.ObjectActionIDs {
 		if actionID != 0 {

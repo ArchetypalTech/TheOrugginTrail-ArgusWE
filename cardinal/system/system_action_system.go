@@ -68,7 +68,7 @@ func HandleBaseAction(cmd component.VerbData, objects []component.Object, world 
 	var err uint8
 
 	// Access the singleton ActionStore
-	actionStore := component.GetActionStore()
+	actionStore := component.GetActionStore(world)
 
 	world.Logger().Debug().Msgf("AS - HBA: Verb data - vrb: %v, DObj: %v, IObj: %v, ERR:%v", cmd.Verb, cmd.DirectObject, cmd.IndirectObject, cmd.ErrCode)
 	if cmd.DirectObject != enums.ObjectTypeNone && cmd.IndirectObject == enums.ObjectTypeNone {
@@ -137,7 +137,7 @@ func FetchObjsForType(actType enums.ActionType, room component.Room, ts *Tokenis
 	var matchedObjects []component.Object
 
 	// Access the singleton ActionStore
-	actionStore := component.GetActionStore()
+	actionStore := component.GetActionStore(world)
 
 	for _, object := range room.Objects {
 		if object.ObjectID != 0 {
@@ -181,7 +181,7 @@ func FetchDirObjsForType(actType enums.ActionType, room component.Room, ts *Toke
 	var matchedDirObjects []component.Object
 
 	// Access the singleton ActionStore
-	actionStore := component.GetActionStore()
+	actionStore := component.GetActionStore(world)
 
 	for _, dirObject := range room.DirObjs {
 		if dirObject.ObjectID != 0 {
@@ -234,10 +234,9 @@ func SetActionBits(cmd component.VerbData, objects []component.Object, isD bool,
 	var bc uint8 = 0
 	var dBit_Txt string
 	var err uint8 = 0
-
 	var actionResultStr string
 	// Accessing the instance of the ActionStore that was created when the game was setup
-	actionStore := component.GetActionStore()
+	actionStore := component.GetActionStore(world)
 
 	world.Logger().Debug().Msgf("AS - SAB: ----->sz: %v", ct)
 
@@ -296,6 +295,7 @@ func SetActionBits(cmd component.VerbData, objects []component.Object, isD bool,
 										world.Logger().Debug().Msgf("AS - SAB: linkedActionID: %d, DBIT value is: %v", linkedAction.ID, linkedAction.DBit)
 										linkedAction.Enabled = !linkedAction.Enabled
 										linkedAction.DBit = !linkedAction.DBit
+										actionResultStr += linkedAction.DBitTxt
 										world.Logger().Debug().Msgf("AS - SAB: linkedActionID: %d, NEW enabled value is: %v", linkedAction.ID, linkedAction.Enabled)
 										world.Logger().Debug().Msgf("AS - SAB: linkedActionID: %d, NEW DBIT value is: %v", linkedAction.ID, linkedAction.DBit)
 										actionStore.Set(linkedAction.ID, linkedAction)
@@ -333,7 +333,7 @@ func SetActionBits(cmd component.VerbData, objects []component.Object, isD bool,
 
 // FollowLinkedActions recursively follows linked actions, adding them to the ids slice.
 func FollowLinkedActions(top uint32, ids *[]uint32, world cardinal.WorldContext) uint8 {
-	actionStore := component.GetActionStore()
+	actionStore := component.GetActionStore(world)
 	action, found := actionStore.Get(top)
 
 	if !found {
