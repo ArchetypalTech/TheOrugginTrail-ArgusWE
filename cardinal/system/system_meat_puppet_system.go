@@ -265,7 +265,7 @@ func InsultMeat(cErr uint8, badCmd string) string {
 	case constants.ErrParserRoutineTKCX.Code:
 		eMsg = "WTF, slow down cowboy, you're gonna hurt yourself"
 
-	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code, constants.ErrNoObjectsToHandle.Code, constants.ErrBadLookCommand.Code, constants.ErrActionHandleBadCommand0.Code:
+	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code, constants.ErrBadLookCommand.Code, constants.ErrActionHandleBadCommand0.Code:
 		eMsg = "Nope, gibberish. Stop breathing with your mouth."
 
 	case constants.ErrParserRoutineND.Code, constants.ErrDirectionRoutineND.Code:
@@ -276,6 +276,9 @@ func InsultMeat(cErr uint8, badCmd string) string {
 
 	case constants.ErrNoExit.Code:
 		eMsg = "Can't go that way " + badCmd
+
+	case constants.ErrNoObjectsToHandle.Code:
+		eMsg = "That object is only in your imagination!"
 
 	default:
 		// Add a default case if needed for handling unexpected cErr values
