@@ -29,7 +29,7 @@ func Act(cmdData component.VerbData, roomID uint32, playerID uint32, ts *Tokenis
 	}
 	world.Logger().Debug().Msgf("AS - ACT: RoomID is t: %v", room.ID)
 
-	objects := FetchObjsForType(cmdData.Verb, room, ts, world)
+	objects := FetchObjsForType(cmdData.Verb, room, playerID, ts, world)
 	world.Logger().Debug().Msgf("AS - ACT: Number of objects got: %v", len(objects))
 
 	dirObjects := FetchDirObjsForType(cmdData.Verb, room, ts, world)
@@ -133,27 +133,82 @@ func GetResponseStr(cmd component.VerbData, ts *TokeniserSystem, world cardinal.
 }
 
 // FetchObjsForType fetches objects for a given type and action type within a room.
-func FetchObjsForType(actType enums.ActionType, room component.Room, ts *TokeniserSystem, world cardinal.WorldContext) []component.Object {
+func FetchObjsForType(actType enums.ActionType, room component.Room, playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext) []component.Object {
 	var matchedObjects []component.Object
 
 	// Access the singleton ActionStore
 	actionStore := component.GetActionStore(world)
 
-	for _, object := range room.Objects {
+	if len(room.Objects) > 0 {
+		for _, object := range room.Objects {
+			if object.ObjectID != 0 {
+				world.Logger().Debug().Msgf("AS - FOBJ: ObjectGot has ID: %v", object.ObjectID)
+
+				for _, actionID := range object.ObjectActionIDs {
+					if actionID != 0 {
+						action, found := actionStore.Get(actionID)
+						if !found {
+							world.Logger().Error().Msgf("AS - FOBJ: Action with ID %d not found in ActionStore", actionID)
+							continue
+						}
+						world.Logger().Debug().Msgf("AS - FOBJ: Action description: %s is for Object with ID: %v", action.DBitTxt, object.ObjectID)
+
+						if action.ActionType == enums.ActionTypeNone {
+							world.Logger().Error().Msgf("AS - FOBJ: Action with ID %d is of type: %v", actionID, action.ActionType)
+							break
+						}
+
+						responses := ts.GetResponseForVerb(action.ActionType)
+
+						if len(responses) > 0 {
+							for _, response := range responses {
+								if response == actType {
+									matchedObjects = append(matchedObjects, object)
+									break // Move to the next object after finding a match
+								}
+							}
+						}
+
+					}
+				}
+			}
+		}
+	} else {
+		matchedObjectsInventory := FetchObjsForTypeInventory(actType, playerID, ts, world)
+		matchedObjects = append(matchedObjects, matchedObjectsInventory...)
+	}
+
+	return matchedObjects
+}
+
+// FetchObjsForTypeInventory fetches objects for a given type and action type within the player inventory.
+func FetchObjsForTypeInventory(actType enums.ActionType, playerID uint32, ts *TokeniserSystem, world cardinal.WorldContext) []component.Object {
+	var matchedObjects []component.Object
+
+	// Access the singleton ActionStore
+	actionStore := component.GetActionStore(world)
+
+	// Get Player
+	player, err := GetPlayer(types.EntityID(playerID), world)
+	if err != nil {
+		world.Logger().Error().Msgf("AS - FOBJ-I: Error getting Player Component: %v for playerID: %d", err, playerID)
+	}
+
+	for _, object := range player.Inventory {
 		if object.ObjectID != 0 {
-			world.Logger().Debug().Msgf("AS - FOBJ: ObjectGot has ID: %v", object.ObjectID)
+			world.Logger().Debug().Msgf("AS - FOBJ-I: ObjectGot has ID: %v", object.ObjectID)
 
 			for _, actionID := range object.ObjectActionIDs {
 				if actionID != 0 {
 					action, found := actionStore.Get(actionID)
 					if !found {
-						world.Logger().Error().Msgf("AS - FOBJ: Action with ID %d not found in ActionStore", actionID)
+						world.Logger().Error().Msgf("AS - FOBJ-I: Action with ID %d not found in ActionStore", actionID)
 						continue
 					}
-					world.Logger().Debug().Msgf("AS - FOBJ: Action description: %s is for Object with ID: %v", action.DBitTxt, object.ObjectID)
+					world.Logger().Debug().Msgf("AS - FOBJ-I: Action description: %s is for Object with ID: %v", action.DBitTxt, object.ObjectID)
 
 					if action.ActionType == enums.ActionTypeNone {
-						world.Logger().Error().Msgf("AS - FOBJ: Action with ID %d is of type: %v", actionID, action.ActionType)
+						world.Logger().Error().Msgf("AS - FOBJ-I: Action with ID %d is of type: %v", actionID, action.ActionType)
 						break
 					}
 
@@ -167,7 +222,6 @@ func FetchObjsForType(actType enums.ActionType, room component.Room, ts *Tokenis
 							}
 						}
 					}
-
 				}
 			}
 		}

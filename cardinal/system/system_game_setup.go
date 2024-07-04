@@ -319,5 +319,5 @@ func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs []
 		}
 	}
 
-	world.Logger().Info().Msgf("Room with ID %d created successfully, entity ID: %d", roomID-1, roomManagerID)
+	world.Logger().Info().Msgf("Room with ID %d created successfully, entity ID: %d", roomID, roomManagerID)
 }
