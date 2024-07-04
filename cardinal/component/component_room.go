@@ -7,6 +7,7 @@ import (
 type Room struct {
 	ID          uint32         `json:"id"`
 	Description string         `json:"description"`
+	RoomTxt     string         `json:"txt"`
 	RoomType    enums.RoomType `json:"room_type"`
 	Objects     map[int]Object `json:"object_ids"`
 	DirObjs     map[int]Object `json:"dir_obj_ids"`

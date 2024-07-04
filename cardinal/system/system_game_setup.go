@@ -94,8 +94,8 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 		RoomType:    enums.RoomTypePlain,
 	})
 
-	tidPlain := s._textGuid("a windsept plain")
-	tidPlain += " " + ("where the wind blowing is cold and" +
+	tidPlain := s._textGuid("a windswept plain")
+	txtPlain := (" where the wind blowing is cold and" +
 		" bison skulls in piles taller than houses" +
 		" cover the plains as far as your eye can see" +
 		" the air tastes of burnt grease and bensons.")
@@ -108,7 +108,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 	world.Logger().Debug().Msgf("Data passed to createPlace for room %d: %+v", roomID, objs)
 	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain, world)
+	s.createPlace(roomID, enums.RoomTypePlain, dObjs, objs, tidPlain, txtPlain, world)
 
 	world.Logger().Debug().Msg("---->Plain setup complete")
 
@@ -143,7 +143,7 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 	})
 
 	tidBarn := s._textGuid("a barn")
-	tidBarn += " " + ("and place is dusty and full of spiderwebs," +
+	txtBarn := (" and place is dusty and full of spiderwebs," +
 		" something died in here, possibly your own self" +
 		" plenty of corners and dark shadows.")
 
@@ -155,7 +155,7 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 	world.Logger().Debug().Msgf("Data passed to createPlace for room %d: %+v", roomID, [32]uint32{})
 	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypeBarn, dObjs, nil, tidBarn, world) // Pass empty array instead of nil for the objects.
+	s.createPlace(roomID, enums.RoomTypeBarn, dObjs, nil, tidBarn, txtBarn, world) // Pass empty array instead of nil for the objects.
 
 	world.Logger().Debug().Msg("---->Barn setup complete")
 
@@ -179,7 +179,7 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 	})
 
 	tidMpath := s._textGuid("a high mountain pass")
-	tidMpath += " " + ("where it winds through the mountains, the path is treacherous" +
+	txtMpath := (" where it winds through the mountains, the path is treacherous" +
 		" toilet papered trees cover the steep valley sides below you." +
 		" On closer inspection the TP might be the remains of a cricket team" +
 		" or perhaps a lost and very dead KKK picnic group." +
@@ -193,7 +193,7 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 	world.Logger().Debug().Msgf("Data passed to createPlace for room %d: %+v", roomID, [32]uint32{})
 	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, nil, tidMpath, world) // Pass empty array instead of nil for the objects.
+	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, nil, tidMpath, txtMpath, world) // Pass empty array instead of nil for the objects.
 
 	world.Logger().Debug().Msg("---->Mountain path setup complete")
 }
@@ -282,12 +282,13 @@ func (s *GameSetup) _textGuid(desc string) string {
 }
 
 // createPlace creates a room in the game world and populates it with objects and directional objects.
-func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs []component.Object, objs []component.Object, tid string, world cardinal.WorldContext) {
+func (s *GameSetup) createPlace(roomID uint32, roomType enums.RoomType, dObjs []component.Object, objs []component.Object, tid string, roomTxt string, world cardinal.WorldContext) {
 	// Create an entity representing the room with its components
 	roomManagerID, err := cardinal.Create(s.worldCtx,
 		component.Room{
 			ID:          roomID,
 			Description: tid,
+			RoomTxt:     roomTxt,
 			RoomType:    roomType,
 			Objects:     make(map[int]component.Object),
 			DirObjs:     make(map[int]component.Object),

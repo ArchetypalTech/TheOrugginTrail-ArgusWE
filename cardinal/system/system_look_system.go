@@ -18,7 +18,7 @@ func LookSystem(world cardinal.WorldContext) error {
 }
 
 func Stuff(tokens []string, curRmId uint32, playerId uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
-	world.Logger().Debug().Msgf("---->SEE T:%s, R:%d\n", tokens[0], curRmId)
+	world.Logger().Debug().Msgf("LS - S: ---->SEE T:%s, R:%d\n", tokens[0], curRmId)
 	vrb := ts.GetActionType(tokens[0])
 	var gObj enums.GrammarType
 	var err uint8
@@ -27,41 +27,42 @@ func Stuff(tokens []string, curRmId uint32, playerId uint32, ts *TokeniserSystem
 	// we know it is an action because the commandProcessors has pre-parsed for us
 	// so we dont need to test for a garbage vrb token
 	if vrb == enums.ActionTypeLook {
-		world.Logger().Debug().Msgf("---->LK RM:%d\n", curRmId)
+		world.Logger().Debug().Msgf("LS - S: ---->LK RM:%d\n", curRmId)
 
 		if len(tokens) > 1 {
 			gObj = ts.GetGrammarType(tokens[len(tokens)-1])
 			if gObj != enums.GrammarTypeAdverb {
 				output, err := LookAround(curRmId, playerId, ts, world)
-				world.Logger().Debug().Msgf("-->_LA:%d", err)
+				world.Logger().Debug().Msgf("LS - S: ---->_LA:%d", err)
 				return output, err
 			}
 		} else {
 			output, err := LookAround(curRmId, playerId, ts, world)
-			world.Logger().Debug().Msgf("-->_LOOK:%d", err)
+			world.Logger().Debug().Msgf("LS - S: ---->_LOOK:%d", err)
 			return output, err
 		}
 	} else if vrb == enums.ActionTypeDescribe || vrb == enums.ActionTypeLook {
-		world.Logger().Debug().Msgf("---->DESC\n")
+		world.Logger().Debug().Msgf("LS - S: ---->DESC")
 	}
-	world.Logger().Debug().Msgf("---->_ERR:%d", err)
+	world.Logger().Debug().Msgf("LS - S: ---->_ERR:%d", err)
 	return output, 0
 }
 
 func LookAround(rId uint32, playerId uint32, ts *TokeniserSystem, world cardinal.WorldContext) (string, uint8) {
 	output := GenDescText(playerId, rId, ts, world)
-	world.Logger().Debug().Msgf("ROOM DESCRIPTION IS: %s", output)
+	output += GenRoomTxt(rId, playerId, world)
+	world.Logger().Debug().Msgf("LS - LA: Room description is: %s", output)
 	return output, 0
 }
 
 // Generates the description on that will be shown
-func GenDescText(playerId uint32, id uint32, ts *TokeniserSystem, world cardinal.WorldContext) string {
+func GenDescText(playerID uint32, id uint32, ts *TokeniserSystem, world cardinal.WorldContext) string {
 
 	desc := "You are standing "
 	rID := types.EntityID(id)
 	room, err := GetRoom(rID, world)
 	if err != nil {
-		world.Logger().Error().Msgf("Error2 getting Room Component: %v", err)
+		world.Logger().Error().Msgf("LS - GDT: Error getting Room Component: %v", err)
 	}
 
 	if room.RoomType == enums.RoomTypePlain {
@@ -70,9 +71,22 @@ func GenDescText(playerId uint32, id uint32, ts *TokeniserSystem, world cardinal
 		desc += fmt.Sprintf("in %s", room.Description)
 	}
 
+	return desc
+}
+
+func GenRoomTxt(roomID uint32, playerID uint32, world cardinal.WorldContext) string {
+	var desc string
+
+	rID := types.EntityID(roomID)
+	room, err := GetRoom(rID, world)
+	if err != nil {
+		world.Logger().Error().Msgf("LS - GRT: Error getting Room Component: %v", err)
+	}
+
+	desc += room.RoomTxt
 	desc += ObjectDescription(room, world)
 	desc += DirObjectDescription(room, ts, world)
-	desc += GetPlayersPresence(room, playerId, world)
+	desc += GetPlayersPresence(room, playerID, world)
 
 	return desc
 }
@@ -84,7 +98,7 @@ func GetRoom(rID types.EntityID, world cardinal.WorldContext) (component.Room, e
 		Each(world, func(id types.EntityID) bool {
 			room, err := cardinal.GetComponent[component.Room](world, rID)
 			if err != nil {
-				world.Logger().Error().Msgf("Error getting Room Component: %v", err)
+				world.Logger().Error().Msgf("LS - GR: Error getting Room Component: %v", err)
 				return true
 			}
 
@@ -109,7 +123,7 @@ func ObjectDescription(room component.Room, world cardinal.WorldContext) string 
 			object = room.Objects[int(lookingObject.ObjectID)]
 			description = fmt.Sprintf(" You see a %s", object.Description)
 
-			world.Logger().Debug().Msgf("Descriptions for object with ID: %d is: %v", lookingObject.ObjectID, description)
+			world.Logger().Debug().Msgf("LS - OD: Descriptions for object with ID: %d is: %v", lookingObject.ObjectID, description)
 		}
 	}
 
@@ -135,7 +149,7 @@ func DirObjectDescription(room component.Room, ts *TokeniserSystem, world cardin
 					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) +
 					"to the" + " " + dirObject.DirType.String() + "."
 			}
-			world.Logger().Debug().Msgf("Descriptions for dirObject with ID: %d is: %v", lookingDirObject.ObjectID, description)
+			world.Logger().Debug().Msgf("LS - DOD: Descriptions for dirObject with ID: %d is: %v", lookingDirObject.ObjectID, description)
 			descriptions = append(descriptions, description)
 		}
 	}
@@ -167,13 +181,13 @@ func GetPlayersPresence(room component.Room, playerID uint32, world cardinal.Wor
 			} else {
 				description = player.PlayerName
 			}
-			world.Logger().Debug().Msgf("Players found in the room are: %s", player.PlayerName)
+			world.Logger().Debug().Msgf("LS - GPP: Players found in the room are: %s", player.PlayerName)
 			descriptions = append(descriptions, description)
 		}
 	}
 
 	if len(descriptions) == 0 {
-		return "There is no other poor soul here apart from you."
+		return " There is no other poor soul here apart from you."
 	}
 
 	// Handle proper punctuation for multiple players
