@@ -7,7 +7,7 @@ type RoomType int
 
 const (
 	RoomTypeNone       RoomType = iota // Starts at 0
-	RoomTypeWoodCabin                  // 1
+	RoomTypeBarn                       // 1
 	RoomTypeStore                      // 2
 	RoomTypeCavern                     // 3
 	RoomTypeStoneCabin                 // 4
@@ -24,7 +24,7 @@ func (r RoomType) String() string {
 // Map to store the string representations of the enum
 var toStringRoom = map[RoomType]string{
 	RoomTypeNone:       "None",
-	RoomTypeWoodCabin:  "WoodCabin",
+	RoomTypeBarn:       "Barn",
 	RoomTypeStore:      "Store",
 	RoomTypeCavern:     "Cavern",
 	RoomTypeStoneCabin: "StoneCabin",
@@ -37,7 +37,7 @@ var toStringRoom = map[RoomType]string{
 // Map to store the enum values by string
 var toEnumRoom = map[string]RoomType{
 	"None":       RoomTypeNone,
-	"WoodCabin":  RoomTypeWoodCabin,
+	"Barn":       RoomTypeBarn,
 	"Store":      RoomTypeStore,
 	"Cavern":     RoomTypeCavern,
 	"StoneCabin": RoomTypeStoneCabin,

@@ -4,6 +4,9 @@ import (
 	"sync"
 
 	"github.com/ArchetypalTech/TheOrugginTrail-ArgusWE/cardinal/enums"
+	"pkg.world.dev/world-engine/cardinal"
+	"pkg.world.dev/world-engine/cardinal/search/filter"
+	"pkg.world.dev/world-engine/cardinal/types"
 )
 
 type Action struct {
@@ -18,8 +21,8 @@ type Action struct {
 }
 
 type ActionStore struct {
-	actions map[uint32]Action
-	nextID  uint32
+	Actions map[uint32]Action
+	NextID  uint32
 }
 
 var instance *ActionStore
@@ -33,32 +36,58 @@ func (Action) Name() string {
 	return "Action"
 }
 
-func NewActionStore() *ActionStore {
-	once.Do(func() {
-		instance = &ActionStore{
-			actions: make(map[uint32]Action),
-			nextID:  1,
-		}
+func NewActionStore(world cardinal.WorldContext) *ActionStore {
+
+	actionStoreManagerID, err := cardinal.Create(world, ActionStore{
+		Actions: make(map[uint32]Action),
+		NextID:  1,
 	})
-	return instance
+	if err != nil {
+		world.Logger().Debug().Msgf("Failed to create actionStore entity: %v", err)
+	}
+
+	actionStoreManager, err := cardinal.GetComponent[ActionStore](world, actionStoreManagerID)
+	if err != nil {
+		world.Logger().Error().Msgf("Error getting ActionStore: %v", err)
+	}
+
+	return actionStoreManager
+
 }
 
-func GetActionStore() *ActionStore {
-	return instance
+func GetActionStore(world cardinal.WorldContext) ActionStore {
+
+	var existingActionStore ActionStore
+	err := cardinal.NewSearch().Entity(filter.Exact(filter.Component[ActionStore]())).
+		Each(world, func(id types.EntityID) bool {
+			actionStore, err := cardinal.GetComponent[ActionStore](world, id)
+			if err != nil {
+				world.Logger().Error().Msgf("GAS: Error getting ActionStore: %v", err)
+				return true
+			}
+
+			existingActionStore = *actionStore
+			return false
+		})
+	if err != nil {
+		world.Logger().Debug().Msgf("Error updating the Player entity: %v when creating", err)
+	}
+
+	return existingActionStore
 }
 
 func (store *ActionStore) Add(action Action) uint32 {
-	action.ID = store.nextID
-	store.actions[store.nextID] = action
-	store.nextID++
+	action.ID = store.NextID
+	store.Actions[store.NextID] = action
+	store.NextID++
 	return action.ID
 }
 
 func (store *ActionStore) Get(id uint32) (Action, bool) {
-	action, found := store.actions[id]
+	action, found := store.Actions[id]
 	return action, found
 }
 
 func (store *ActionStore) Set(id uint32, action Action) {
-	store.actions[id] = action
+	store.Actions[id] = action
 }

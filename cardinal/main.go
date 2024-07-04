@@ -29,11 +29,8 @@ func MustInitWorld(w *cardinal.World) {
 	Must(
 		cardinal.RegisterComponent[component.Action](w),
 		cardinal.RegisterComponent[component.ActionStore](w),
-		cardinal.RegisterComponent[component.ActionOutput](w),
-		cardinal.RegisterComponent[component.Description](w),
 		cardinal.RegisterComponent[component.Object](w),
 		cardinal.RegisterComponent[component.ObjectStore](w),
-		cardinal.RegisterComponent[component.Output](w),
 		cardinal.RegisterComponent[component.Player](w),
 		cardinal.RegisterComponent[component.Room](w),
 		cardinal.RegisterComponent[component.RoomStore](w),
@@ -61,6 +58,7 @@ func MustInitWorld(w *cardinal.World) {
 		system.LookSystem,
 		system.InventorySystem,
 		system.DirectionSystem,
+		system.ActionSystem,
 	))
 
 	// Register the init system when the world is initiated.
