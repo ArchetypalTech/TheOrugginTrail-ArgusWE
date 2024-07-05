@@ -46,7 +46,7 @@ func Act(cmdData component.VerbData, roomID uint32, playerID uint32, ts *Tokenis
 	world.Logger().Debug().Msgf("AS - ACT: PRE-PRE-Final error is: %d", err)
 
 	if len(dirObjects) > 0 {
-		if cmdData.IndirectObject != enums.ObjectTypeNone {
+		if cmdData.IndirectObject != enums.ObjectTypeNone && len(objects) > 0 {
 			bitTxt, err, bitCnt = SetActionBits(cmdData, dirObjects, true, world)
 		}
 	}
