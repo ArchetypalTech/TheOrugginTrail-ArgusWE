@@ -216,15 +216,26 @@ func HandleAlias(tokens []string, roomID uint32, playerID uint32, ts *TokeniserS
 	vrb := ts.GetActionType(tokens[0])
 	var resultStr string
 	var e uint8
-	if vrb == enums.ActionTypeInventory {
+	switch vrb {
+	case enums.ActionTypeInventory:
 		// HERE GOES INVENTORY FROM INVENTORY SYSTEM
 		world.Logger().Debug().Msg("---->HANDLE ALIAS: NOW SHOULD BE GOING TO INVENTORY FROM INVENTORY SYSTEM")
 		resultStr, e = Inventory(playerID, ts, world)
-	} else if vrb == enums.ActionTypeLook {
+	case enums.ActionTypeLook:
 		// HERE GOES STUFF FROM LOOK SYSTEM
 		world.Logger().Debug().Msg("--->HANDLE ALIAS: NOW SHOULD BE GOING TO STUFF FROM LOOK SYSTEM")
 		resultStr, e = Stuff(tokens, roomID, playerID, ts, world)
+
+	case enums.ActionTypeGo:
+		resultStr = ""
+		e = constants.ErrParserRoutineND.Code
+
+	default:
+		resultStr = ""
+		e = 128
+
 	}
+
 	return resultStr, e
 }
 
@@ -265,7 +276,7 @@ func InsultMeat(cErr uint8, badCmd string) string {
 	case constants.ErrParserRoutineTKCX.Code:
 		eMsg = "WTF, slow down cowboy, you're gonna hurt yourself"
 
-	case constants.ErrDirectionRoutineNOP.Code, constants.ErrParserRoutineNOP.Code, constants.ErrParserRoutineTKC1.Code, constants.ErrBadLookCommand.Code, constants.ErrActionHandleBadCommand0.Code:
+	case constants.ErrParserRoutineNOP.Code, constants.ErrBadLookCommand.Code, constants.ErrActionHandleBadCommand0.Code:
 		eMsg = "Nope, gibberish. Stop breathing with your mouth."
 
 	case constants.ErrParserRoutineND.Code, constants.ErrDirectionRoutineND.Code:
@@ -279,6 +290,9 @@ func InsultMeat(cErr uint8, badCmd string) string {
 
 	case constants.ErrNoObjectsToHandle.Code:
 		eMsg = "That object is only in your imagination!"
+
+	case constants.ErrParserRoutineTKC1.Code:
+		eMsg = "Something is missing here..."
 
 	default:
 		// Add a default case if needed for handling unexpected cErr values
