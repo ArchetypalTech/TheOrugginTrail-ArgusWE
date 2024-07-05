@@ -122,7 +122,11 @@ func GetResponseStr(cmd component.VerbData, ts *TokeniserSystem, world cardinal.
 	var verb string = ts.GetActionType(cmd.Verb.String()).String()
 	var dObj string = ts.GetObjectType(cmd.DirectObject.String()).String()
 	var iObj string = ts.GetObjectType(cmd.IndirectObject.String()).String()
-	response += " " + verb + " " + "the" + " " + dObj
+	response += " " + verb
+	if cmd.DirectObject != enums.ObjectTypeNone {
+		response += " " + "the" + " " + dObj
+	}
+
 	if cmd.IndirectObject != enums.ObjectTypeNone {
 		response += " " + "at the" + " " + iObj + "."
 	} else {

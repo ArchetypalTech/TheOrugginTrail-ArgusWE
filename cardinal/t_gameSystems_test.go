@@ -30,13 +30,31 @@ func TestSystem_CreatePlayer_Success(t *testing.T) {
 
 	const playerName = "Hueyu"
 	const roomSpawn = 1
+	const expectedMessage = "Player: Hueyu was created successfully. It's entity ID is: 4 and has been placed in room: 1"
+	const expectedRoomDesc = "You are standing on a windswept plain"
 
 	// Create an initial player
-	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+	processTxHash := tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
 		PlayersName: playerName,
 		RoomID:      roomSpawn,
 	})
 	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt := getReceiptFromPastTick(t, tf.World, processTxHash)
+	if errs := processReceipt.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when creating the player; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	createPlayerReply, ok := processReceipt.Result.(msg.CreatePlayerReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.CreatePlayerReply; got %T", processReceipt.Result)
+	}
+	// Access the fields
+	assert.Equal(t, true, createPlayerReply.Success)
+	assert.Equal(t, expectedMessage, createPlayerReply.Message)
+	assert.Equal(t, expectedRoomDesc, createPlayerReply.RoomDescription)
 }
 
 func TestFindExistingPlayer_NoFind(t *testing.T) {
@@ -154,9 +172,9 @@ func TestSystem_ProcessCommands_Success(t *testing.T) {
 	tf.DoTick()
 
 	const playerName = "Hueyu"
-	const roomSpawn = 0
+	const roomSpawn = 1
 	var tokens = []string{"LOOK", "WITH", "BOTTLE", "AT", "THE", "WINDOW"}
-	var expectedOut string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+	var expectedOut string = ("You are standing on a windswept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
 		" the air tastes of burnt grease and bensons." +
 		" You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
 		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
@@ -240,14 +258,10 @@ func TestSystem_ProcessCommands_Success_GoNextRoom(t *testing.T) {
 
 	const playerName1 = "Hueyu"
 	const playerName2 = "GOD"
-	const roomSpawn1 = 2
-	const roomSpawn2 = 0
+	const roomSpawn1 = 3
+	const roomSpawn2 = 1
 	var tokens = []string{"go", "west"}
-	var expectedOut string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
-		" the air tastes of burnt grease and bensons." +
-		" You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
-		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
-		" In this room is GOD")
+	var expectedOut string = ("You are standing on a windswept plain")
 	// Create an initial player
 	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
 		PlayersName: playerName1,
@@ -293,8 +307,8 @@ func TestSystem_ProcessCommands_Failure_GoNextRoom(t *testing.T) {
 
 	const playerName1 = "Hueyu"
 	const playerName2 = "GOD"
-	const roomSpawn1 = 2
-	const roomSpawn2 = 0
+	const roomSpawn1 = 3
+	const roomSpawn2 = 1
 	var tokens = []string{"go", "south"}
 	var expectedOut string = ("Can't go that way ")
 	// Create an initial player
@@ -347,14 +361,14 @@ func TestHandleVerb_Success(t *testing.T) {
 	setup()
 
 	const playerName = "Hueyu"
-	const playerID = 3
+	const playerID = 4
 	const roomSpawn = 1
 
 	tokens := []string{"TAKE", "ball"}
 	var expectedOutTake string = ("You picked up a Football.")
 
 	tokens2 := []string{"DROP", "ball"}
-	expectedOutStDrop := "You drop a Football."
+	expectedOutStDrop := "You dropped the Football."
 	var expectedOutErr uint8 = 0
 
 	// Create an initial player
@@ -375,14 +389,12 @@ func TestHandleVerb_Success(t *testing.T) {
 	assert.Equal(t, expectedOutTake, outputTake)
 	assert.Equal(t, expectedOutStDrop, outputDrop)
 	assert.Equal(t, expectedOutErr, er)
-
 }
 
 /*
 The HandleVerb does not have a failure itself as the erros come from the function that calls this function one
-or from the functions that this function calls like stuff from the look system.
-The switch case has a default case which returns a value of 0 for the error so no error and the expected output for now is
-"---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM"
+from the functions that this function calls like stuff from the look system.
+The switch case has a default case which returns a value of 0 for the error so no error and the verb.
 */
 func TestHandleVerb_Failure(t *testing.T) {
 	tf := testutils.NewTestFixture(t, nil)
@@ -390,11 +402,11 @@ func TestHandleVerb_Failure(t *testing.T) {
 	setup()
 
 	const playerName = "Hueyu"
-	const playerID = 3
-	const roomSpawn = 0
+	const playerID = 4
+	const roomSpawn = 1
 
-	tokens := []string{"GO"}
-	expectedOutSt := "---->HANDLE VERB: NOW SHOULD BE GOING TO ACT FROM ACTION SYSTEM"
+	tokens := []string{"KICK"}
+	expectedOutSt := "You Kick."
 	var expectedOutErr uint8 = 0
 
 	// Create an initial player
@@ -416,11 +428,11 @@ func TestHandleAlias_Success(t *testing.T) {
 	setup()
 
 	const playerName = "Hueyu"
-	const playerID = 3
-	const roomSpawn = 0
+	const playerID = 4
+	const roomSpawn = 1
 
 	tokens := []string{"LOOK"}
-	var expectedOutSt string = ("You are standing on a windsept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
+	var expectedOutSt string = ("You are standing on a windswept plain where the wind blowing is cold and bison skulls in piles taller than houses cover the plains as far as your eye can see" +
 		" the air tastes of burnt grease and bensons." +
 		" You see a A slightly deflated knock off uefa football, not quite spherical, it's kickable though." +
 		" There is a path made mainly from dirt to the North and there is a path made mainly from mud to the East." +
@@ -451,8 +463,8 @@ func TestHandleAlias_Failure(t *testing.T) {
 	setup()
 
 	const playerName = "Hueyu"
-	const playerID = 3
-	const roomSpawn = 0
+	const playerID = 4
+	const roomSpawn = 1
 
 	tokens := []string{"INVENTORY"}
 	expectedOutSt := "Your carrier bag doesn't even have a spiderweb."
