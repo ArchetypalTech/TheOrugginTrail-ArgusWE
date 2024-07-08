@@ -1,4 +1,4 @@
-name: knetchess
+name: OrugginTrail
 data_dir: "./data/"
 
 logger:
@@ -6,5 +6,5 @@ logger:
 
 console:
   port: 7351
-  username: "Oruggin_Admin"
-  password: "TESTING-ORUGGIN"
+  username: "myAdmin"  # Set your admin username for the Nakama Console
+  password: "myPassword" # Set your password for the Nakama Console
