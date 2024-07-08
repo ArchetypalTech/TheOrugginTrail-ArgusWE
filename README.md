@@ -1,11 +1,11 @@
 # TheOrugginTrail-ArgusWE
 This is a version for TheOrugginTrail that is being developed in WE/Cardinal.
 
-To make it run with WE/Cardinal you should install:
+Dependencies:
 
-## Installing World CLI
+## World CLI
 
-To begin your development journey with World Engine, you install 
+Install 
 [World CLI](https://github.com/Argus-Labs/world-cli) a tool for creating, managing, and deploying World 
 Engine projects. 
 
@@ -16,13 +16,10 @@ curl https://install.world.dev/cli! | bash
 ```
 
 ## Install Docker
-This should be easy for you.
 
 ## Install Go
-This should be easy for you.
 
 ## Running 
-Once you have installed the above, you can run the project on:
 
 ### Development Mode
 World Engine dev mode provides a fast and easy way to run and iterate on your game shard.
@@ -53,7 +50,8 @@ performance.
 
 ### Cardinal Editor
 
-The Cardinal Editor is a web-based companion app that makes game development of Cardinal easier. It allows you to inspect the state of Cardinal in real-time without any additional code.
+The Cardinal Editor is a web-based companion app that makes game development of Cardinal easier. 
+It allows you to inspect the state of Cardinal in real-time without any additional code.
 
 To access it, run `world cardinal start` or `world cardinal dev`
 
@@ -62,7 +60,7 @@ Then, open the [Cardinal Editor](http://localhost:3000/) in a web browser.
 After you create some entities in your game, it will show up on the Cardinal Editor.
 
 ## Developing Your Game
-For more details on how to create the game of your dream, visit the [World Engine documentation](https://world.dev)
+For more details see: [World Engine documentation](https://world.dev)
 
 
 # TheOrugginTrail
@@ -86,9 +84,3 @@ https://medium.com/swlh/zork-the-great-inner-workings-b68012952bdc
 This Zork-like engine will be piloted by a text adventure called the O'ruggin Trail.
 
 WARNING: attempting a crossing to the frontiers of crypto country ultimately always results in horrible death... physical, moral, ego, or otherwise.
-
-Pre death you'll want to run `pnpm install` at the root 
-of this repo because we aren't checking in the node_modules folder.
-cruft....
-
-**Really**. Run `pnpm install` at the project root. Or be dead. Pfft.
