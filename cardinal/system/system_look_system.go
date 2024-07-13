@@ -115,19 +115,25 @@ func GetRoom(rID types.EntityID, world cardinal.WorldContext) (component.Room, e
 
 // Gets the Objects descriptions that exists on the room
 func ObjectDescription(room component.Room, world cardinal.WorldContext) string {
-	var object component.Object
-	var description string
+	var descriptions []string
+	isFirst := true
 
-	for _, lookingObject := range room.Objects {
-		if lookingObject.ObjectID != 0 {
-			object = room.Objects[int(lookingObject.ObjectID)]
-			description = fmt.Sprintf(" You see a %s", object.Description)
-
-			world.Logger().Debug().Msgf("LS - OD: Descriptions for object with ID: %d is: %v", lookingObject.ObjectID, description)
+	for _, lookingObjects := range room.Objects {
+		if lookingObjects.ObjectID != 0 {
+			object := room.Objects[int(lookingObjects.ObjectID)]
+			var description string
+			if isFirst {
+				description = " You see " + fmt.Sprintf(object.Description)
+				isFirst = false
+			} else {
+				description = "and " + fmt.Sprintf(object.Description)
+			}
+			world.Logger().Debug().Msgf("LS - DOD: Descriptions for dirObject with ID: %d is: %v", lookingObjects.ObjectID, description)
+			descriptions = append(descriptions, description)
 		}
 	}
 
-	return description
+	return strings.Join(descriptions, " ")
 }
 
 // Gets the DirectionalObjects descriptions that exists on the room
@@ -147,7 +153,7 @@ func DirObjectDescription(room component.Room, ts *TokeniserSystem, world cardin
 			} else {
 				description = "and there is a " + fmt.Sprintf(dirObject.Description) +
 					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) +
-					"to the" + " " + dirObject.DirType.String() + "."
+					"to the" + " " + dirObject.DirType.String()
 			}
 			world.Logger().Debug().Msgf("LS - DOD: Descriptions for dirObject with ID: %d is: %v", lookingDirObject.ObjectID, description)
 			descriptions = append(descriptions, description)
@@ -176,7 +182,7 @@ func GetPlayersPresence(room component.Room, playerID uint32, world cardinal.Wor
 			player := room.Players[int(lookingPlayer.PlayerID)]
 			var description string
 			if isFirst {
-				description = " In this room is " + player.PlayerName
+				description = " .In this room is " + player.PlayerName
 				isFirst = false
 			} else {
 				description = player.PlayerName
@@ -187,7 +193,7 @@ func GetPlayersPresence(room component.Room, playerID uint32, world cardinal.Wor
 	}
 
 	if len(descriptions) == 0 {
-		return " There is no other poor soul here apart from you."
+		return " .There is no other poor soul here apart from you."
 	}
 
 	// Handle proper punctuation for multiple players

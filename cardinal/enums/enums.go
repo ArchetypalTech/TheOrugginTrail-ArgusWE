@@ -15,6 +15,7 @@ const (
 	RoomTypeRoom                       // 6
 	RoomTypePlain                      // 7
 	RoomTypeForge                      // 8
+	RoomTypeCellar                     // 9
 )
 
 func (r RoomType) String() string {
@@ -32,6 +33,7 @@ var toStringRoom = map[RoomType]string{
 	RoomTypeRoom:       "Room",
 	RoomTypePlain:      "Plain",
 	RoomTypeForge:      "Forge",
+	RoomTypeCellar:     "Cellar",
 }
 
 // Map to store the enum values by string
@@ -45,6 +47,7 @@ var toEnumRoom = map[string]RoomType{
 	"Room":       RoomTypeRoom,
 	"Plain":      RoomTypePlain,
 	"Forge":      RoomTypeForge,
+	"Cellar":     RoomTypeCellar,
 }
 
 // DirectionType - Custom type for direction types
@@ -117,6 +120,7 @@ const (
 	ActionTypeDamage                      // 18
 	ActionTypeHit                         // 19
 	ActionTypeAcquire                     // 20
+	ActionTypeSniff                       //21
 )
 
 func (a ActionType) String() string {
@@ -146,6 +150,7 @@ var toStringAction = map[ActionType]string{
 	ActionTypeDamage:    "Damage",
 	ActionTypeHit:       "Hit",
 	ActionTypeAcquire:   "Acquire",
+	ActionTypeSniff:     "Sniff",
 }
 
 // Map to store the enum values by string
@@ -171,25 +176,31 @@ var toEnumAction = map[string]ActionType{
 	"Damage":    ActionTypeDamage,
 	"Hit":       ActionTypeHit,
 	"Acquire":   ActionTypeAcquire,
+	"Sniff":     ActionTypeSniff,
 }
 
 // ObjectType - Custom type for object types
 type ObjectType int
 
 const (
-	ObjectTypeNone     ObjectType = iota // Starts at 0
-	ObjectTypeFootball                   // 1
-	ObjectTypeKey                        // 2
-	ObjectTypeKnife                      // 3
-	ObjectTypeBottle                     // 4
-	ObjectTypeStraw                      // 5
-	ObjectTypePetrol                     // 6
-	ObjectTypeDoor                       // 7
-	ObjectTypeWindow                     // 8
-	ObjectTypeStairs                     // 9
-	ObjectTypeLadder                     // 10
-	ObjectTypePath                       // 11
-	ObjectTypeTrail                      // 12
+	ObjectTypeNone        ObjectType = iota // Starts at 0
+	ObjectTypeFootball                      // 1
+	ObjectTypeKey                           // 2
+	ObjectTypeKnife                         // 3
+	ObjectTypeBottle                        // 4
+	ObjectTypeHay                           // 5
+	ObjectTypePetrol                        // 6
+	ObjectTypeDoor                          // 7
+	ObjectTypeWindow                        // 8
+	ObjectTypeStairs                        // 9
+	ObjectTypeLadder                        // 10
+	ObjectTypePath                          // 11
+	ObjectTypeTrail                         // 12
+	ObjectTypeMatchsticks                   // 13
+	ObjectTypeDynamite                      // 14
+	ObjectTypeGlue                          // 15
+	ObjectTypeBoulder                       // 16
+	ObjectTypeTrapdoor                      // 17
 )
 
 func (o ObjectType) String() string {
@@ -198,36 +209,46 @@ func (o ObjectType) String() string {
 
 // Map to store the string representations of the enum
 var toStringObject = map[ObjectType]string{
-	ObjectTypeNone:     "None",
-	ObjectTypeFootball: "Football",
-	ObjectTypeKey:      "Key",
-	ObjectTypeKnife:    "Knife",
-	ObjectTypeBottle:   "Bottle",
-	ObjectTypeStraw:    "Straw",
-	ObjectTypePetrol:   "Petrol",
-	ObjectTypeDoor:     "Door",
-	ObjectTypeWindow:   "Window",
-	ObjectTypeStairs:   "Stairs",
-	ObjectTypeLadder:   "Ladder",
-	ObjectTypePath:     "Path",
-	ObjectTypeTrail:    "Trail",
+	ObjectTypeNone:        "None",
+	ObjectTypeFootball:    "Football",
+	ObjectTypeKey:         "Key",
+	ObjectTypeKnife:       "Knife",
+	ObjectTypeBottle:      "Bottle",
+	ObjectTypeHay:         "Hay",
+	ObjectTypePetrol:      "Petrol",
+	ObjectTypeDoor:        "Door",
+	ObjectTypeWindow:      "Window",
+	ObjectTypeStairs:      "Stairs",
+	ObjectTypeLadder:      "Ladder",
+	ObjectTypePath:        "Path",
+	ObjectTypeTrail:       "Trail",
+	ObjectTypeMatchsticks: "Matchsticks",
+	ObjectTypeDynamite:    "Dynamite",
+	ObjectTypeGlue:        "Glue",
+	ObjectTypeBoulder:     "Boulder",
+	ObjectTypeTrapdoor:    "Trapdoor",
 }
 
 // Map to store the enum values by string
 var toEnumObject = map[string]ObjectType{
-	"None":     ObjectTypeNone,
-	"Football": ObjectTypeFootball,
-	"Key":      ObjectTypeKey,
-	"Knife":    ObjectTypeKnife,
-	"Bottle":   ObjectTypeBottle,
-	"Straw":    ObjectTypeStraw,
-	"Petrol":   ObjectTypePetrol,
-	"Door":     ObjectTypeDoor,
-	"Window":   ObjectTypeWindow,
-	"Stairs":   ObjectTypeStairs,
-	"Ladder":   ObjectTypeLadder,
-	"Path":     ObjectTypePath,
-	"Trail":    ObjectTypeTrail,
+	"None":        ObjectTypeNone,
+	"Football":    ObjectTypeFootball,
+	"Key":         ObjectTypeKey,
+	"Knife":       ObjectTypeKnife,
+	"Bottle":      ObjectTypeBottle,
+	"Hay":         ObjectTypeHay,
+	"Petrol":      ObjectTypePetrol,
+	"Door":        ObjectTypeDoor,
+	"Window":      ObjectTypeWindow,
+	"Stairs":      ObjectTypeStairs,
+	"Ladder":      ObjectTypeLadder,
+	"Path":        ObjectTypePath,
+	"Trail":       ObjectTypeTrail,
+	"Matchsticks": ObjectTypeMatchsticks,
+	"Dynamite":    ObjectTypeDynamite,
+	"Glue":        ObjectTypeGlue,
+	"Boulder":     ObjectTypeBoulder,
+	"Trapdoor":    ObjectTypeTrapdoor,
 }
 
 // MaterialType - Custom type for material types

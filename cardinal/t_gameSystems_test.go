@@ -1841,6 +1841,412 @@ func TestFetchObjsForType_RoomToInventory_Empty(t *testing.T) {
 
 // #endregion Action System Test
 
+// #region REST ROOMS ACT I Test
+func TestUsingForgeObjects(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 4
+	var tokens1 = []string{"light", "matchsticks"}
+	var expectedOut1 string = ("You Light the Matchsticks. The matchsticks (despite their small size) lights enough to see a small distance. You have to use them quickly or your fingers will be burn.")
+	var tokens2 = []string{"burn", "petrol"}
+	var expectedOut2 string = ("You Burn the Petrol. The petrol (with its unique funny smell) burns fiercely with a scent that makes you feel dizzy.")
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash1 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens1,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt1 := getReceiptFromPastTick(t, tf.World, processTxHash1)
+	if errs := processReceipt1.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply1, ok := processReceipt1.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt1.Result)
+	}
+
+	assert.Equal(t, expectedOut1, processCommandsReply1.Result)
+	tf.DoTick()
+
+	// Process Commands2
+	processTxHash2 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens2,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt2 := getReceiptFromPastTick(t, tf.World, processTxHash2)
+	if errs := processReceipt2.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply2, ok := processReceipt2.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt2.Result)
+	}
+
+	assert.Equal(t, expectedOut2, processCommandsReply2.Result)
+	tf.DoTick()
+}
+
+func TestBurningPetrolAtStairsWithHay(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 4
+	var tokens1 = []string{"take", "petrol"}
+	var expectedOut1 string = ("You picked up a Petrol.")
+	var tokens2 = []string{"take", "matchsticks"}
+	var expectedOut2 string = ("You picked up a Matchsticks.")
+	var tokens3 = []string{"go", "west"}
+	var expectedOut3 string = ("You are standing in a barn")
+	var tokens4 = []string{"burn", "petrol", "at", "the", "stairs"}
+	var expectedOut4 string = ("You Burn the Petrol at the Stairs. I can hear the crispy sound of the hay burning as it gets consumed by the dark fires." +
+		" However, this enjoyable moment does not persist for too long. The hay having been burned quickly, reveals the stairs cleared up.")
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash1 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens1,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt1 := getReceiptFromPastTick(t, tf.World, processTxHash1)
+	if errs := processReceipt1.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply1, ok := processReceipt1.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt1.Result)
+	}
+
+	assert.Equal(t, expectedOut1, processCommandsReply1.Result)
+	tf.DoTick()
+
+	// Process Commands2
+	processTxHash2 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens2,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt2 := getReceiptFromPastTick(t, tf.World, processTxHash2)
+	if errs := processReceipt2.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply2, ok := processReceipt2.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt2.Result)
+	}
+
+	assert.Equal(t, expectedOut2, processCommandsReply2.Result)
+	tf.DoTick()
+
+	// Process Commands3
+	processTxHash3 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens3,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt3 := getReceiptFromPastTick(t, tf.World, processTxHash3)
+	if errs := processReceipt3.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply3, ok := processReceipt3.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt3.Result)
+	}
+
+	assert.Equal(t, expectedOut3, processCommandsReply3.Result)
+	tf.DoTick()
+
+	// Process Commands4
+	processTxHash4 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens4,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt4 := getReceiptFromPastTick(t, tf.World, processTxHash4)
+	if errs := processReceipt4.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply4, ok := processReceipt4.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt4.Result)
+	}
+
+	assert.Equal(t, expectedOut4, processCommandsReply4.Result)
+	tf.DoTick()
+}
+
+func TestUsingCellarObjects(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 5
+	var tokens1 = []string{"sniff", "glue"}
+	var expectedOut1 string = ("You Sniff the Glue. The smell of it is really relaxing, but for now thats all.")
+	var tokens2 = []string{"light", "dynamite"}
+	var expectedOut2 string = ("You Light the Dynamite. Seeing the fuse sparkling makes you remember the fireworks you loved as a child." +
+		" Suddenly, you return back and see that there is almost no time. You have to do something or you will be flying into meat pieces!.")
+	var tokens3 = []string{"throw", "dynamite"}
+	var expectedOut3 string = ("You Throw the Dynamite. You throw quickly the dynamite and start running for the hills as your life depens on it.")
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash1 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens1,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt1 := getReceiptFromPastTick(t, tf.World, processTxHash1)
+	if errs := processReceipt1.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply1, ok := processReceipt1.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt1.Result)
+	}
+
+	assert.Equal(t, expectedOut1, processCommandsReply1.Result)
+	tf.DoTick()
+
+	// Process Commands2
+	processTxHash2 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens2,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt2 := getReceiptFromPastTick(t, tf.World, processTxHash2)
+	if errs := processReceipt2.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply2, ok := processReceipt2.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt2.Result)
+	}
+
+	assert.Equal(t, expectedOut2, processCommandsReply2.Result)
+	tf.DoTick()
+
+	// Process Commands2
+	processTxHash3 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens3,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt3 := getReceiptFromPastTick(t, tf.World, processTxHash3)
+	if errs := processReceipt3.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply3, ok := processReceipt3.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt3.Result)
+	}
+
+	assert.Equal(t, expectedOut3, processCommandsReply3.Result)
+	tf.DoTick()
+}
+
+func TestThrowingDynamiteAtBoulder(t *testing.T) {
+	tf := testutils.NewTestFixture(t, nil)
+	MustInitWorld(tf.World)
+	tf.DoTick()
+
+	const playerName = "Hueyu"
+	const roomSpawn = 5
+	var tokens1 = []string{"take", "dynamite"}
+	var expectedOut1 string = ("You picked up a Dynamite.")
+	var tokens2 = []string{"go", "up"}
+	var expectedOut2 string = ("You are standing in a barn")
+	var tokens3 = []string{"go", "south"}
+	var expectedOut3 string = ("You are standing on a windswept plain")
+	var tokens4 = []string{"go", "east"}
+	var expectedOut4 string = ("You are standing in a high mountain pass")
+	var tokens5 = []string{"throw", "petrol", "at", "the", "boulder"}
+	var expectedOut5 string = ("You Throw the Petrol at the Boulder. The dynamite lands at the boulder while you keep running and in just a second KBOOOM!." +
+		" The boulder, blasted to pieces reveals a path to a new adventure. This is the end of ACT I, if you go East you will return to the plain")
+
+	// Create an initial player
+	_ = tf.AddTransaction(getCreateMsgID(t, tf.World), msg.CreatePlayerMsg{
+		PlayersName: playerName,
+		RoomID:      roomSpawn,
+	})
+	tf.DoTick()
+
+	// Process Commands
+	processTxHash1 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens1,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt1 := getReceiptFromPastTick(t, tf.World, processTxHash1)
+	if errs := processReceipt1.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply1, ok := processReceipt1.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt1.Result)
+	}
+
+	assert.Equal(t, expectedOut1, processCommandsReply1.Result)
+	tf.DoTick()
+
+	// Process Commands2
+	processTxHash2 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens2,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt2 := getReceiptFromPastTick(t, tf.World, processTxHash2)
+	if errs := processReceipt2.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply2, ok := processReceipt2.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt2.Result)
+	}
+
+	assert.Equal(t, expectedOut2, processCommandsReply2.Result)
+	tf.DoTick()
+
+	// Process Commands3
+	processTxHash3 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens3,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt3 := getReceiptFromPastTick(t, tf.World, processTxHash3)
+	if errs := processReceipt3.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply3, ok := processReceipt3.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt3.Result)
+	}
+
+	assert.Equal(t, expectedOut3, processCommandsReply3.Result)
+	tf.DoTick()
+
+	// Process Commands4
+	processTxHash4 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens4,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt4 := getReceiptFromPastTick(t, tf.World, processTxHash4)
+	if errs := processReceipt4.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply4, ok := processReceipt4.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt4.Result)
+	}
+
+	assert.Equal(t, expectedOut4, processCommandsReply4.Result)
+	tf.DoTick()
+
+	// Process Commands4
+	processTxHash5 := tf.AddTransaction(getProcessMsgID(t, tf.World), msg.ProcessCommandsMsg{
+		PlayerName: playerName,
+		Tokens:     tokens5,
+	})
+	tf.DoTick()
+
+	// Make sure process was successful
+	processReceipt5 := getReceiptFromPastTick(t, tf.World, processTxHash5)
+	if errs := processReceipt5.Errs; len(errs) > 0 {
+		t.Fatalf("expected no errors when processing the commands; got %v", errs)
+	}
+
+	// Type assert the Result field to msg.ProcessCommandsReply
+	processCommandsReply5, ok := processReceipt5.Result.(msg.ProcessCommandsReply)
+	if !ok {
+		t.Fatalf("expected processReceipt.Result to be of type msg.ProcessCommandsReply; got %T", processReceipt5.Result)
+	}
+
+	assert.Equal(t, expectedOut5, processCommandsReply5.Result)
+	tf.DoTick()
+}
+
+// #endregion REST ROOMS ACT I Test
+
 func getCreateMsgID(t *testing.T, world *cardinal.World) types.MessageID {
 	return getMsgID(t, world, createMsgName)
 }
