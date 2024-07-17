@@ -78,6 +78,7 @@ func (ts *TokeniserSystem) setupCmds() {
 	ts.vrbLookup["INVENTORY"] = enums.ActionTypeInventory
 	ts.vrbLookup["BURN"] = enums.ActionTypeBurn
 	ts.vrbLookup["LIGHT"] = enums.ActionTypeLight
+	ts.vrbLookup["SNIFF"] = enums.ActionTypeSniff
 
 	// lowercase
 	ts.revVrbLookup["go"] = enums.ActionTypeGo
@@ -97,6 +98,7 @@ func (ts *TokeniserSystem) setupCmds() {
 	ts.revVrbLookup["inventory"] = enums.ActionTypeInventory
 	ts.revVrbLookup["burn"] = enums.ActionTypeBurn
 	ts.revVrbLookup["light"] = enums.ActionTypeLight
+	ts.revVrbLookup["sniff"] = enums.ActionTypeSniff
 
 	ts.revVrbLookup["Go"] = enums.ActionTypeGo
 	ts.revVrbLookup["Move"] = enums.ActionTypeMove
@@ -115,6 +117,7 @@ func (ts *TokeniserSystem) setupCmds() {
 	ts.revVrbLookup["Inventory"] = enums.ActionTypeInventory
 	ts.revVrbLookup["Burn"] = enums.ActionTypeBurn
 	ts.revVrbLookup["Light"] = enums.ActionTypeLight
+	ts.revVrbLookup["Sniff"] = enums.ActionTypeSniff
 
 }
 
@@ -125,6 +128,11 @@ func (ts *TokeniserSystem) setupObjects() {
 	ts.objLookup["KEY"] = enums.ObjectTypeKey
 	ts.objLookup["KNIFE"] = enums.ObjectTypeKnife
 	ts.objLookup["BOTTLE"] = enums.ObjectTypeBottle
+	ts.objLookup["MATCHES"] = enums.ObjectTypeMatches
+	ts.objLookup["PETROL"] = enums.ObjectTypePetrol
+	ts.objLookup["DYNAMITE"] = enums.ObjectTypeDynamite
+	ts.objLookup["GLUE"] = enums.ObjectTypeGlue
+	ts.objLookup["BOULDER"] = enums.ObjectTypeBoulder
 
 	// lowercase
 	ts.revObjLookup["football"] = enums.ObjectTypeFootball
@@ -132,11 +140,22 @@ func (ts *TokeniserSystem) setupObjects() {
 	ts.revObjLookup["key"] = enums.ObjectTypeKey
 	ts.revObjLookup["knife"] = enums.ObjectTypeKnife
 	ts.revObjLookup["bottle"] = enums.ObjectTypeBottle
+	ts.revObjLookup["matches"] = enums.ObjectTypeMatches
+	ts.revObjLookup["petrol"] = enums.ObjectTypePetrol
+	ts.revObjLookup["dynamite"] = enums.ObjectTypeDynamite
+	ts.revObjLookup["glue"] = enums.ObjectTypeGlue
+	ts.revObjLookup["boulder"] = enums.ObjectTypeBoulder
+
 	ts.revObjLookup["Football"] = enums.ObjectTypeFootball
 	ts.revObjLookup["Ball"] = enums.ObjectTypeFootball
 	ts.revObjLookup["Key"] = enums.ObjectTypeKey
 	ts.revObjLookup["Knife"] = enums.ObjectTypeKnife
 	ts.revObjLookup["Bottle"] = enums.ObjectTypeBottle
+	ts.revObjLookup["Matches"] = enums.ObjectTypeMatches
+	ts.revObjLookup["Petrol"] = enums.ObjectTypePetrol
+	ts.revObjLookup["Dynamite"] = enums.ObjectTypeDynamite
+	ts.revObjLookup["Glue"] = enums.ObjectTypeGlue
+	ts.revObjLookup["Boulder"] = enums.ObjectTypeBoulder
 }
 
 // setupDirs initializes the direction lookup table with predefined directions
@@ -197,10 +216,12 @@ func (ts *TokeniserSystem) setupDirObjs() {
 // setupVrbAct initializes the verb action response lookup table with predefined responses
 func (ts *TokeniserSystem) setupVrbAct() {
 	ts.responseLookup[enums.ActionTypeKick] = []enums.ActionType{enums.ActionTypeBreak, enums.ActionTypeHit, enums.ActionTypeDamage, enums.ActionTypeKick}
-	ts.responseLookup[enums.ActionTypeBurn] = []enums.ActionType{enums.ActionTypeBurn, enums.ActionTypeLight, enums.ActionTypeDamage}
-	ts.responseLookup[enums.ActionTypeLight] = []enums.ActionType{enums.ActionTypeBurn, enums.ActionTypeLight, enums.ActionTypeDamage}
+	ts.responseLookup[enums.ActionTypeBurn] = []enums.ActionType{enums.ActionTypeBurn, enums.ActionTypeDamage}
+	ts.responseLookup[enums.ActionTypeLight] = []enums.ActionType{enums.ActionTypeLight, enums.ActionTypeDamage}
 	ts.responseLookup[enums.ActionTypeOpen] = []enums.ActionType{enums.ActionTypeOpen}
 	ts.responseLookup[enums.ActionTypeBreak] = []enums.ActionType{enums.ActionTypeBreak}
+	ts.responseLookup[enums.ActionTypeThrow] = []enums.ActionType{enums.ActionTypeThrow}
+	ts.responseLookup[enums.ActionTypeSniff] = []enums.ActionType{enums.ActionTypeSniff}
 }
 
 // setupGrammar initializes the grammar response tookup table with predifined grammar

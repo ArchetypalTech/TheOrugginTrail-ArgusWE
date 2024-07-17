@@ -8,3 +8,7 @@ console:
   port: 7351
   username: "myAdmin"  # Set your admin username for the Nakama Console
   password: "myPassword" # Set your password for the Nakama Console
+
+session:
+  token_expiry_sec: 300
+  refresh_token_expiry_sec: 3600
