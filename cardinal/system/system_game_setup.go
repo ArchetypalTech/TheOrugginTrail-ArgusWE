@@ -253,7 +253,7 @@ func (s *GameSetup) setupForge(world cardinal.WorldContext) {
 
 	matchesActions := []uint32{light}
 	objs = append(objs, s.createObject(enums.ObjectTypeMatches, enums.MaterialTypeWood,
-		"a box of matches that ahve survived the passing of the ages, you can probably light them up, as they seem to be in a good condition", enums.ObjectTypeMatches.String(), matchesActions, true, world))
+		"a box of matches that have survived the passing of the ages, you can probably light them up, as they seem to be in a good condition", enums.ObjectTypeMatches.String(), matchesActions, true, world))
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a dusty forge",
@@ -308,7 +308,7 @@ func (s *GameSetup) setupCellar(world cardinal.WorldContext) {
 
 	glueActions := []uint32{sniff}
 	objs = append(objs, s.createObject(enums.ObjectTypeGlue, enums.MaterialTypeShit,
-		"some oddly names glue. Not knowing if its your imagination it seems to be calling you", enums.ObjectTypeGlue.String(), glueActions, true, world))
+		"some oddly named glue. Not knowing if its your imagination it seems to be calling you", enums.ObjectTypeGlue.String(), glueActions, true, world))
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a small cellar",
