@@ -123,7 +123,7 @@ func ObjectDescription(room component.Room, world cardinal.WorldContext) string 
 			object := room.Objects[int(lookingObjects.ObjectID)]
 			var description string
 			if isFirst {
-				description = " You see " + fmt.Sprintf(object.Description)
+				description = ". You see " + fmt.Sprintf(object.Description)
 				isFirst = false
 			} else {
 				description = "and " + fmt.Sprintf(object.Description)
@@ -146,7 +146,7 @@ func DirObjectDescription(room component.Room, ts *TokeniserSystem, world cardin
 			dirObject := room.DirObjs[int(lookingDirObject.ObjectID)]
 			var description string
 			if isFirst {
-				description = " There is a " + fmt.Sprintf(dirObject.Description) +
+				description = ". There is a " + fmt.Sprintf(dirObject.Description) +
 					GenMaterialDesc(dirObject.MaterialType.String(), dirObject.ObjectType, ts) +
 					"to the" + " " + dirObject.DirType.String()
 				isFirst = false
@@ -182,7 +182,7 @@ func GetPlayersPresence(room component.Room, playerID uint32, world cardinal.Wor
 			player := room.Players[int(lookingPlayer.PlayerID)]
 			var description string
 			if isFirst {
-				description = " .In this room is " + player.PlayerName
+				description = ". In this room is " + player.PlayerName
 				isFirst = false
 			} else {
 				description = player.PlayerName
@@ -193,7 +193,7 @@ func GetPlayersPresence(room component.Room, playerID uint32, world cardinal.Wor
 	}
 
 	if len(descriptions) == 0 {
-		return " .There is no other poor soul here apart from you."
+		return ". There is no other poor soul here apart from you."
 	}
 
 	// Handle proper punctuation for multiple players

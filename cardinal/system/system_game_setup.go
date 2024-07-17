@@ -79,7 +79,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 		" your nose is really itchy", true, true, true, 0, 0)
 
 	plainPath := []uint32{open2Path}
-	dObjs = append(dObjs, s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeStoneCabin,
+	dObjs = append(dObjs, s.createDirObject(enums.DirectionTypeEast, enums.RoomTypeMountainPath,
 		enums.ObjectTypePath, enums.MaterialTypeMud,
 		"path", plainPath, world))
 
@@ -89,7 +89,7 @@ func (s *GameSetup) setupPlain(world cardinal.WorldContext) {
 
 	ballActions := []uint32{kick}
 	objs := []component.Object{s.createObject(enums.ObjectTypeFootball, enums.MaterialTypeFlesh,
-		"A slightly deflated knock off uefa football, not quite spherical, it's kickable though", enums.ObjectTypeFootball.String(), ballActions, true, world)}
+		"a slightly deflated knock off uefa football, not quite spherical, it's kickable though", enums.ObjectTypeFootball.String(), ballActions, true, world)}
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a windswept plain",
@@ -141,11 +141,11 @@ func (s *GameSetup) setupBarn(world cardinal.WorldContext) {
 		"window", windowActions, world))
 
 	// KBARN -> DOWN
-	open2Cellar := s.createAction(enums.ActionTypeOpen, " The hay having been burned quickly, reveals the stairs cleared up.", false, false, false, 0, 0)
+	open2Cellar := s.createAction(enums.ActionTypeOpen, " The hay having burnt fast reveals a set of stairs.", false, false, false, 0, 0)
 
-	burnHay := s.createAction(enums.ActionTypeBurn, " I can hear the crispy sound of the hay burning"+
-		" as it gets consumed by the dark fires."+
-		" However, this enjoyable moment does not persist for too long.",
+	burnHay := s.createAction(enums.ActionTypeBurn, " You hear the cracking noise of the hay burning quickly"+
+		" as it is consumed by the dark fires,"+
+		" sadly this enjoyable moment is short lived.",
 		true, false, true, open2Cellar, 0)
 
 	hayActions := []uint32{open2Cellar, burnHay}
@@ -190,7 +190,7 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a high mountain pass",
-		RoomType:    enums.RoomTypeStoneCabin,
+		RoomType:    enums.RoomTypeMountainPath,
 	})
 
 	// KPATH -> E
@@ -222,7 +222,7 @@ func (s *GameSetup) setupMountainPath(world cardinal.WorldContext) {
 	world.Logger().Debug().Msgf("Data passed to createPlace for room %d: %+v", roomID, [32]uint32{})
 	world.Logger().Debug().Msgf("Data passed to createDirectionalObject for room %d: %+v", roomID, dObjs)
 
-	s.createPlace(roomID, enums.RoomTypeStoneCabin, dObjs, nil, tidMpath, txtMpath, world) // Pass empty array instead of nil for the objects.
+	s.createPlace(roomID, enums.RoomTypeMountainPath, dObjs, nil, tidMpath, txtMpath, world) // Pass empty array instead of nil for the objects.
 
 	world.Logger().Debug().Msg("---->Mountain path setup complete")
 }
@@ -244,16 +244,16 @@ func (s *GameSetup) setupForge(world cardinal.WorldContext) {
 
 	petrolActions := []uint32{burn}
 	objs := []component.Object{s.createObject(enums.ObjectTypePetrol, enums.MaterialTypeIKEA,
-		"a strange liquid that seems to be petrol, probably there is three liters of it, it's highly burnable though", enums.ObjectTypePetrol.String(), petrolActions, true, world)}
+		"a strange liquid that seems to be petrol, probably there are about 3 litres of it, its highly flammable", enums.ObjectTypePetrol.String(), petrolActions, true, world)}
 
-	// Matchsticks Object
-	light := s.createAction(enums.ActionTypeLight, " The matchsticks (despite their small size)"+
+	// Matchess Object
+	light := s.createAction(enums.ActionTypeLight, " The matches (despite their small size)"+
 		" lights enough to see a small distance. You have to use them quickly"+
-		" or your fingers will be burn", true, false, true, 0, 0)
+		" or your fingers will get burnt", true, false, true, 0, 0)
 
 	matchesActions := []uint32{light}
-	objs = append(objs, s.createObject(enums.ObjectTypeMatchsticks, enums.MaterialTypeWood,
-		"a group of matchsticks that have survived the pass of time, you can probably light them up, as they seem to be in a good condition", enums.ObjectTypeMatchsticks.String(), matchesActions, true, world))
+	objs = append(objs, s.createObject(enums.ObjectTypeMatches, enums.MaterialTypeWood,
+		"a box of matches that ahve survived the passing of the ages, you can probably light them up, as they seem to be in a good condition", enums.ObjectTypeMatches.String(), matchesActions, true, world))
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a dusty forge",
@@ -293,14 +293,14 @@ func (s *GameSetup) setupCellar(world cardinal.WorldContext) {
 	// Dynamite Object
 	lightDynamite := s.createAction(enums.ActionTypeLight, " Seeing the fuse sparkling makes you remember the fireworks you loved as a child."+
 		" Suddenly, you return back and see that there is almost no time."+
-		" You have to do something or you will be flying into meat pieces!", true, false, true, 0, 0)
+		" You have to do something or you will be turned to meat puree", true, false, true, 0, 0)
 
 	throwDynamite := s.createAction(enums.ActionTypeThrow, " You throw quickly the dynamite"+
-		" and start running for the hills as your life depens on it", true, false, true, 0, 0)
+		" and start running for the hills as your life depends on it", true, false, true, 0, 0)
 
 	dynamiteActions := []uint32{lightDynamite, throwDynamite}
 	objs := []component.Object{s.createObject(enums.ObjectTypeDynamite, enums.MaterialTypeIKEA,
-		"a high quality dynamite that can blast almost everything. It needs to be lighted up first", enums.ObjectTypeDynamite.String(), dynamiteActions, true, world)}
+		"a high quality (if old) dynamite with a quick fuse. It needs to be lit first", enums.ObjectTypeDynamite.String(), dynamiteActions, true, world)}
 
 	// GLUE Object
 	sniff := s.createAction(enums.ActionTypeSniff, " The smell of it is really relaxing,"+
@@ -308,7 +308,7 @@ func (s *GameSetup) setupCellar(world cardinal.WorldContext) {
 
 	glueActions := []uint32{sniff}
 	objs = append(objs, s.createObject(enums.ObjectTypeGlue, enums.MaterialTypeShit,
-		"some glue of a strange name: &$#${+>@#!@. Don't knowing if it's your imagination, it is calling you", enums.ObjectTypeGlue.String(), glueActions, true, world))
+		"some oddly names glue. Not knowing if its your imagination it seems to be calling you", enums.ObjectTypeGlue.String(), glueActions, true, world))
 
 	roomID := s.RoomStore.Add(component.Room{
 		Description: "a small cellar",

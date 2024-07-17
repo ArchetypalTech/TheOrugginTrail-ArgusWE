@@ -7,90 +7,90 @@ import (
 // Test for RoomType enum
 func TestRoomType(t *testing.T) {
 	// Test enum to string conversion
-	if RoomTypeNone.String() != "None" {
-		t.Errorf("RoomTypeNone.String() = %v; want %v", RoomTypeNone.String(), "None")
+	if RoomTypeNone.String() != "none" {
+		t.Errorf("RoomTypeNone.String() = %v; want %v", RoomTypeNone.String(), "none")
 	}
-	if RoomTypeBarn.String() != "Barn" {
-		t.Errorf("RoomTypeBarn.String() = %v; want %v", RoomTypeBarn.String(), "Barn")
+	if RoomTypeBarn.String() != "barn" {
+		t.Errorf("RoomTypeBarn.String() = %v; want %v", RoomTypeBarn.String(), "barn")
 	}
-	if RoomTypeStore.String() != "Store" {
-		t.Errorf("RoomTypeStore.String() = %v; want %v", RoomTypeStore.String(), "Store")
+	if RoomTypeStore.String() != "store" {
+		t.Errorf("RoomTypeStore.String() = %v; want %v", RoomTypeStore.String(), "store")
 	}
-	if RoomTypeCavern.String() != "Cavern" {
-		t.Errorf("RoomTypeCavern.String() = %v; want %v", RoomTypeCavern.String(), "Cavern")
+	if RoomTypeCavern.String() != "cavern" {
+		t.Errorf("RoomTypeCavern.String() = %v; want %v", RoomTypeCavern.String(), "cavern")
 	}
-	if RoomTypeStoneCabin.String() != "StoneCabin" {
-		t.Errorf("RoomTypeStoneCabin.String() = %v; want %v", RoomTypeStoneCabin.String(), "StoneCabin")
+	if RoomTypeMountainPath.String() != "mountain path" {
+		t.Errorf("RoomTypeMountainPath.String() = %v; want %v", RoomTypeMountainPath.String(), "mountain path")
 	}
-	if RoomTypeFort.String() != "Fort" {
-		t.Errorf("RoomTypeFort.String() = %v; want %v", RoomTypeFort.String(), "Fort")
+	if RoomTypeFort.String() != "fort" {
+		t.Errorf("RoomTypeFort.String() = %v; want %v", RoomTypeFort.String(), "fort")
 	}
-	if RoomTypeRoom.String() != "Room" {
-		t.Errorf("RoomTypeRoom.String() = %v; want %v", RoomTypeRoom.String(), "Room")
+	if RoomTypeRoom.String() != "room" {
+		t.Errorf("RoomTypeRoom.String() = %v; want %v", RoomTypeRoom.String(), "room")
 	}
-	if RoomTypePlain.String() != "Plain" {
-		t.Errorf("RoomTypePlain.String() = %v; want %v", RoomTypePlain.String(), "Plain")
+	if RoomTypePlain.String() != "plain" {
+		t.Errorf("RoomTypePlain.String() = %v; want %v", RoomTypePlain.String(), "plain")
 	}
-	if RoomTypeForge.String() != "Forge" {
-		t.Errorf("RoomTypeForge.String() = %v; want %v", RoomTypeForge.String(), "Forge")
+	if RoomTypeForge.String() != "forge" {
+		t.Errorf("RoomTypeForge.String() = %v; want %v", RoomTypeForge.String(), "forge")
 	}
 
 	// Test map lookup
-	if toStringRoom[RoomTypeNone] != "None" {
-		t.Errorf("toStringRoom[RoomTypeNone] = %v; want %v", toStringRoom[RoomTypeNone], "None")
+	if toStringRoom[RoomTypeNone] != "none" {
+		t.Errorf("toStringRoom[RoomTypeNone] = %v; want %v", toStringRoom[RoomTypeNone], "mone")
 	}
-	if toStringRoom[RoomTypeBarn] != "Barn" {
-		t.Errorf("toStringRoom[RoomTypeBarn] = %v; want %v", toStringRoom[RoomTypeBarn], "Barn")
+	if toStringRoom[RoomTypeBarn] != "barn" {
+		t.Errorf("toStringRoom[RoomTypeBarn] = %v; want %v", toStringRoom[RoomTypeBarn], "barn")
 	}
-	if toStringRoom[RoomTypeStore] != "Store" {
-		t.Errorf("toStringRoom[RoomTypeStore] = %v; want %v", toStringRoom[RoomTypeStore], "Store")
+	if toStringRoom[RoomTypeStore] != "store" {
+		t.Errorf("toStringRoom[RoomTypeStore] = %v; want %v", toStringRoom[RoomTypeStore], "store")
 	}
-	if toStringRoom[RoomTypeCavern] != "Cavern" {
-		t.Errorf("toStringRoom[RoomTypeCavern] = %v; want %v", toStringRoom[RoomTypeCavern], "Cavern")
+	if toStringRoom[RoomTypeCavern] != "cavern" {
+		t.Errorf("toStringRoom[RoomTypeCavern] = %v; want %v", toStringRoom[RoomTypeCavern], "cavern")
 	}
-	if toStringRoom[RoomTypeStoneCabin] != "StoneCabin" {
-		t.Errorf("toStringRoom[RoomTypeStoneCabin] = %v; want %v", toStringRoom[RoomTypeStoneCabin], "StoneCabin")
+	if toStringRoom[RoomTypeMountainPath] != "mountain path" {
+		t.Errorf("toStringRoom[RoomTypeMountainPath] = %v; want %v", toStringRoom[RoomTypeMountainPath], "mountain path")
 	}
-	if toStringRoom[RoomTypeFort] != "Fort" {
-		t.Errorf("toStringRoom[RoomTypeFort] = %v; want %v", toStringRoom[RoomTypeFort], "Fort")
+	if toStringRoom[RoomTypeFort] != "fort" {
+		t.Errorf("toStringRoom[RoomTypeFort] = %v; want %v", toStringRoom[RoomTypeFort], "fort")
 	}
-	if toStringRoom[RoomTypeRoom] != "Room" {
-		t.Errorf("toStringRoom[RoomTypeRoom] = %v; want %v", toStringRoom[RoomTypeRoom], "Room")
+	if toStringRoom[RoomTypeRoom] != "room" {
+		t.Errorf("toStringRoom[RoomTypeRoom] = %v; want %v", toStringRoom[RoomTypeRoom], "room")
 	}
-	if toStringRoom[RoomTypePlain] != "Plain" {
-		t.Errorf("toStringRoom[RoomTypePlain] = %v; want %v", toStringRoom[RoomTypePlain], "Plain")
+	if toStringRoom[RoomTypePlain] != "plain" {
+		t.Errorf("toStringRoom[RoomTypePlain] = %v; want %v", toStringRoom[RoomTypePlain], "plain")
 	}
-	if toStringRoom[RoomTypeForge] != "Forge" {
-		t.Errorf("toStringRoom[RoomTypeForge] = %v; want %v", toStringRoom[RoomTypeForge], "Forge")
+	if toStringRoom[RoomTypeForge] != "forge" {
+		t.Errorf("toStringRoom[RoomTypeForge] = %v; want %v", toStringRoom[RoomTypeForge], "forge")
 	}
 
 	// Test reverse map lookup
-	if toEnumRoom["None"] != RoomTypeNone {
-		t.Errorf("toEnumRoom[\"None\"] = %v; want %v", toEnumRoom["None"], RoomTypeNone)
+	if toEnumRoom["none"] != RoomTypeNone {
+		t.Errorf("toEnumRoom[\"none\"] = %v; want %v", toEnumRoom["none"], RoomTypeNone)
 	}
-	if toEnumRoom["Barn"] != RoomTypeBarn {
-		t.Errorf("toEnumRoom[\"Barn\"] = %v; want %v", toEnumRoom["Barn"], RoomTypeBarn)
+	if toEnumRoom["barn"] != RoomTypeBarn {
+		t.Errorf("toEnumRoom[\"barn\"] = %v; want %v", toEnumRoom["barn"], RoomTypeBarn)
 	}
-	if toEnumRoom["Store"] != RoomTypeStore {
-		t.Errorf("toEnumRoom[\"Store\"] = %v; want %v", toEnumRoom["Store"], RoomTypeStore)
+	if toEnumRoom["store"] != RoomTypeStore {
+		t.Errorf("toEnumRoom[\"store\"] = %v; want %v", toEnumRoom["store"], RoomTypeStore)
 	}
-	if toEnumRoom["Cavern"] != RoomTypeCavern {
-		t.Errorf("toEnumRoom[\"Cavern\"] = %v; want %v", toEnumRoom["Cavern"], RoomTypeCavern)
+	if toEnumRoom["cavern"] != RoomTypeCavern {
+		t.Errorf("toEnumRoom[\"cavern\"] = %v; want %v", toEnumRoom["cavern"], RoomTypeCavern)
 	}
-	if toEnumRoom["StoneCabin"] != RoomTypeStoneCabin {
-		t.Errorf("toEnumRoom[\"StoneCabin\"] = %v; want %v", toEnumRoom["StoneCabin"], RoomTypeStoneCabin)
+	if toEnumRoom["mountain path"] != RoomTypeMountainPath {
+		t.Errorf("toEnumRoom[\"mountain path\"] = %v; want %v", toEnumRoom["mountain path"], RoomTypeMountainPath)
 	}
-	if toEnumRoom["Fort"] != RoomTypeFort {
-		t.Errorf("toEnumRoom[\"Fort\"] = %v; want %v", toEnumRoom["Fort"], RoomTypeFort)
+	if toEnumRoom["fort"] != RoomTypeFort {
+		t.Errorf("toEnumRoom[\"fort\"] = %v; want %v", toEnumRoom["fort"], RoomTypeFort)
 	}
-	if toEnumRoom["Room"] != RoomTypeRoom {
-		t.Errorf("toEnumRoom[\"Room\"] = %v; want %v", toEnumRoom["Room"], RoomTypeRoom)
+	if toEnumRoom["room"] != RoomTypeRoom {
+		t.Errorf("toEnumRoom[\"room\"] = %v; want %v", toEnumRoom["room"], RoomTypeRoom)
 	}
-	if toEnumRoom["Plain"] != RoomTypePlain {
-		t.Errorf("toEnumRoom[\"Plain\"] = %v; want %v", toEnumRoom["Plain"], RoomTypePlain)
+	if toEnumRoom["plain"] != RoomTypePlain {
+		t.Errorf("toEnumRoom[\"plain\"] = %v; want %v", toEnumRoom["plain"], RoomTypePlain)
 	}
-	if toEnumRoom["Forge"] != RoomTypeForge {
-		t.Errorf("toEnumRoom[\"Forge\"] = %v; want %v", toEnumRoom["Forge"], RoomTypeForge)
+	if toEnumRoom["forge"] != RoomTypeForge {
+		t.Errorf("toEnumRoom[\"forge\"] = %v; want %v", toEnumRoom["forge"], RoomTypeForge)
 	}
 }
 
@@ -187,171 +187,171 @@ func TestDirectionType(t *testing.T) {
 // Test for ObjectType enum
 func TestObjectType(t *testing.T) {
 	// Test enum to string conversion
-	if ObjectTypeNone.String() != "None" {
-		t.Errorf("DirObjectTypeNone.String() = %v; want %v", ObjectTypeNone.String(), "None")
+	if ObjectTypeNone.String() != "none" {
+		t.Errorf("DirObjectTypeNone.String() = %v; want %v", ObjectTypeNone.String(), "none")
 	}
-	if ObjectTypeDoor.String() != "Door" {
-		t.Errorf("DirObjectTypeDoor.String() = %v; want %v", ObjectTypeDoor.String(), "Door")
+	if ObjectTypeDoor.String() != "door" {
+		t.Errorf("DirObjectTypeDoor.String() = %v; want %v", ObjectTypeDoor.String(), "door")
 	}
-	if ObjectTypeWindow.String() != "Window" {
-		t.Errorf("DirObjectTypeWindow.String() = %v; want %v", ObjectTypeWindow.String(), "Window")
+	if ObjectTypeWindow.String() != "window" {
+		t.Errorf("DirObjectTypeWindow.String() = %v; want %v", ObjectTypeWindow.String(), "window")
 	}
-	if ObjectTypeStairs.String() != "Stairs" {
-		t.Errorf("DirObjectTypeStairs.String() = %v; want %v", ObjectTypeStairs.String(), "Stairs")
+	if ObjectTypeStairs.String() != "stairs" {
+		t.Errorf("DirObjectTypeStairs.String() = %v; want %v", ObjectTypeStairs.String(), "stairs")
 	}
-	if ObjectTypeLadder.String() != "Ladder" {
-		t.Errorf("DirObjectTypeLadder.String() = %v; want %v", ObjectTypeLadder.String(), "Ladder")
+	if ObjectTypeLadder.String() != "ladder" {
+		t.Errorf("DirObjectTypeLadder.String() = %v; want %v", ObjectTypeLadder.String(), "ladder")
 	}
-	if ObjectTypePath.String() != "Path" {
-		t.Errorf("DirObjectTypePath.String() = %v; want %v", ObjectTypePath.String(), "Path")
+	if ObjectTypePath.String() != "path" {
+		t.Errorf("DirObjectTypePath.String() = %v; want %v", ObjectTypePath.String(), "path")
 	}
-	if ObjectTypeTrail.String() != "Trail" {
-		t.Errorf("DirObjectTypeTrail.String() = %v; want %v", ObjectTypeTrail.String(), "Trail")
+	if ObjectTypeTrail.String() != "trail" {
+		t.Errorf("DirObjectTypeTrail.String() = %v; want %v", ObjectTypeTrail.String(), "trail")
 	}
 
 	// Test map lookup
-	if toStringObject[ObjectTypeNone] != "None" {
-		t.Errorf("toStringDObject[DirObjectTypeNone] = %v; want %v", toStringObject[ObjectTypeNone], "None")
+	if toStringObject[ObjectTypeNone] != "none" {
+		t.Errorf("toStringDObject[DirObjectTypeNone] = %v; want %v", toStringObject[ObjectTypeNone], "none")
 	}
-	if toStringObject[ObjectTypeDoor] != "Door" {
-		t.Errorf("toStringDObject[DirObjectTypeDoor] = %v; want %v", toStringObject[ObjectTypeDoor], "Door")
+	if toStringObject[ObjectTypeDoor] != "door" {
+		t.Errorf("toStringDObject[DirObjectTypeDoor] = %v; want %v", toStringObject[ObjectTypeDoor], "door")
 	}
-	if toStringObject[ObjectTypeWindow] != "Window" {
-		t.Errorf("toStringDObject[DirObjectTypeWindow] = %v; want %v", toStringObject[ObjectTypeWindow], "Window")
+	if toStringObject[ObjectTypeWindow] != "window" {
+		t.Errorf("toStringDObject[DirObjectTypeWindow] = %v; want %v", toStringObject[ObjectTypeWindow], "window")
 	}
-	if toStringObject[ObjectTypeStairs] != "Stairs" {
-		t.Errorf("toStringDObject[DirObjectTypeStairs] = %v; want %v", toStringObject[ObjectTypeStairs], "Stairs")
+	if toStringObject[ObjectTypeStairs] != "stairs" {
+		t.Errorf("toStringDObject[DirObjectTypeStairs] = %v; want %v", toStringObject[ObjectTypeStairs], "stairs")
 	}
-	if toStringObject[ObjectTypeLadder] != "Ladder" {
-		t.Errorf("toStringDObject[DirObjectTypeLadder] = %v; want %v", toStringObject[ObjectTypeLadder], "Ladder")
+	if toStringObject[ObjectTypeLadder] != "ladder" {
+		t.Errorf("toStringDObject[DirObjectTypeLadder] = %v; want %v", toStringObject[ObjectTypeLadder], "ladder")
 	}
-	if toStringObject[ObjectTypePath] != "Path" {
-		t.Errorf("toStringDObject[DirObjectTypePath] = %v; want %v", toStringObject[ObjectTypePath], "Path")
+	if toStringObject[ObjectTypePath] != "path" {
+		t.Errorf("toStringDObject[DirObjectTypePath] = %v; want %v", toStringObject[ObjectTypePath], "path")
 	}
-	if toStringObject[ObjectTypeTrail] != "Trail" {
-		t.Errorf("toStringDObject[DirObjectTypeTrail] = %v; want %v", toStringObject[ObjectTypeTrail], "Trail")
+	if toStringObject[ObjectTypeTrail] != "trail" {
+		t.Errorf("toStringDObject[DirObjectTypeTrail] = %v; want %v", toStringObject[ObjectTypeTrail], "trail")
 	}
 
 	// Test reverse map lookup
-	if toEnumObject["None"] != ObjectTypeNone {
-		t.Errorf("toEnumDObject[\"None\"] = %v; want %v", toEnumObject["None"], ObjectTypeNone)
+	if toEnumObject["none"] != ObjectTypeNone {
+		t.Errorf("toEnumDObject[\"none\"] = %v; want %v", toEnumObject["none"], ObjectTypeNone)
 	}
-	if toEnumObject["Door"] != ObjectTypeDoor {
-		t.Errorf("toEnumDObject[\"Door\"] = %v; want %v", toEnumObject["Door"], ObjectTypeDoor)
+	if toEnumObject["door"] != ObjectTypeDoor {
+		t.Errorf("toEnumDObject[\"door\"] = %v; want %v", toEnumObject["door"], ObjectTypeDoor)
 	}
-	if toEnumObject["Window"] != ObjectTypeWindow {
-		t.Errorf("toEnumDObject[\"Window\"] = %v; want %v", toEnumObject["Window"], ObjectTypeWindow)
+	if toEnumObject["window"] != ObjectTypeWindow {
+		t.Errorf("toEnumDObject[\"window\"] = %v; want %v", toEnumObject["window"], ObjectTypeWindow)
 	}
-	if toEnumObject["Stairs"] != ObjectTypeStairs {
-		t.Errorf("toEnumDObject[\"Stairs\"] = %v; want %v", toEnumObject["Stairs"], ObjectTypeStairs)
+	if toEnumObject["stairs"] != ObjectTypeStairs {
+		t.Errorf("toEnumDObject[\"stairs\"] = %v; want %v", toEnumObject["stairs"], ObjectTypeStairs)
 	}
-	if toEnumObject["Ladder"] != ObjectTypeLadder {
-		t.Errorf("toEnumDObject[\"Ladder\"] = %v; want %v", toEnumObject["Ladder"], ObjectTypeLadder)
+	if toEnumObject["ladder"] != ObjectTypeLadder {
+		t.Errorf("toEnumDObject[\"ladder\"] = %v; want %v", toEnumObject["ladder"], ObjectTypeLadder)
 	}
-	if toEnumObject["Path"] != ObjectTypePath {
-		t.Errorf("toEnumDObject[\"Path\"] = %v; want %v", toEnumObject["Path"], ObjectTypePath)
+	if toEnumObject["path"] != ObjectTypePath {
+		t.Errorf("toEnumDObject[\"path\"] = %v; want %v", toEnumObject["path"], ObjectTypePath)
 	}
-	if toEnumObject["Trail"] != ObjectTypeTrail {
-		t.Errorf("toEnumDObject[\"Trail\"] = %v; want %v", toEnumObject["Trail"], ObjectTypeTrail)
+	if toEnumObject["trail"] != ObjectTypeTrail {
+		t.Errorf("toEnumDObject[\"trail\"] = %v; want %v", toEnumObject["trail"], ObjectTypeTrail)
 	}
 }
 
 // Test for MaterialType enum
 func TestMaterialType(t *testing.T) {
 	// Test enum to string conversion
-	if MaterialTypeNone.String() != "None" {
-		t.Errorf("MaterialTypeNone.String() = %v; want %v", MaterialTypeNone.String(), "None")
+	if MaterialTypeNone.String() != "none" {
+		t.Errorf("MaterialTypeNone.String() = %v; want %v", MaterialTypeNone.String(), "none")
 	}
-	if MaterialTypeWood.String() != "Wood" {
-		t.Errorf("MaterialTypeWood.String() = %v; want %v", MaterialTypeWood.String(), "Wood")
+	if MaterialTypeWood.String() != "wood" {
+		t.Errorf("MaterialTypeWood.String() = %v; want %v", MaterialTypeWood.String(), "wood")
 	}
-	if MaterialTypeStone.String() != "Stone" {
-		t.Errorf("MaterialTypeStone.String() = %v; want %v", MaterialTypeStone.String(), "Stone")
+	if MaterialTypeStone.String() != "stone" {
+		t.Errorf("MaterialTypeStone.String() = %v; want %v", MaterialTypeStone.String(), "stone")
 	}
-	if MaterialTypeIron.String() != "Iron" {
-		t.Errorf("MaterialTypeIron.String() = %v; want %v", MaterialTypeIron.String(), "Iron")
+	if MaterialTypeIron.String() != "iron" {
+		t.Errorf("MaterialTypeIron.String() = %v; want %v", MaterialTypeIron.String(), "iron")
 	}
-	if MaterialTypeShit.String() != "Shit" {
-		t.Errorf("MaterialTypeShit.String() = %v; want %v", MaterialTypeShit.String(), "Shit")
+	if MaterialTypeShit.String() != "shit" {
+		t.Errorf("MaterialTypeShit.String() = %v; want %v", MaterialTypeShit.String(), "shit")
 	}
 	if MaterialTypeIKEA.String() != "IKEA" {
 		t.Errorf("MaterialTypeIKEA.String() = %v; want %v", MaterialTypeIKEA.String(), "IKEA")
 	}
-	if MaterialTypeFlesh.String() != "Flesh" {
-		t.Errorf("MaterialTypeFlesh.String() = %v; want %v", MaterialTypeFlesh.String(), "Flesh")
+	if MaterialTypeFlesh.String() != "flesh" {
+		t.Errorf("MaterialTypeFlesh.String() = %v; want %v", MaterialTypeFlesh.String(), "flesh")
 	}
-	if MaterialTypeDirt.String() != "Dirt" {
-		t.Errorf("MaterialTypeDirt.String() = %v; want %v", MaterialTypeDirt.String(), "Dirt")
+	if MaterialTypeDirt.String() != "dirt" {
+		t.Errorf("MaterialTypeDirt.String() = %v; want %v", MaterialTypeDirt.String(), "dirt")
 	}
-	if MaterialTypeMud.String() != "Mud" {
-		t.Errorf("MaterialTypeMud.String() = %v; want %v", MaterialTypeMud.String(), "Mud")
+	if MaterialTypeMud.String() != "mud" {
+		t.Errorf("MaterialTypeMud.String() = %v; want %v", MaterialTypeMud.String(), "mud")
 	}
-	if MaterialTypeGlass.String() != "Glass" {
-		t.Errorf("MaterialTypeGlass.String() = %v; want %v", MaterialTypeGlass.String(), "Glass")
+	if MaterialTypeGlass.String() != "glass" {
+		t.Errorf("MaterialTypeGlass.String() = %v; want %v", MaterialTypeGlass.String(), "glass")
 	}
 
 	// Test map lookup
-	if toStringMaterial[MaterialTypeNone] != "None" {
-		t.Errorf("toStringMaterial[MaterialTypeNone] = %v; want %v", toStringMaterial[MaterialTypeNone], "None")
+	if toStringMaterial[MaterialTypeNone] != "none" {
+		t.Errorf("toStringMaterial[MaterialTypeNone] = %v; want %v", toStringMaterial[MaterialTypeNone], "none")
 	}
-	if toStringMaterial[MaterialTypeWood] != "Wood" {
-		t.Errorf("toStringMaterial[MaterialTypeWood] = %v; want %v", toStringMaterial[MaterialTypeWood], "Wood")
+	if toStringMaterial[MaterialTypeWood] != "wood" {
+		t.Errorf("toStringMaterial[MaterialTypeWood] = %v; want %v", toStringMaterial[MaterialTypeWood], "wood")
 	}
-	if toStringMaterial[MaterialTypeStone] != "Stone" {
-		t.Errorf("toStringMaterial[MaterialTypeStone] = %v; want %v", toStringMaterial[MaterialTypeStone], "Stone")
+	if toStringMaterial[MaterialTypeStone] != "stone" {
+		t.Errorf("toStringMaterial[MaterialTypeStone] = %v; want %v", toStringMaterial[MaterialTypeStone], "stone")
 	}
-	if toStringMaterial[MaterialTypeIron] != "Iron" {
-		t.Errorf("toStringMaterial[MaterialTypeIron] = %v; want %v", toStringMaterial[MaterialTypeIron], "Iron")
+	if toStringMaterial[MaterialTypeIron] != "iron" {
+		t.Errorf("toStringMaterial[MaterialTypeIron] = %v; want %v", toStringMaterial[MaterialTypeIron], "iron")
 	}
-	if toStringMaterial[MaterialTypeShit] != "Shit" {
-		t.Errorf("toStringMaterial[MaterialTypeShit] = %v; want %v", toStringMaterial[MaterialTypeShit], "Shit")
+	if toStringMaterial[MaterialTypeShit] != "shit" {
+		t.Errorf("toStringMaterial[MaterialTypeShit] = %v; want %v", toStringMaterial[MaterialTypeShit], "shit")
 	}
 	if toStringMaterial[MaterialTypeIKEA] != "IKEA" {
 		t.Errorf("toStringMaterial[MaterialTypeIKEA] = %v; want %v", toStringMaterial[MaterialTypeIKEA], "IKEA")
 	}
-	if toStringMaterial[MaterialTypeFlesh] != "Flesh" {
-		t.Errorf("toStringMaterial[MaterialTypeFlesh] = %v; want %v", toStringMaterial[MaterialTypeFlesh], "Flesh")
+	if toStringMaterial[MaterialTypeFlesh] != "flesh" {
+		t.Errorf("toStringMaterial[MaterialTypeFlesh] = %v; want %v", toStringMaterial[MaterialTypeFlesh], "flesh")
 	}
-	if toStringMaterial[MaterialTypeDirt] != "Dirt" {
-		t.Errorf("toStringMaterial[MaterialTypeDirt] = %v; want %v", toStringMaterial[MaterialTypeDirt], "Dirt")
+	if toStringMaterial[MaterialTypeDirt] != "dirt" {
+		t.Errorf("toStringMaterial[MaterialTypeDirt] = %v; want %v", toStringMaterial[MaterialTypeDirt], "dirt")
 	}
-	if toStringMaterial[MaterialTypeMud] != "Mud" {
-		t.Errorf("toStringMaterial[MaterialTypeMud] = %v; want %v", toStringMaterial[MaterialTypeMud], "Mud")
+	if toStringMaterial[MaterialTypeMud] != "mud" {
+		t.Errorf("toStringMaterial[MaterialTypeMud] = %v; want %v", toStringMaterial[MaterialTypeMud], "mud")
 	}
-	if toStringMaterial[MaterialTypeGlass] != "Glass" {
-		t.Errorf("toStringMaterial[MaterialTypeGlass] = %v; want %v", toStringMaterial[MaterialTypeGlass], "Glass")
+	if toStringMaterial[MaterialTypeGlass] != "glass" {
+		t.Errorf("toStringMaterial[MaterialTypeGlass] = %v; want %v", toStringMaterial[MaterialTypeGlass], "glass")
 	}
 
 	// Test reverse map lookup
-	if toEnumMaterial["None"] != MaterialTypeNone {
-		t.Errorf("toEnumMaterial[\"None\"] = %v; want %v", toEnumMaterial["None"], MaterialTypeNone)
+	if toEnumMaterial["none"] != MaterialTypeNone {
+		t.Errorf("toEnumMaterial[\"none\"] = %v; want %v", toEnumMaterial["none"], MaterialTypeNone)
 	}
-	if toEnumMaterial["Wood"] != MaterialTypeWood {
-		t.Errorf("toEnumMaterial[\"Wood\"] = %v; want %v", toEnumMaterial["Wood"], MaterialTypeWood)
+	if toEnumMaterial["wood"] != MaterialTypeWood {
+		t.Errorf("toEnumMaterial[\"wood\"] = %v; want %v", toEnumMaterial["wood"], MaterialTypeWood)
 	}
-	if toEnumMaterial["Stone"] != MaterialTypeStone {
-		t.Errorf("toEnumMaterial[\"Stone\"] = %v; want %v", toEnumMaterial["Stone"], MaterialTypeStone)
+	if toEnumMaterial["stone"] != MaterialTypeStone {
+		t.Errorf("toEnumMaterial[\"stone\"] = %v; want %v", toEnumMaterial["stone"], MaterialTypeStone)
 	}
-	if toEnumMaterial["Iron"] != MaterialTypeIron {
-		t.Errorf("toEnumMaterial[\"Iron\"] = %v; want %v", toEnumMaterial["Iron"], MaterialTypeIron)
+	if toEnumMaterial["iron"] != MaterialTypeIron {
+		t.Errorf("toEnumMaterial[\"iron\"] = %v; want %v", toEnumMaterial["iron"], MaterialTypeIron)
 	}
-	if toEnumMaterial["Shit"] != MaterialTypeShit {
-		t.Errorf("toEnumMaterial[\"Shit\"] = %v; want %v", toEnumMaterial["Shit"], MaterialTypeShit)
+	if toEnumMaterial["shit"] != MaterialTypeShit {
+		t.Errorf("toEnumMaterial[\"shit\"] = %v; want %v", toEnumMaterial["shit"], MaterialTypeShit)
 	}
 	if toEnumMaterial["IKEA"] != MaterialTypeIKEA {
 		t.Errorf("toEnumMaterial[\"IKEA\"] = %v; want %v", toEnumMaterial["IKEA"], MaterialTypeIKEA)
 	}
-	if toEnumMaterial["Flesh"] != MaterialTypeFlesh {
-		t.Errorf("toEnumMaterial[\"Flesh\"] = %v; want %v", toEnumMaterial["Flesh"], MaterialTypeFlesh)
+	if toEnumMaterial["flesh"] != MaterialTypeFlesh {
+		t.Errorf("toEnumMaterial[\"flesh\"] = %v; want %v", toEnumMaterial["flesh"], MaterialTypeFlesh)
 	}
-	if toEnumMaterial["Dirt"] != MaterialTypeDirt {
-		t.Errorf("toEnumMaterial[\"Dirt\"] = %v; want %v", toEnumMaterial["Dirt"], MaterialTypeDirt)
+	if toEnumMaterial["dirt"] != MaterialTypeDirt {
+		t.Errorf("toEnumMaterial[\"dirt\"] = %v; want %v", toEnumMaterial["dirt"], MaterialTypeDirt)
 	}
-	if toEnumMaterial["Mud"] != MaterialTypeMud {
-		t.Errorf("toEnumMaterial[\"Mud\"] = %v; want %v", toEnumMaterial["Mud"], MaterialTypeMud)
+	if toEnumMaterial["mud"] != MaterialTypeMud {
+		t.Errorf("toEnumMaterial[\"mud\"] = %v; want %v", toEnumMaterial["mud"], MaterialTypeMud)
 	}
-	if toEnumMaterial["Glass"] != MaterialTypeGlass {
-		t.Errorf("toEnumMaterial[\"Glass\"] = %v; want %v", toEnumMaterial["Glass"], MaterialTypeGlass)
+	if toEnumMaterial["glass"] != MaterialTypeGlass {
+		t.Errorf("toEnumMaterial[\"glass\"] = %v; want %v", toEnumMaterial["glass"], MaterialTypeGlass)
 	}
 }
 

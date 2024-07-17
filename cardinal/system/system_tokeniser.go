@@ -128,7 +128,7 @@ func (ts *TokeniserSystem) setupObjects() {
 	ts.objLookup["KEY"] = enums.ObjectTypeKey
 	ts.objLookup["KNIFE"] = enums.ObjectTypeKnife
 	ts.objLookup["BOTTLE"] = enums.ObjectTypeBottle
-	ts.objLookup["MATCHSTICKS"] = enums.ObjectTypeMatchsticks
+	ts.objLookup["MATCHES"] = enums.ObjectTypeMatches
 	ts.objLookup["PETROL"] = enums.ObjectTypePetrol
 	ts.objLookup["DYNAMITE"] = enums.ObjectTypeDynamite
 	ts.objLookup["GLUE"] = enums.ObjectTypeGlue
@@ -140,7 +140,7 @@ func (ts *TokeniserSystem) setupObjects() {
 	ts.revObjLookup["key"] = enums.ObjectTypeKey
 	ts.revObjLookup["knife"] = enums.ObjectTypeKnife
 	ts.revObjLookup["bottle"] = enums.ObjectTypeBottle
-	ts.revObjLookup["matchsticks"] = enums.ObjectTypeMatchsticks
+	ts.revObjLookup["matches"] = enums.ObjectTypeMatches
 	ts.revObjLookup["petrol"] = enums.ObjectTypePetrol
 	ts.revObjLookup["dynamite"] = enums.ObjectTypeDynamite
 	ts.revObjLookup["glue"] = enums.ObjectTypeGlue
@@ -151,7 +151,7 @@ func (ts *TokeniserSystem) setupObjects() {
 	ts.revObjLookup["Key"] = enums.ObjectTypeKey
 	ts.revObjLookup["Knife"] = enums.ObjectTypeKnife
 	ts.revObjLookup["Bottle"] = enums.ObjectTypeBottle
-	ts.revObjLookup["Matchsticks"] = enums.ObjectTypeMatchsticks
+	ts.revObjLookup["Matches"] = enums.ObjectTypeMatches
 	ts.revObjLookup["Petrol"] = enums.ObjectTypePetrol
 	ts.revObjLookup["Dynamite"] = enums.ObjectTypeDynamite
 	ts.revObjLookup["Glue"] = enums.ObjectTypeGlue
